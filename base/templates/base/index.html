@@ -1,0 +1,340 @@
+{% extends "base/base.html" %}
+{% load mathfilters %}
+
+{%block map%}
+{%endblock%}
+
+
+
+{% block buttons %}
+<div>
+<button title="Download and import tracks and photos from Google Drive and Google Photos"
+     onclick="location.href='{% url 'quick_import'  %}'" type="button">Quick Import Google</button>
+<button title="Download and import tracks from TomTom" onclick="location.href='{% url 'quick_import_tomtom'  %}'" type="button">Quick Import TomTom</button>
+
+<form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">
+    {% csrf_token %}
+    <input type="file" name="file" multiple />
+    <input type="submit" value="Upload File" />
+  </form>
+</div>
+{%endblock%}
+
+{% block content %}
+
+<h2>TODO</h2>
+<ul>
+    <li>reset button leaflet</li>
+    <li>export line as json, show line with tracks, convert to gpx</li>
+    <li>group short view without map </li>
+    <li>download from polar </li>
+    <li>pwx </li>
+    <li>help page</li>
+    <li>waypoints in gpx export</li>
+    <li>fit/fat</li>
+    <li>support for sqlite with textfields - remove array fields</li>
+    <li>fastkml for kml exporting</li>
+    <li>custom user https://wsvincent.com/django-tips-custom-user-model/</li>
+    <li>create line with https://django-leaflet.readthedocs.io/en/latest/widget.html </li>
+    <li> choose wchich photo is background -pass background image in track view</li>
+    <li>export page with excel, gpx, kml, geojson</li>
+    <li> add hr and freq to list of tracks if present</li>
+    <li>tests</li>
+    <li>export zip package gpx + photos</li>
+    <li>photos slideshow</li>
+    <li>splits many tracks</li>
+    <li>link next and previous track</li>
+    <li>overlapping features: draw icons; fix photos: popup photos side by side</li>
+    <li>set track group via api</li>
+    <li>heat map altitudes</li>
+    <li>similar tracks in django</li>
+    <li>global objects in all maps</li>
+    <li>add page titles to all templates</li>
+    <li>check that import other extensions works</li>
+    <li>add waypoint.track2 everywhere</li>
+    <li>timeline: tracks, photos, every day</li>
+    <li>duration and speed summed over each segment: netto e lordo</li>
+    <li>clustering looking at photos one after the other</li>
+    <li>many tracks  do everythin in ajax and add option to remove/add tracks</li>
+    <li>laps edit directly indices</li>
+    <li>
+        https://datatables.net/extensions/keytable/
+        https://www.gyrocode.com/articles/jquery-datatables-how-to-navigate-rows-with-keytable-plugin/
+    </li>
+    <li>add geopy in ajax in track list with lat and long</li>
+    <li>tracksplit - wps and photos?</li>
+    <li>better visualization of google history: description for segments http://127.0.0.1:8000/tracks/track/9280/?</li>
+    <li>rebuild venv, clean requirements, clean js</li>
+    <li>reduce points global done at db level, not only in output</li>
+    <li> waypoint merge map and table?</li>
+    <li>fix remove initial ppoints http://127.0.0.1:8000/tracks/track/8215/</li>
+    <li>plot for pace?</li>
+    <li>search track removing unicode https://stackoverflow.com/questions/38167273/python-regular-expression-to-remove-non-unicode-characters</li>
+    <li>initial index http://127.0.0.1:8000/tracks/track/11225/</li>
+    <li>https://leafletjs.com/plugins.html#printexport</li>
+    <li>vedere gli errori dei kml/kmz</li>
+    <li>test tracks con waypoints</li>
+
+<h2>Last Tracks
+     <!-- - <a href="{% url 'track_index' %}?no_search=1">Search</a> -->
+    <!-- -         <div style="float:left"></div><a href="{% url 'track_index' %}?n_days=30 ">Last 30 days</a></div> -->
+<!-- <div style="float:left"><form method="GET" action="{% url 'track_index' %}" id="searchform">
+<input class="searchfield" id="searchbox1" name="name" type="text" value="" placeholder="Name"/>
+<input type="submit" value="Search">
+</form></div> -->
+
+
+
+</h2>
+
+{{ track_form.media }}
+{{ track_form.non_field_errors }}
+{{ track_form.errors }}
+
+<form method="POST" action=""" id="searchform">
+    {% csrf_token %}
+    {{ track_form}}
+    <input type="submit"  name="track_form" value="Submit">
+</form>
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="tracks_table">
+
+            <thead>
+            <tr>
+                <td></td>
+                <td>Name</td>
+                <td>Date</td>
+                <td>Country</td>
+                <td>City</td>
+                <td>Duration</td>
+                <!--<td>Frequency</td>-->
+                <td>Length</td>
+                <td>Pace</td>
+                <td>Photos</td>
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for track in tracks %}
+                <tr>
+                    <td>
+                        <a href="{% url 'track_detail' track_id=track.pk %}"><img src="{{track.png_file}}" style="max-height:40px;
+                            max-width:60px;
+                            height:auto;
+                            width:auto;"></a>
+                    </td>
+                    <td>
+                        <a href="{% url 'track_detail' track_id=track.pk %}"> {{track.name_wo_path_wo_ext|truncatechars:30}}</a>
+                    </td>
+
+                    <td>{{track.date|date:"Y/m/d"}}</td>
+                    <td>{{track.end_country}}</td>
+                    <td>{{track.end_city}}</td>
+                    
+                    <td>{% if track.duration_string%}{{track.duration_string}}{%endif%}</td>
+                    <!--<td data-sort={{track.total_frequency|stringformat:"05.3f"}}>{% if track.total_frequency%}{{track.total_frequency|floatformat:-1}}steps/min{%endif%}</td>-->
+                    <td data-sort={{track.length_3d|stringformat:"09d"}}>{% if track.length_3d %}{{track.length_3d|div:1000|floatformat:-2}}km{%endif%}</td>
+                    <td data-sort={{track.pace|stringformat:"09.3f"}}>{% if track.pace_string %}{{track.pace_string}}{%endif%}</td>
+                    <td>{{track.photos.count}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+        <br>
+    </div>
+</div>
+
+{% if year_track_dates %}
+    <h2>Timeline</h2>
+    {% for ytd in year_track_dates %}
+        {% if ytd.track or ytd.photo %}
+            <div style="float:left;margin-right:1%">
+            {% if ytd.track %}
+                    <h3>
+                        <a href="{% url 'track_index' %}?min_date={{ytd.min_date}}&max_date={{ytd.max_date}}&exclude_excluded_groups=1">{{ytd.n_year}} {% if ytd.n_year == 1%}year{%else%}years{%endif%} ago</a>
+                    </h3>
+                    <a href="{% url 'track_detail' track_id=ytd.track.pk %}"> {{ytd.track.name_wo_path_wo_ext|truncatechars:30}}</a><br>
+                    {{ytd.track.end_country}}, {{ytd.track.end_city}}<br>
+                    {{ytd.track.duration_string}}, {{ytd.track.length_3d|div:1000|floatformat:-2}}km<br>
+
+
+                    <a href="{% url 'track_detail' track_id=ytd.track.pk %}"><img src="{{ytd.track.png_file}}" style="max-height:100px;
+                            max-width:150px;
+                            height:auto;
+                            width:auto;"></a><br>
+            {% endif %}
+            {% if ytd.photo %}
+                {%if not ytd.track%}
+                    <h3>{{ytd.n_year}} {% if ytd.n_year == 1%}year{%else%}years{%endif%} ago</h3>
+                {%endif%}
+                <div style="display:block;width:200px;overflow:auto;">
+                    <a href="{% url 'photo_detail' photo_id=ytd.photo.pk %}">
+                        <img style="display:block;width:100%;margin: 0;" src={{ytd.photo.thumbnail_url_path}} alt="img" >
+                    </a>
+                </div>
+                    <br>
+            {% endif %}
+
+                </div>
+        {% endif %}
+    {%endfor %}
+<div style = "clear:both;"></div>
+{%endif %}
+
+<div style="float:left; margin-left: 3%">
+
+    <div style="width:90%; float:left;">
+        <h2>Last Waypoints</h2>
+
+        <table class="table table-bordered table-hover" id="wps_table">
+
+            <thead>
+            <tr>
+                <td>Name</td>
+                <td>Time</td>
+                <td>Altitude</td>
+                <td>Track</td>
+                <!--<td>Country</td>-->
+                <!--<td>City</td>-->
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for wp in waypoints  %}
+                <tr>
+                    <td>
+                        <a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a>
+                    </td>
+                    <td>{{wp.time|date:"Y/m/d"}}</td>
+                    <td>{{wp.alt}}</td>
+                    <td>
+                        
+                        {%if wp.track%}
+                        <a href="{% url 'track_detail' track_id=wp.track.pk %}">{{wp.track.name}}</a>
+                        {%endif%}
+                    </td>
+                    <!--<td>{{wp.country}}</td>-->
+                    <!--<td>{{wp.city}}</td>-->
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+        <br>
+                <div style="float:left"><a href="{% url 'waypoint_index' %}?n_days= 30 ">Last 30 days</a></div>
+        <form method="GET" action="{% url 'waypoint_index' %}" id="searchform_w">
+            <input class="searchfield" id="searchbox1_w" name="name" type="text" value="" placeholder="Name"/>
+        <input type="submit" value="Search">
+            </form>
+
+    </div>
+</div>
+
+
+<div style="float:left; margin-left: 3%">
+    <div style="width:90%; float:left;">
+        <h2>Last groups</h2>
+        <table class="table table-bordered table-hover" id="groups_table">
+
+            <thead>
+            <tr>
+                <td>Name</td>
+                <td>Tracks</td>
+                <!--<td>Created</td>-->
+                <td>Modified</td>
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for g in groups  %}
+                <tr>
+                    <td>
+                        <a href="{% url 'group_detail' group_id=g.pk %}">{{g.name}}</a>
+                    </td>
+                    <td>{{g.size}}</td>
+                    <!--<td>{{g.created|date:"Y/m/d"}}</td>-->
+                    <td>{{g.modified|date:"Y/m/d"}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+        {{ group_form.media }}
+        {{ group_form.non_field_errors }}
+        {{ group_form.errors }}
+
+        <form method="POST" action=""" id="searchform">
+            {% csrf_token %}
+            {{ group_form}}
+            <input type="submit" value="Submit"  name="group_form">
+        </form>
+
+    </div>
+</div>
+
+<div style = "clear:both;"></div>
+
+<h2>Last Photos</h2>
+<div style="float:left"><a href="{% url 'photo_index' %}?n_days= 30 ">Last 30 days</a></div>
+<form method="GET" action="{% url 'photo_index' %}" id="searchform_p">
+<input class="searchfield" id="searchbox1_p" name="name" type="text" value="" placeholder="Name"/>
+<input type="submit" value="Search">
+</form>
+
+{%for photo in photos%}
+    <div style="width:24%;float:left; margin-left: 1%;margin-top: 1%">
+<div max-width: 100%;></div>
+<div max-width: 100%;><a href='{% url 'photo_detail' photo_id=photo.pk %}' ><img src='{{photo.url_path}}'  style="max-width:100%"; ></a></div>
+
+
+</div>
+{%endfor%}
+
+
+{%endblock%}
+
+
+{%block tablejs%}
+<script>
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#tracks_table')
+        .DataTable({
+            paging: false,
+            searching:false,
+            "order": [[ 2, "desc" ]],
+            dom: 'Bfrtip',
+            select: false,
+            buttons: [],
+            "bInfo" : false,
+    } )});
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#wps_table')
+        .DataTable({
+            paging: false,
+            searching:false,
+            "order": [[ 1, "desc" ]],
+            dom: 'Bfrtip',
+            select: false,
+            buttons: [],
+            "bInfo" : false,
+    } )});
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#groups_table')
+        .DataTable({
+            paging: false,
+            searching:false,
+            "order": [[ 2, "desc" ]],
+            dom: 'Bfrtip',
+            select: false,
+            buttons: [],
+            "bInfo" : false,
+    } )});
+    </script>
+{%endblock%}    

@@ -1,0 +1,68 @@
+{% extends "base/base.html" %}
+
+
+{% load leaflet_tags %}
+{% load mathfilters %}
+{% load static %}
+
+{% block map %}
+{% endblock %}
+
+
+{%block buttons %}
+<button onclick="location.href='{% url 'geojsonobj_edit'   %}'" type="button">New</button>
+{%endblock%}
+
+
+{%block table %}
+<h2>All Geojson Objects</h2>
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="import_table">
+
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Website</th>
+                <th>Is Valid</th>
+                <th>Modify</th>
+
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for obj in objs  %}
+                <tr>
+                    <td>{{obj.pk}}</td>
+                    <td>
+                        <a href="{% url 'geojsonobj' geojsonobj_id=obj.pk %}">{{obj.name}}</a>
+                    </td>
+                    <td>{% if obj.website %} <a href="{{obj.website}}">{{obj.website}}</a> {%endif%}</td>
+                    <td>{{obj.is_valid}}</td>
+                    <td><a href="{% url 'geojsonobj_edit' geojsonobj_id=obj.pk %}">Edit</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<script>
+$(document).ready( function () {
+    var events = $('#events');
+    var table =    $('#import_table')
+    .DataTable({
+        "pageLength": 10,
+        "lengthMenu":[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        "order": [[ 0, "asc" ]],
+       // dom: 'Bfrtip',
+        buttons: [],
+       // select: true
+    } );
+} );
+</script>
+</body>
+
+{%endblock%}

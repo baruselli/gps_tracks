@@ -1,0 +1,180 @@
+{% extends "base/base.html" %}
+
+{% block map %}
+{% endblock %}
+
+{% block content %}
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+
+</head>
+
+
+<body>
+
+
+<h1>Tracks</h1>
+<h3>Download</h3>
+<button title="Requires TomTom username and password set in Options" onclick="location.href='{% url 'download_tomtom'  %}'" type="button">Download from TomTom</button>
+<button title="Requires Google Tracks directory names set in Options"onclick="location.href='{% url 'google_drive_tracks'  %}'" type="button">Download from Google Drive</button>
+<button onclick="location.href='{% url 'download_googlehistory'  %}'" type="button">Download Google history tracks (experimental, needs chromium drivers)</button>
+
+
+{%if show_timeline %}
+    <a href="{% url 'history_files'%}">Google Timeline</a>
+{%endif%}
+
+<h3>Import</h3>
+{%comment %}
+<button onclick="location.href='{% url 'import_gpx'  %}'" type="button">Import gpx</button>
+<button onclick="location.href='{% url 'import_kmz'  %}'" type="button">Import kmz</button>
+<button onclick="location.href='{% url 'import_kml'  %}'" type="button">Import kml</button>
+<button onclick="location.href='{% url 'import_csv'  %}'" type="button">Import csv</button>
+<button onclick="location.href='{% url 'import_tcx'  %}'" type="button">Import tcx</button>
+{%endcomment %}
+
+<form method="GET" action="{% url 'import_update_tracks' %}" id="import_upload_tracks_form">
+    Extensions
+    <select name="ext" size="5" multiple>
+        <option value=".gpx">GPX</option>
+        <option value=".kml">KML</option>
+        <option value=".kmz">KMZ</option>
+        <option value=".csv">CSV</option>
+        <option value=".tcx">TCX</option>
+      </select> 
+    <input type="checkbox" name="update" value=1>Update existing tracks
+    <input type="checkbox" name="import_new_extensions" value=1>Update existing tracks if extension is new
+    <input type="submit" value="Submit" id ="submit_button_tracks">
+</form>
+
+
+<h3>Upload file(s) and import</h3>
+<form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">
+    {% csrf_token %}
+    <input type="file" name="file" multiple />
+    <br />
+    <input title="Manually upload one or more GPS files" type="submit" value="Upload File" />
+
+  </form>
+
+  {%comment %}
+  <h3>Update tracks</h3>
+<button onclick="location.href='{% url 'update_gpx'  %}'" type="button">Update gpx</button>
+<button onclick="location.href='{% url 'update_kml'  %}'" type="button">Update kml</button>
+<button onclick="location.href='{% url 'update_kmz'  %}'" type="button">Update kmz</button>
+<button onclick="location.href='{% url 'update_csv'  %}'" type="button">Update csv</button>
+<button onclick="location.href='{% url 'update_tcx'  %}'" type="button">Update tcx</button>
+{%endcomment%}
+
+<!-- <button onclick="location.href='{% url 'geopy_tracks'  %}'" type="button">Get infos on endpoints</button> -->
+
+
+
+<!-- <h3>Export tracks</h3>
+<button onclick="location.href='{% url 'serialize_tracks'  %}'" type="button">Export as JSON</button> -->
+
+
+<!-- <h1>Waypoints</h1>
+<button onclick="location.href='{% url 'geopy_waypoints'  %}'" type="button">Get infos on waypoints</button>
+<button onclick="location.href='{% url 'serialize_waypoints'  %}'" type="button">Export as JSON</button> -->
+
+
+
+<h1>Photos</h1>
+<h3>Download</h3>
+<button title="Requires Google Drive photos directories set in Options" onclick="location.href='{% url 'google_drive_photos'  %}'" type="button">Download Photos from Google Drive</button>
+<button title="Look for all photos in Google Photos startin from the initial year set in Options" onclick="location.href='{% url 'google_photos'  %}'" type="button">Download Photos from Google Photos</button>
+<h3>Import</h3>
+<button onclick="location.href='{% url 'import_photos'  %}'" type="button">Import photos</button>
+<button onclick="location.href='{% url 'update_photos'  %}'" type="button">Update photos</button>
+<button onclick="location.href='{% url 'link_photos'  %}'" type="button">Link photos to tracks</button>
+<!-- <button onclick="location.href='{% url 'geopy_photos'  %}'" type="button">Get infos on photo locations</button> -->
+<!-- <button onclick="location.href='{% url 'serialize_photos'  %}'" type="button">Export as JSON</button> -->
+
+<h1>Delete</h3>
+    <button onclick="deleteemptytracks_fct()" type="button">Delete empty tracks</button>
+    <button onclick="deletetracks_fct()" type="button">Delete all tracks</button>
+    <a href="{% url 'index_blacklist' %}">Blacklist</a>
+    <button onclick="deletewps_fct()" type="button">Delete all waypoints</button>
+    <button onclick="deletelines_fct()" type="button">Delete all lines</button>
+    <button onclick="deletegroups_fct()" type="button">Delete all groups</button>
+    <button onclick="deletephotos_fct()" type="button">Delete all photos</button>
+    
+    
+
+<!-- <h1>Lines</h1>
+<button onclick="location.href='{% url 'geopy_lines'  %}'" type="button">Get infos on endpoints</button> -->
+
+<!-- <h1>Groups</h1>
+<h3>Create groups</h3>
+<button onclick="location.href='{% url 'autocreate_groups'  %}'" type="button">Auto create groups</button> -->
+
+
+<!-- <h1>Deserialize</h1>
+<h3>Select file(s)</h3>
+<form method="post" enctype="multipart/form-data"  action="{% url 'deserialize'%}">
+    {% csrf_token %}
+    <input type="file" name="file" multiple />
+    <br />
+    <input type="submit" value="Upload File" />
+
+  </form> -->
+
+
+</body>
+
+
+<script>
+
+function deletegroups_fct() {
+    var r=confirm("Really delete groups?");
+    if (r == true) {
+        location.href='{% url 'delete_groups'  %}'
+}
+}
+
+function deletephotos_fct() {
+    var r=confirm("Really delete photos?");
+    if (r == true) {
+        location.href='{% url 'delete_photos'  %}'
+}
+}
+
+
+function deleteemptytracks_fct() {
+    var r=confirm("Really delete empty tracks (0 points, no waypoints)?");
+    if (r == true) {
+        location.href='{% url 'delete_empty_tracks'  %}'
+}
+}
+
+function deletetracks_fct() {
+    var r=confirm("Really delete tracks?");
+    if (r == true) {
+        location.href='{% url 'delete_tracks'  %}'
+}
+}
+
+function deletewps_fct() {
+    var r=confirm("Really delete waypoints?");
+    if (r == true) {
+        location.href='{% url 'delete_wps'  %}'
+}
+}
+function deletelines_fct() {
+    var r=confirm("Really delete lines?");
+    if (r == true) {
+        location.href='{% url 'delete_lines'  %}'
+}
+}
+</script>
+
+</html>
+
+{%endblock%}

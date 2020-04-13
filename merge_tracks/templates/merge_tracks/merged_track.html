@@ -1,0 +1,54 @@
+{% extends "base/base.html" %}
+{% load staticfiles%}
+
+{% block map %}
+{% endblock %}
+
+{% block title %}
+<div><h1>Merged track {{obj.name}}</h1></div>
+{%endblock%}
+
+{% block buttons %}
+<button onclick="location.href='{% url 'merged_tracks_index' %}'" type="button">All merged tracks</button>
+<button onclick="location.href='{% url 'edit_merged_track' id=obj.pk %}'" type="button">Modify</button>
+<button onclick="deletemg_fct()" type="button">Delete</button>
+{%endblock%}
+
+
+{%block table%}
+<div>
+        <table class="table table-bordered table-hover" id="import_table">
+
+                <thead>
+                </thead>
+                <tbody>
+                <tr>  <td>Id</td><td>{{obj.pk}}</td></tr>
+                <tr>  <td>Name</td><td>{{obj.name}}</td></tr>
+                <tr>  <td>Output Track</td><td>
+                    {% if obj.output_track %}
+                        <a href="{% url 'track_detail' track_id=obj.output_track.pk %}">{{obj.output_track}}</a>
+                    {% endif %}
+                </td></tr>
+                <tr>  <td>Input Tracks</td><td>
+                    {% for t in input_tracks %}
+                        <a href="{% url 'track_detail' track_id=t.pk %}">{{t}}</a><br>
+                    {% endfor %}
+                </td></tr>
+                 </tbody>
+
+            </table>
+</div>
+{%endblock%}
+
+
+{% block js %}
+<script>
+
+        function deletemg_fct() {
+            var r=confirm("Really delete merged track?");
+            if (r == true) {
+                location.href='{% url 'delete_merged_track' id=obj.pk  %}'
+        }
+        }
+</script>
+{%endblock%}

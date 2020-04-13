@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+
+{%block map%}
+{%endblock%}
+
+{%block buttons%}
+<a href="{% url 'track_source' ext=extension track_id=track.pk %}?raw_view=1">Text version</a>
+{%endblock%}
+
+{% block content %}
+
+
+<html>
+  <head>
+
+
+
+</head>
+
+<body>
+<h2>Gpx for track  <a href="{% url 'track_detail' track_id=track.pk %}">{{track.name_wo_path_wo_ext}}</a></h2>
+
+<div id="simplexml">
+<!--<pre lang="xml"  style="white-space: pre-line">{{track.gpx}}</pre>-->
+</div>
+
+</body>
+
+</html>
+
+  <script>
+    string='{{track.gpx|escapejs }}'
+
+	$("#simplexml").simpleXML({
+	  xmlString:string
+	});
+  </script>
+
+
+{%endblock%}

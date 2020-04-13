@@ -1,0 +1,17 @@
+client_config_backend: file
+client_config_file: "auth/client_secrets.json"
+# client_config:
+#   client_id: {{str}}
+#   client_secret: {{str}}
+#   auth_uri: {{str}}
+#   token_uri: {{str}}
+#   redirect_uri: {{str}}
+#   revoke_uri: {{str}}
+
+save_credentials: True
+save_credentials_backend: file
+save_credentials_file: "auth/my_cred.txt"
+
+# get_refresh_token: {{bool}}
+
+# oauth_scope: {{list of str}}

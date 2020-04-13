@@ -1,0 +1,28 @@
+{% extends "groups/group_plots_base.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{% block head_title %}
+    <title>Group {{group.name}}</title>
+{% endblock %}
+
+
+{%block title%}
+    <h1>Scatter Plots for <a href="{% url 'group_detail' group_id=group.pk %}?reduce_points={{reduce_points}}">{{group.name}}</a> - {{group.tracks.count}} Tracks</h1>
+{%endblock%}
+
+{% block js %}
+
+
+    <script>
+        function get_data_url(){
+                return '{% url 'group_json_properties' group_id=group.pk %}'
+           }
+    </script>
+
+    {{block.super}}
+
+{%endblock%}
+

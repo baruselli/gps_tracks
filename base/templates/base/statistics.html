@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+
+{% block head_title %}
+    <title>Statistics</title>
+{% endblock %}
+
+
+{% block content %}
+<h2>Statistics</h2>
+
+<table>
+    <thead><td></td><td><b>#</b></td><td><b>First</b></td><td><b>Last</b></td></thead>
+    <tr><td><b>Tracks</b></td><td>{{n_tracks}}</td><td>{{first_track.date|date:'Y-m-d'}}</td><td>{{last_track.date|date:'Y-m-d'}}</td></tr>
+    <tr><td><b>Photos</b></td><td>{{n_photos}}</td><td>{{first_photo.time|date:'Y-m-d'}}</td><td>{{last_photo.time|date:'Y-m-d'}}</td></tr>
+    <tr><td><b>Waypoints</b></td><td>{{n_waypoints}}</td><td></td><td></td></tr>
+    <tr><td><b>Groups</b></td><td>{{n_groups}}</td><td></td><td></td></tr>
+    <tr><td><b>Lines</b></td><td>{{n_lines}}</td><td></td><td></td></tr>
+    <tr><td><b>GeoJSON</b></td><td>{{n_geojson}}</td><td></td><td></td></tr>
+    <tr><td><b>Users</b></td><td>{{n_users}}</td><td></td><td></td></tr>
+</table>
+
+
+
+
+{%endblock%}

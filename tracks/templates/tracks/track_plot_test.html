@@ -1,0 +1,83 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{%block buttons %}
+
+{%endblock%}
+
+{% block content %}
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+
+
+  </head>
+
+
+
+  <body>
+        <div>
+<h1><a href="{% url 'track_detail' track_id=track.pk %}">{{track.name_wo_path_wo_ext}}</a></h1>
+
+
+
+
+
+
+
+
+
+    {% if track.td.alts%}
+    <h3>Altitude</h3>
+    <div>
+        <div style="float:left; margin-left: 2%">
+            <div id="c3_14"    style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%">
+            <div id="c3_24"    style="width:90%; "></div>
+        </div>
+    </div>
+        <div style = "clear:both;"></div>
+    {%endif %}
+
+
+
+<script type="text/javascript">
+
+function map_init_basic (map, options) {
+
+   map_right_click(map,options,point_link,waypoint_link,{{track.pk}} );
+
+    map.addControl(new L.Control.Fullscreen());
+
+
+url='{% url 'track_geojson' track_id=track.pk %}'
+$.getJSON(url,function(data){
+console.log(data)
+    L.geoJson(data).addTo(map);
+});
+
+
+}
+  </script>
+
+
+{% endblock %}
+
+{%block map%}
+
+<div id="map_block">
+<div style="height:50%">
+
+
+    <div id="l_map">
+        {%leaflet_map "map" callback="window.map_init_basic"%}
+    </div>
+
+</div>
+</div>
+{%endblock%}

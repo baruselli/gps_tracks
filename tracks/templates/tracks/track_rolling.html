@@ -1,0 +1,241 @@
+{% extends "tracks/base_track.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block buttons %}
+{%endblock%}
+
+{%block title%}
+    <h1>Rolling Window Smoothing for <a href="{% url 'track_detail' track_id=track.pk %}?reduce_points={{reduce_points}}">{{track.name_wo_path_wo_ext}}</a></h1>
+    <div>
+        Every quantity is averaged in a rolling windows of size "Number of rolling points".<br>
+        At the beginning and at the end, if the window size becomes smaller than "Minimum number of points", a constant value is taken.
+    </div>
+{%endblock%}
+
+{% block plots %}
+    <form method="GET" action="{% url 'rolling_track' track_id=track.pk %}" id="searchform">
+        <input type="hidden" name="reduce_points" value="{{reduce_points}}" />
+        <input type="submit" value="Submit">
+
+    {% if track.td.alts%}
+        <h3>Altitude</h3>
+        Number of rolling points <input class="searchfield" id="searchbox4" name="n_rolling_alt" type="number" value="{{track.n_rolling_alt}}" placeholder="n_rolling"/>
+        Minimum number of points <input class="searchfield" id="searchbox5" name="min_n_alt" type="number" value="{{track.min_n_alt}}" placeholder="min_n"/><br>
+        <div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_14"    style="width:90%; "></div>
+            </div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_24"    style="width:90%; "></div>
+            </div>
+        </div>
+            <div style = "clear:both;"></div>
+    {%endif %}
+
+    {%if track.td.times %}
+        <h3>Speed</h3>
+        <input class="searchfield" id="searchbox2" name="n_rolling_speed" type="number" value="{{track.n_rolling_speed}}" placeholder="n_rolling"/>
+         <input class="searchfield" id="searchbox3" name="min_n_speed" type="number" value="{{track.min_n_speed}}" placeholder="min_n"/><br>
+
+        <div style="float:left; margin-left: 2%">
+            <div id="c3_11"      style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%">
+            <div id="c3_21"      style="width:90%; "></div>
+        </div>
+
+        <div style = "clear:both;"></div>
+{%endif%}
+    {%if track.td.alts %}
+        <h3>Slope / Vertical Speed</h3>
+        <input class="searchfield" id="searchbox2b" name="n_rolling_slope" type="number" value="{{track.n_rolling_slope}}" placeholder="n_slope"/>
+         <input class="searchfield" id="searchbox3b" name="min_n_slope" type="number" value="{{track.min_n_slope}}" placeholder="min_n_slope"/><br>
+        <div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_13"      style="width:90%; "></div>
+            </div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_23"      style="width:90%; "></div>
+            </div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_17"      style="width:90%; "></div>
+            </div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_27"      style="width:90%; "></div>
+            </div>
+        </div>
+        <div style = "clear:both;"></div>
+    {%endif%}
+
+    {%if track.td.frequencies%}
+        <h3>Frequency / Step Length</h3>
+        <input class="searchfield" id="searchbox6" name="n_rolling_freq" type="number" value="{{track.n_rolling_freq}}" placeholder="n_rolling"/>
+         <input class="searchfield" id="searchbox7" name="min_n_freq" type="number" value="{{track.min_n_freq}}" placeholder="min_n"/><br>
+
+        <div>
+        <div style="float:left; margin-left: 2%">
+            <div id="c3_12"    style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%">
+            <div id="c3_22"    style="width:90%; "></div>
+        </div>
+        </div>
+        <div style = "clear:both;"></div>
+
+        <div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_15"    style="width:90%; "></div>
+            </div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_25"    style="width:90%; "></div>
+            </div>
+        </div>
+        <div style = "clear:both;"></div>
+    {%endif%}
+
+    {%if track.td.heartbeats%}
+        <h3>Heartrate</h3> <input class="searchfield" id="searchbox8" name="n_rolling_hr" type="number" value="{{track.n_rolling_hr}}" placeholder="n_rolling"/>
+         <input class="searchfield" id="searchbox9" name="min_n_hr" type="number" value="{{track.min_n_hr}}" placeholder="min_n"/><br>
+
+        <div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_16"    style="width:90%; "></div>
+            </div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_26"    style="width:90%; "></div>
+            </div>
+        </div>
+        <div style = "clear:both;"></div>
+    {%endif%}
+
+    <div style = "clear:both;"></div>
+    <input type="submit" value="Submit">
+
+    </form>
+
+{%endblock%}
+
+{%block js %}
+    {{block.super}}
+    <script type="text/javascript">
+
+    url='{% url 'track_json_list_of_points' track_id=track.pk %}?reduce_points={{reduce_points}}'
+
+    alt=ver_speed=hrs=freq=step_length=false
+
+    {% if track.min_alt %}
+        alt=true
+        ver_speed=true
+    {%endif%}
+    {% if track.has_hr %}
+        hrs=true
+    {%endif%}
+    {% if track.has_freq %}
+        freq=true
+        step_length=true
+    {%endif%}
+
+    var width=600
+    var height=200
+
+    colors=[]
+
+     $.getJSON(url,function(data_orig){
+            console.log(data_orig)
+         height=200
+         width=600
+
+        options1={
+                    "type":"scatter",
+                    "show_legend":false,
+                    "height":height,
+                    "width":width,
+                    "x_type":"time",
+                    "show_legend":false
+                }
+        options2={
+                    "x_label":"Distance(km)",
+                    "type":"line",
+                    "show_legend":false,
+                    "height":height,
+                    "width":width,
+                    "show_legend":false
+                }
+
+        data=data_orig["Track"]["points"]
+
+        //speed
+        options1["y_label"]="Speed(km/h)"
+        options1["bind_to"]="#c3_11"
+        var chart1=c3plotjsondata(data,"DeltaTimeString",["Speed"],options1)
+        options2["y_label"]="Speed(km/h)"
+        options2["bind_to"]="#c3_21"
+        var chart5=c3plotjsondata(data,"Distance", ["Speed"],options2)
+
+      //alt //vertical speed
+        {% if track.has_alts %}
+            options1["y_label"]="Altitude(m)"
+            options1["bind_to"]="#c3_14"
+            var chart4=c3plotjsondata(data,"DeltaTimeString", ["Altitude"],options1)
+            options2["y_label"]="Altitude(m)"
+            options2["bind_to"]="#c3_24"
+            var chart8=c3plotjsondata(data,"Distance", ["Altitude"],options2)
+            options1["y_label"]="Slope(%)"
+            options1["bind_to"]="#c3_13"
+            var chart3=c3plotjsondata(data,"DeltaTimeString",["Slope"],options1)
+            options2["y_label"]="Slope(%)"
+            options2["bind_to"]="#c3_23"
+            var chart7=c3plotjsondata(data,"Distance",["Slope"],options2)
+            options1["y_label"]="Vertical Speed(m/s)"
+            options1["bind_to"]="#c3_17"
+            var chart13=c3plotjsondata(data,"DeltaTimeString",["VerticalSpeed"],options1)
+            options2["y_label"]="Vertical Speed(m/s)"
+            options2["bind_to"]="#c3_27"
+            var chart14=c3plotjsondata(data,"Distance",["VerticalSpeed"],options2)
+        {% endif %}
+        //heartrate
+        {% if track.has_hr %}
+            options1["y_label"]="Heartbeat(bpm)"
+            options1["bind_to"]="#c3_16"
+            options1["colors_"]="ColorHeartrateGroup"
+            options1["pointcolor"]=true
+            var chart11=c3plotjsondata(data,"DeltaTimeString",["Heartrate"],options1)
+            options1["colors_"]=undefined //reset
+            options1["pointcolor"]=false //reset
+            options2["y_label"]="Heartbeat(bpm)"
+            options2["bind_to"]="#c3_26"
+            var chart12=c3plotjsondata(data,"Distance",["Heartrate"],options2)
+        {% endif %}
+        //frequency //step length
+        {% if track.has_freq %}
+            options1["y_label"]="Frequency"
+            options1["bind_to"]="#c3_12"
+            var chart2=c3plotjsondata(data,"DeltaTimeString",["Frequency"],options1)
+            options2["y_label"]="Frequency"
+            options2["bind_to"]="#c3_22"
+            var chart6=c3plotjsondata(data,"Distance",["Frequency"],options2)
+            options1["y_label"]="Step Length(m)"
+            options1["bind_to"]="#c3_15"
+            var chart9= c3plotjsondata(data,"DeltaTimeString",["StepLength"],options1)
+            options2["y_label"]="Step Length(m)"
+            options2["bind_to"]="#c3_25"
+            var chart10=c3plotjsondata(data,"Distance",["StepLength"],options2)
+        {% endif %}
+
+        })
+
+    </script>
+{% endblock %}
+
+
+{% block map %}{% endblock %}
+
+{%block splits%}{% endblock %}
+
+{%block laps%}{% endblock %}
+
+{%block mapjs%}{% endblock %}
+

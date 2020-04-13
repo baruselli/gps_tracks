@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+
+{%block map%}
+{%endblock%}
+
+{%block buttons%}
+<a href="{% url 'track_source' ext=extension track_id=track.pk %}?raw_view=1">Text version</a>
+{%endblock%}
+
+
+{% block content %}
+
+
+<html>
+  <head>
+
+
+
+</head>
+
+<body>
+<h2>Csv for track  <a href="{% url 'track_detail' track_id=track.pk %}">{{track.name_wo_path_wo_ext}}</a></h2>
+
+<pre lang="xml">{{track.csv_table|safe}}</pre>
+
+</body>
+
+</html>
+
+<script>
+  simple_table("#csv_table")
+</script>
+{%endblock%}

@@ -1,0 +1,39 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{%block map%}{%endblock%}
+
+
+{% block content %}
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+</head>
+
+
+<body>
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+
+
+    <h1>Edit Track</h1>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="OK">
+    </form>
+
+</body>
+
+
+</html>
+
+{%endblock%}

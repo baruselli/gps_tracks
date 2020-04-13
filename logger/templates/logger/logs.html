@@ -1,0 +1,37 @@
+{% extends "base/base.html" %}
+
+{% block map %}
+{% endblock %}
+
+{% block content %}
+
+<h1>Logs</h1>
+
+
+<table id ="logs_table">
+    <tfoot>
+        <td></td><td></td><td></td><td></td><td></td>
+    </tfoot>
+    <thead>
+        <th>Date</th><th>Level</th><th>File</th><th>Size</th><th>Download</th>
+    </thead>
+    {% for f in files %}
+    <tr>
+        <td>{{f.date|date:"Y-m-d"}}</td>
+        <td>{{f.level}}</td>
+        <td><a href="{% url 'log' %}?name={{f.name}}">{{f.name}}</a></td>
+        <td>{{f.size}}</td>
+        <td><button onclick="location.href='{% url 'download_log'  %}?name={{f.name}}'" type="button">Download</button></td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+ {%endblock%}
+
+ {% block js %}
+    <script>
+        create_table_logs("#logs_table")
+    </script>
+{% endblock %}

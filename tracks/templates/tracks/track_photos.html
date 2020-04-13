@@ -1,0 +1,80 @@
+{% extends "tracks/base_track.html" %}
+
+
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block stylesheet%}
+    {{block.super}}
+        #map {
+            height: 60%;
+            width: 100%;
+        }
+{%endblock%}
+
+
+
+{% block title %}
+    <h2>Photos for track  <a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a></h2>
+{%endblock %}
+
+{% block mapjs %}
+    <script type="text/javascript">
+
+        function map_init_basic (map, options) {
+
+            init_map_base(map,options, mapBounds=null,add_basemaps=false)
+
+            opacity=1
+            fillopacity=0.5
+            weight=3
+
+            //starting params for bounds
+            max_lat=-400
+            min_lat=400
+            max_long=-400
+            min_long=400
+
+            //bounds
+            min_lat=Math.min(min_lat,{{track.min_lat}})
+            max_lat=Math.max(max_lat,{{track.max_lat}})
+            min_long=Math.min(min_long,{{track.min_long}})
+            max_long=Math.max(max_long,{{track.max_long}})
+
+            var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+
+            init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false,track_pk={{track.pk}})
+
+            ///////////geoJSON
+
+            var geojsonMarkerOptions = {radius: {{default_radius}},fillOpacity:fillopacity,stroke:true,opacity:opacity, weight:weight};
+            url='{% url 'track_json_list_of_points' track_id=track.pk %}?{{request}}'
+            console.log(url)
+
+            $.getJSON(url,function(data){
+                console.log(data["photos"])
+                 read_data_leaflet_generic(data,geojsonMarkerOptions,map)
+
+             })
+
+        }
+    </script>
+{%endblock %}
+
+
+{% block content %}
+    <div>
+        <div><h2>Photos</h2></div>
+        {%for photo in track.photos.all %}
+            <div style="width:48%;float:left; margin-left: 1%;margin-top: 1%">
+            <div max-width: 100%;></div>
+            <div max-width: 100%;><a href='{% url 'photo_detail' photo_id=photo.pk %}' ><img src='{{photo.url_path}}'  style="max-width:100%"; ></a></div>
+            </div>
+        {%endfor%}
+    </div>
+{%endblock%}
+
+
+{%block splits%}{%endblock%}
+{%block laps%}{%endblock%}

@@ -1,0 +1,275 @@
+<html>
+
+    {% load static %}
+
+    <style>
+        {% block stylesheet_base %}
+            header {
+                background-color: #66ff66;
+                position: fixed;
+                top: 0;
+              left: 0;
+              right: 0;
+              down:0;
+              width:100%;
+              z-index:99999;
+              font-size: 140%;
+            }
+
+            footer {
+            background-color: green;
+             position: fixed;
+                /* top: 0;
+              left: 0;
+              right: 0;
+              down:0; */
+              width:100%;
+              z-index:99999;
+            }
+            /* .sticky {
+              position: fixed;
+              top: 0;
+              width: 100%
+            } */
+            .spacer
+            {
+                width: 100%;
+                height: 30px;
+            }
+            .modal {
+                display:    none;
+                position:   absolute;
+                z-index:    1000;
+                top:        0;
+                left:       0;
+                height:     100%;
+                width:      100%;
+                background: rgba( 255, 255, 255, .8 )
+                            url({% static 'gif/FhHRx.gif'%})
+                            50% 50%
+                            no-repeat;
+            }
+
+            /* When the body has the loading class, we turn
+               the scrollbar off with overflow:hidden */
+            body.loading .modal {
+                overflow: hidden;
+            }
+
+            /* Anytime the body has the loading class, our
+               modal element will be visible */
+            body.loading .modal {
+                display: block;
+            }
+
+            /* topbar css*/
+            .ul_topbar {
+              list-style-type: none;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+              background-color: #66ff66;
+            }
+
+            .li_topbar {
+              float: left;
+            border-right: 1px solid #bbb;
+            }
+
+            .li_topbar .a_topbar {
+              display: block;
+              text-align: center;
+              padding: 8px;
+              text-decoration: none;
+            }
+            .li_topbar .a_topbar:hover {
+              background-color: 	#008080;
+            }
+
+            main {
+              margin-top: 20px; /* Add a top margin to avoid content overlay */
+            }
+
+            img:click{
+               width: 800px;
+               z-index=100
+            }
+
+            body {
+                background-color: rgba(238, 238, 238, 0.9);
+            }
+
+            .leaflet-popup-content {
+                background-color: rgba(169, 169, 169, .7);
+            }
+
+        {% endblock %}
+        {% block stylesheet %}{% endblock %}
+    </style>
+
+
+    <head>
+
+        {% load leaflet_tags %}
+        {% leaflet_js %}
+        {% leaflet_css %}
+
+        {% load mathfilters %}
+        {% load svg %}
+
+        <!--plotting libraries-->
+        <script src="{% static 'js/external/d3.js' %}"></script>
+        <script src="{% static 'js/external/c3.js' %}"></script>
+        <link rel='stylesheet' href="{% static 'css/c3.css' %}" />
+        <!-- exporting plots -->
+        <script src="{% static 'js/external/saveSvgAsPng.js' %}"></script>
+        <!--leaflet extensions-->
+        <script src="{% static 'js/external/leaflet-providers.js' %}"></script>
+        <script src="{% static 'js/external/Leaflet.fullscreen.min.js' %}"></script>
+        <script src="{% static 'js/external/leaflet.groupedlayercontrol.js' %}"></script>
+        <script src="{% static 'js/external/leaflet-heat.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/leaflet.fullscreen.css' %}"/>
+        <link rel='stylesheet' href="{% static 'css/leaflet.groupedlayercontrol.css' %}" />
+        <!-- custom scripts -->
+        <script src="{% static 'js/custom/maps.js' %}"></script>
+        <script src="{% static 'js/custom/map_fcts.js' %}"></script>
+        <script src="{% static 'js/custom/plots.js' %}"></script>
+        <script src="{% static 'js/custom/tables.js' %}"></script>
+        <!--jquery and datatables-->
+        <script src="{% static 'js/external/jquery-3.3.1.js' %}"></script>
+        <script src="{% static 'js/external/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'js/external/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'js/external/dataTables.select.min.js' %}"></script>
+        <!-- <script src="{% static 'js/dataTables.keyTable.min.js' %}"></script> -->
+        <link rel="stylesheet" href="{% static 'css/jquery.dataTables.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/buttons.dataTables.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/select.dataTables.min.css' %}">
+        <!-- <link rel="stylesheet" href="{% static 'css/keyTable.dataTables.min.css' %}"> -->
+        <!-- excel export of tables -->
+        <script src="{% static 'js/external/buttons.html5.min.js' %}"></script>
+        <script src="{% static 'js/external/jszip.min.js' %}"></script>
+
+        <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script> -->
+        <!-- <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script> -->
+        
+        <!--interactive xml for track sources-->
+        <script src="{% static 'js/external/simpleXML.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/simpleXML.css' %}" />
+
+
+        <!-- <script src="{% static 'js/chart.js' %}"></script> -->
+        <!-- <script src="{% static 'js/chartjs-plugin-zoom.js' %}"></script> -->
+        <!-- <script src="{% static 'js/c3-rect-zoom.js' %}"></script> -->
+        <!-- <script src="{% static 'js/require.js' %}"></script> -->
+        <!-- <script src="{% static 'js/vega@4.2.0' %}"></script> -->
+        <!-- <script src="{% static 'js/vega-lite@3.0.0-rc4' %}"></script> -->
+        <!-- <script src="{% static 'js/vega-embed@3.18.2' %}"></script> -->
+        <!-- <script src="{% static 'js/jstree.min.js' %}"></script> -->
+        <!--<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">-->
+        <!--<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css">-->
+        <!--<script type="text/javascript" src= "https://code.jquery.com/jquery-1.12.4.js"></script>-->
+        <!--<script type="text/javascript" src= "https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>-->
+        <!--<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>-->
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>-->
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>-->
+        <!--<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>-->
+
+
+
+
+        <!-- <link rel="stylesheet" href="{% static 'css/js_tree_style.min.css' %}" /> -->
+
+        <!-- <link rel="stylesheet" href="{% static 'css/c3-rect-zoom.css' %}"/> -->
+
+        <!-- <script src="{% static 'js/require.js' %}"></script>
+        <script>    
+            var c3 = require('c3')
+            require('c3-rect-zoom').patchC3(c3)
+        </script> -->
+
+        <!-- <script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+        <script src="{% static 'js/dygraph.js' %}"></script> -->
+        <!-- <script src="{% static 'js/synchronizer.js' %}"></script>
+
+        <link href="{% static 'css/leaflet.fullscreen.css' %}" rel='stylesheet'/>
+       <link href="{% static 'css/dygraph.css' %}" rel='stylesheet'/> -->
+
+       {% block head_title %}
+            <title>GPS Tracks</title>
+        {% endblock %}
+       {% block mapjs %}{% endblock %}
+       {% block tablejs %}{% endblock %}
+    </head>
+
+    <body>
+        <header id="header" class="header">
+            <ul class="ul_topbar">
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'index'  %}">Index</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'emptymap'  %}">Map</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'track_index' %}?n_days=7">Tracks</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'waypoints_map'  %}?no_search=1">Waypoints</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'group_index'  %}">Groups</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'photos_show'  %}?no_search=1">Photos</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'line_index' %}">Lines</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'geojson_index' %}">Geojson</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'user_index' %}">Users</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'statistics' %}">Statistics</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'import' %}">Import</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'help' %}">Help</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'logs' %}">Logs</a></li>
+                {% if options_pk > 0 %} <li  class="li_topbar"><a  class="a_topbar" href="{% url 'edit_options' id=options_pk%}">Options</a></li> {%endif%}
+                <li class="li_topbar"><a class="a_topbar" href="/admin">Admin</a></li>
+            </ul>
+        </header>
+
+        <div class="spacer">
+                &nbsp ;
+        </div>
+
+
+        {% if messages %}
+        <div class="messages">
+            <font color="red">
+                {% for message in messages %}
+                    {{ message |linebreaks}}
+                {% endfor %}
+            </font>
+        </div>
+        {% endif %}
+
+
+        <main>
+            {% block buttons %}{% endblock %}
+            {% block title %}{% endblock %}
+            {% block map %}{%endblock%}
+            {% block form0 %}{%endblock%}
+            {% block table0 %}{% endblock %}
+            {% block plots_title%}{%endblock%}
+            {% block plots %}{% endblock %}
+            {% block table %}{% endblock %}
+            {% block splits %}{% endblock %}
+            {% block laps %}{% endblock %}
+            {% block cardio %}{% endblock %}
+            {% block logs %}{% endblock %}
+            {% block content %}{% endblock %}
+            {% block form %}{%endblock%}
+            {% block base_js %} {% endblock %}
+            {% block js %}{% endblock %}
+            {% block c3js%}{% endblock %}
+            {% block waiting_js%}
+                <script>
+                    // from https://stackoverflow.com/questions/1964839/how-can-i-create-a-please-wait-loading-animation-using-jquery
+                    $body = $("body");
+                    $(document).on({
+                    ajaxStart: function() { $body.addClass("loading");    },
+                    ajaxStop: function() { $body.removeClass("loading"); }
+                    });
+                </script>
+            {% endblock %}
+
+
+        </main>
+
+
+    </body>
+</html>

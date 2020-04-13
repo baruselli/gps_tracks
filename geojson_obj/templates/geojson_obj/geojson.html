@@ -1,0 +1,51 @@
+{% extends "base/base_map.html" %}
+{% load static %}
+{% load mathfilters %}
+{% load leaflet_tags %}
+
+{%block stylesheet %}
+     #map {
+        height: 85%;
+        width: 100%;
+    }
+{% endblock %}
+
+{% block title %}
+   <h2> {{obj.name}}</h2>
+{%endblock%}
+
+
+{%block buttons %}
+    <button onclick="location.href='{% url 'geojsonobj_edit'  geojsonobj_id=obj.pk  %}'" type="button">Edit</button>
+    <button onclick="location.href='{% url 'geojsonobj_json' geojsonobj_id=obj.pk %}'" type="button">See GeoJSON</button>
+    <button onclick="location.href='{% url 'geojsonobj_properties' geojsonobj_id=obj.pk %}'" type="button">Set Properties</button>
+{%endblock%}
+
+{%block content%}
+    <div>
+        {% if obj.website %} Link = <a href="{{obj.website}}">{{obj.website}}</a> {%endif%}
+    </div>
+{%endblock%}
+
+{% block mapjs %}
+    <script type="text/javascript">
+        function map_init_basic (map, options) {
+
+
+        init_map_base(map,options, mapBounds=null,add_basemaps=false)
+
+
+
+        url='{% url 'geojsonobj_json' geojsonobj_id=obj.pk %}'
+        console.log(url)
+
+        $.getJSON(url,function(data){
+            console.log(data)
+            read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+        })
+
+        }
+    </script>
+{%endblock%}
+
+

@@ -1,0 +1,70 @@
+{% extends "base/base.html" %}
+
+
+{% load leaflet_tags %}
+{% load mathfilters %}
+{% load static %}
+
+{% block map %}
+{% endblock %}
+
+
+{%block buttons %}
+<button onclick="location.href='{% url 'create_merged_track' %}'" type="button">New</button>
+{%endblock%}
+
+
+{%block table %}
+<h2>All MergedTrack</h2>
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="import_table">
+
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Modified</th>
+                <th>Track</th>
+                <th>Modify</th>
+
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for obj in objs  %}
+                <tr>
+                    <td>{{obj.pk}}</td>
+                    <td>
+                        <a href="{% url 'merged_track' id=obj.pk %}">{{obj.name}}</a>
+                    </td>
+                    <td>{{obj.created}}</td>
+                    <td>{{obj.modified}}</td>
+                    <td>{% if obj.output_track %}<a href="{% url 'track_detail' track_id=obj.output_track.pk %}">{{obj.output_track}}</a>{% endif %}</td>
+                    <td><a href="{% url 'edit_merged_track' id=obj.pk %}">Edit</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<script>
+$(document).ready( function () {
+    var events = $('#events');
+    var table =    $('#import_table')
+    .DataTable({
+        "pageLength": 10,
+        "lengthMenu":[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        "order": [[ 0, "asc" ]],
+       // dom: 'Bfrtip',
+        buttons: [],
+       // select: true
+    } );
+} );
+</script>
+</body>
+
+{%endblock%}

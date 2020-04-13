@@ -1,0 +1,75 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block buttons %}
+{%if blo_id%}
+<div>
+<button onclick="deleteblo_fct()" type="button">Delete rule</button>
+</div>
+{%endif%}
+{%endblock%}
+
+{% block content %}
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+</head>
+
+
+<body>
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+
+    {%if blo_id%}
+    <h1>Edit Blacklist Object</h1>
+    <p>Created:{{blo.created}}</p>
+    <p>Modified:{{blo.modified}}</p>
+    {%else%}
+    <h1>New Blacklist Object</h1>
+    {%endif%}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="OK">
+    </form>
+
+
+    {%if blo_id%}
+    Associated files:
+    <ul>
+    {{blo.files|linebreaksbr}}
+    </ul>
+    {%endif%}
+
+
+</body>
+
+
+</html>
+
+{%endblock%}
+
+
+{%block js%}
+<script>
+{%if blo_id%}
+function deleteblo_fct() {
+    var r=confirm("Really delete rule?");
+    if (r == true) {
+        location.href='{% url 'delete_blo' blo_id=blo_id  %}'
+    }
+} 
+{%endif%}
+</script>
+{%endblock%}
+
+
+{% block map%}{%endblock%}

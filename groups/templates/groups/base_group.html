@@ -1,0 +1,163 @@
+{% extends "base/base_map.html" %}
+
+{% load static %}
+{% load mathfilters %}
+{% load leaflet_tags %}
+
+
+{%block stylesheet%}
+    {{block.super}}
+    
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 80%;
+            width: 100%;
+        }
+
+//        #map {
+//            //position: fixed;
+//            height: 50%;
+//            width: 100%;
+//        }
+
+        table.dataTable th.focus,
+        table.dataTable td.focus {
+            outline: none;
+        }
+    .dataTables tbody tr {
+        min-height: 40px;
+        max-height: 40px;
+        }
+{%endblock%}
+
+{%block table%}
+    <div id="table_div"   style="display:none">
+            <table id="import_table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th class ="png_field"></th>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Country</th>
+                        <th>City</th>
+                        <!--<th>Wps</th>-->
+                        <th>Photos</th>
+                        <th>Duration</th>
+                        <th>Length</th>
+                        <th>Avg speed</th>
+                        <th class ="pace_field">Pace</th>
+                        <th class ="freq_field">Frequency</th>
+                        <th class ="hr_field">Heartrate</th>
+                        <th class ="distance_field">Distance</th>
+                        <th class="similarity_field">Similarity</th>
+                        <th class="duplicated_field">Duplication Group</th>
+                        <!--<td>Freq</td>-->
+                        <!--<td>Pace</td>-->
+                    </tr>
+                    </thead>
+                      <tfoot>
+                    <tr>
+                        <td></td>
+                        <td class ="png_field"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class ="pace_field"></td>
+                        <td class ="freq_field"></td>
+                        <td class="hr_field"></td>
+                        <td class ="distance_field"></td>
+                        <td class="similarity_field"></td>
+                        <th class="duplicated_field"></th>
+                    </tr>
+                    </tfoot>
+            </table>
+    </div>
+{%endblock%}
+
+{%block mapjs%}
+    <script type="text/javascript">
+
+        function map_init_basic (map, options) {
+
+        if (typeof mapBounds !="undefined"){mapBounds=mapBounds}else{mapBounds=null}
+
+        init_map_base(map,options,mapBounds=mapBounds,add_basemaps=false)
+
+
+
+        url=data_url()      //must be defined by inheriting page!
+        console.log(url)
+
+        url_many_tracks="{% url 'many_tracks' %}?track_ids="
+        url_many_tracks_group="{% url 'many_tracks_group'%}?track_ids="
+        url_many_tracks_merge="{% url 'many_tracks_merge'%}?track_ids="
+        url_many_tracks_delete="{% url 'many_tracks_delete' %}?track_ids="
+        url_many_tracks_plot="{% url 'many_tracks_plots' %}?track_ids="
+
+        $.getJSON(url,function(data){
+        console.log("data", data)
+        console.log("hhhhhhhhhhhhhhhhhh")
+        //first, create table
+        options=data["features"] //contains has_hr and has_freq
+        var table=create_table('#import_table',data["Tracks"],url_many_tracks,url_many_tracks_group,url_many_tracks_delete, url_many_tracks_merge,url_many_tracks_plot,options)
+        //highlight point on map when clicking on row: I cannot assign ids to leaflet markers, so I use the ordinal "number" property
+        table.on( 'select', function ( e, dt, type, indexes ) {
+            console.log("--------select row---------")
+            if ( type === 'row' ) {
+            // I take all selected rows 
+            var pks = table.rows( '.selected' ).data().pluck( 'pk' );
+            // and highlight correponding points (=tracks) on the map
+            highlight_leaflet_points(number=null,class_name="leaflet_track_marker", track_pks=pks)
+            highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
+            }
+        } );
+        //same as above on deselect
+        table.on( 'deselect', function ( e, dt, type, indexes ) {
+            console.log("--------deselect row---------")
+            if ( type === 'row' ) {
+            var pks = table.rows( '.selected' ).data().pluck( 'pk' );
+            highlight_leaflet_points(number=null,class_name="leaflet_track_marker", track_pks=pks)
+            highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
+            }
+        } );
+
+        // $('#import_table').on('key-focus.dt', function(e, datatable, cell){
+        //     // Select highlighted row
+        //     console.log("focus")
+        //     table.row(cell.index().row).select();
+        //     });
+
+        // // Handle event when cell loses focus
+        // $('#import_table').on('key-blur.dt', function(e, datatable, cell){
+        //     // Deselect highlighted row
+        //     console.log("blur")
+        //     table.row(cell.index().row).deselect();
+
+        // });       
+
+        //show table
+        document.getElementById("table_div").style.display = "block"
+
+
+        //create map layer
+      //  read_data_leaflet_group(data,geojsonMarkerOptions,map,options,table)
+
+       options["table"]=table
+        read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+
+        })
+
+                };
+    </script>
+
+{%endblock%}
+

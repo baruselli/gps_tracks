@@ -1,0 +1,188 @@
+{% extends "groups/base_group.html" %}
+{% load staticfiles%}
+
+{% block head_title %}
+    <title>Tracks</title>
+{% endblock %}
+
+
+{% block title %}
+<div><h1>Tracks</h1></div>
+{%endblock%}
+
+{% block buttons %}
+{%endblock%}
+
+{% block map %}
+{%endblock%}
+
+{% block table %}
+{%endblock%}
+
+
+{% block content %}
+
+<div style="float: left";>
+    <h2>All tracks</h2>
+    <table>
+    <tr>
+        <td>All tracks: </td>
+        <td>{{all_tracks}}</td>
+        <td><a href="{% url 'track_index' %}">List</a></td>
+        <td><a href="{% url 'tracks_map' %}">Map</a></td>
+        </tr>
+    </table>
+</div>
+
+<div style="float: left;margin-right:30px">
+    <h2><a href="{% url 'track_index' %}?by_id=100">Last created tracks</a></h2>
+</div>
+
+<div style="float: left;margin-right:30px">
+    <h2><a href="{% url 'track_index' %}?special_search=duplicated_tracks">Duplicated tracks</a></h2>
+</div>
+
+<div style="float: left;margin-right:30px">
+    <h2><a href="{% url 'track_index' %}?special_search=merged_tracks">Merged tracks</a></h2>
+    <!--<h2><a href="{% url 'merged_tracks_index' %}?">Merged tracks</a></h2>-->
+</div>
+
+<div style="float: left;margin-right:30px">
+    <h2><a href="{% url 'track_index' %}?deleted_tracks=1">Deleted tracks</a></h2>
+    <!--<h2><a href="{% url 'merged_tracks_index' %}?">Merged tracks</a></h2>-->
+</div>
+
+
+<div style = "clear:both;"></div>
+
+
+<div style="float: left";>
+<h2>By date</h2>
+<table >
+{% for n_days, n_tracks in count_dict.items %}
+
+<tr>
+    <td>Last {{n_days}} days: </td>
+    <td>{{n_tracks}}</td>
+    <td><a href="{% url 'track_index' %}?n_days={{n_days}}">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?n_days={{n_days}}">Map</a></td>
+</tr>
+{%endfor%}
+<tr>
+    <td>Tracks without date: </td>
+    <td>{{nulldate_tracks}}</td>
+    <td><a href="{% url 'track_index' %}?n_days=-1">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?n_days=-1">Map</a></td>
+</tr>
+</table>
+</div>
+
+
+<div style="float: left";>
+<h2>By Year</h2>
+<table>
+{% for a in count_years_list%}
+
+    {%if a.year != 2100 %}
+<tr>
+    <td>{{a.year}}: </td>
+    <td>{{a.n_tracks}}</td>
+    <td><a href="{% url 'track_index' %}?year={{a.year}}">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?year={{a.year}}">Map</a></td>
+    {%endif%}
+</tr>
+{%endfor%}
+</table>
+</div>
+
+
+<div style="float: left";>
+<h2>By extension</h2>
+
+<table>
+{% for ext, n_tracks in count_ext_dict.items %}
+
+<tr>
+    <td>{{ext}}: </td>
+    <td>{{n_tracks}}</td>
+    <td><a href="{% url 'track_index' %}?extension={{ext}}">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?extension={{ext}}">Map</a></td>
+</tr>
+{%endfor%}
+</table>
+</div>
+
+<div style="float: left";>
+<h2>By country</h2>
+
+<table>
+{% for a in count_country_list %}
+
+<tr>
+    <td>{%if a.c%}{{a.c}} {%else%} No country {%endif%}: </td>
+    <td>{{a.n_tracks}}</td>
+    <td><a href="{% url 'track_index' %}?country={%if a.c %}{{a.c}}{%else%}None{%endif%}">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?country={%if a.c %}{{a.c}}{%else%}None{%endif%}">Map</a></td>
+</tr>
+{%endfor%}
+</table>
+</div>
+
+
+<div style="float: left";>
+<h2>By heartrate</h2>
+<table>
+<tr>
+    <td>With heartrate: </td><td>{{count_heart}}</td>
+    <td><a href="{% url 'track_index' %}?heartbeat=yes">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?heartbeat=yes">Map</a></td>
+</tr>
+<tr>
+    <td>Without heartrate: </td><td>{{count_noheart}}</td>
+    <td><a href="{% url 'track_index' %}?heartbeat=no">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?heartbeat=no">Map</a></td>
+</tr>
+</table>
+</div>
+</div>
+
+<div style="float: left";>
+<h2>Wrong or missing coordinates</h2>
+<table>
+<tr>
+    <td>Count: </td><td>{{count_wrong_coords}}</td>
+    <td><a href="{% url 'track_index' %}?special_search=wrong_coords">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?special_search=wrong_coords">Map</a></td>
+    <td><a href="{% url 'failed_tracks_reimport' %}">Reimport</a></td>
+</tr>
+</table>
+</div>
+
+
+</div>
+
+<div style = "clear:both;"></div>
+
+
+<div style="float: left";>
+<h2>Search</h2>
+<form method="GET" action="{% url 'track_index' %}" id="searchform">
+    <input class="searchfield" id="searchbox1" name="name" type="text" value="" placeholder="Name"/>
+    <input class="searchfield" id="searchbox2" name="n_days" type="text" value="" placeholder="Last n days"/>
+    <input class="searchfield" id="searchbox3" name="year" type="text" value="" placeholder="Year"/>
+    <input class="searchfield" id="searchbox4" name="extension" type="text" value="" placeholder="Extension"/>
+    <input class="searchfield" id="searchbox5" name="country" type="text" value="" placeholder="Country"/>
+    <input class="searchfield" id="searchbox7" name="q" type="text" value="" placeholder="Search for term (slow)"/>
+    <input class="searchfield" id="searchbox8" name="min_date" type="date" value="" placeholder="Min date"/>
+    <input class="searchfield" id="searchbox9" name="max_date" type="date" value="" placeholder="Max date"/>
+    <input type="submit" value="Search">
+</form>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+</script>
+{%endblock%}
+

@@ -1,0 +1,167 @@
+{% extends "tracks/base_track.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block stylesheet%}
+    {{block.super}}
+        #laps_block{
+            display: block;
+        }
+        #plots_block{
+            display: none;
+        }
+{%endblock%}
+
+{% block head_title %}
+   <title>Laps for {{track}}</title>
+{% endblock %}
+
+
+{% block title %}
+    <h1>Find laps for <a href="{% url 'track_detail' track_id=track.pk %}?reduce_points={{reduce_points}}">{{track.name_wo_path_wo_ext}}</a></h1>
+{% endblock %}
+
+{%block form0 %}
+    <div id="div_form">
+        {{ form.media }}
+        {{ form.non_field_errors }}
+        {{ form.errors }}
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+             <input type="hidden" name="reduce_points" value="{{reduce_points}}" />
+            <input type="submit" value="Submit">
+        </form>
+
+        <button onclick="location.href='{% url 'delete_laps' track_id=track.pk  %}?reduce_points={{reduce_points}}'" type="button">Delete laps</button>
+
+        <p>Right click on the map to set the starting point, or leave it empty (slow)</p>
+    </div>
+    <div style = "clear:both;"></div>
+
+{%endblock%}
+
+{% block mapjs %}
+    <script type="text/javascript">
+
+        function map_init_basic (map, options) {
+
+                radius=document.getElementById("id_space_threshold").value
+                radius={{default_radius}}
+
+                opacity=1
+                fillopacity=0.5
+                weight=3
+
+                //starting params for bounds
+                max_lat=-400
+                min_lat=400
+                max_long=-400
+                min_long=400
+
+                //bounds
+                min_lat=Math.min(min_lat,{{track.min_lat}})
+                max_lat=Math.max(max_lat,{{track.max_lat}})
+                min_long=Math.min(min_long,{{track.min_long}})
+                max_long=Math.max(max_long,{{track.max_long}})
+
+                var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+                init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false,track_pk={{track.pk}})
+                map_right_click_laps(map,options,point_link,waypoint_link,radius=radius);
+
+                ///////////geoJSON
+
+                var geojsonMarkerOptions = {radius: radius,fillOpacity:fillopacity,stroke:true,opacity:opacity, weight:weight};
+                url='{% url 'track_json_laps' track_id=track.pk %}?reduce_points={{reduce_points}}'
+                console.log(url)
+
+                $.getJSON(url,function(data){
+
+
+                 //   read_data_leaflet_laps(data,"{{track.name_wo_path_wo_ext}}",geojsonMarkerOptions,map,options)
+                    read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+
+                    ///////// c3 plots
+                     // c3 plots
+                    colors=[]
+                    laps_num=[]
+                    laps_name=[]
+                    for (lap in data["Laps"]){
+                        laps_num.push(data["Laps"][lap]["number"])
+                        laps_name.push(data["Laps"][lap]["name"])
+                        colors.push(data["Laps"][lap]["color"])
+                    }
+
+                    var width=600
+                    var height=200
+
+                    hide_absent_data(data,document)
+
+                    data_track=data["Track"]["points"]
+
+                    //add to c3plots
+                    //xs=["Distance","DeltaTimeString","Distance","DeltaTimeString","Distance","DeltaTimeString","Distance","DeltaTimeString"]
+                    xs=["Distance","LapDistance","Distance","LapDistance","Distance","LapDistance","Distance","LapDistance"]
+                    ids=['#c3_11','#c3_21','#c3_14','#c3_24','#c3_16','#c3_26','#c3_12','#c3_22']
+                    yys=["Speed","Speed","Altitude","Altitude", "Heartrate","Heartrate","Frequency","Frequency"]
+                    //xlabels=["Distance(km)","Time","Distance(km)","Time","Distance(km)","Time","Distance(km)","Time"]
+                    xlabels=["Distance(km)","Distance(km)","Distance(km)","Distance(km)","Distance(km)","Distance(km)","Distance(km)","Distance(km)"]
+                    ylabels=["Speed(km/h)","Speed(km/h)","Altitude(m)","Altitude(m)",  "Heartbeat(bpm)",  "Heartbeat(bpm)","Frequency","Frequency"]
+                    types=["scatter","scatter","scatter","scatter","scatter","scatter","scatter","scatter"]
+
+
+                    for (i=0;i<yys.length;i+=1){
+                        console.log(xs[i],yys[i])
+                        //substitute y column names with lap names for legend
+                        data_chart = convert_data_c3(data_track,y=yys[i], feature="Lap", feature_name="Lap")
+
+                        x_type="indexed"
+
+                        options={
+                            "colors_":colors,
+                            "x_label":xlabels[i],
+                            "y_label":ylabels[i] ,
+                            "bind_to":ids[i],
+                            "type":types[i],
+                            "show_legend":true,
+                            x_type:x_type
+
+                        }
+                        var chart=c3plotjsondata(data_chart,xs[i],laps_name,options)
+                    }
+
+
+                 })
+
+            }
+    </script>
+{% endblock %}
+
+{%block plots_title%}
+    <h2>Plots<button onclick="hide_show('plots_block')">Hide/Show</button></h2>
+{%endblock%}
+
+{% block form %}
+    <div id="div_form2">
+        <h3>Export Lap to Line</h3>
+          <form method="GET" action="{% url 'lap_to_line' track_id=track.pk %}" id="searchform">
+            Take every <input class="searchfield" id="every_form" name="every" type="number" value="10"
+                              placeholder="Take every x points"/>points
+             <br>Lap:
+         <select name="lap">
+             {% for l in laps %}
+          <option value="{{l.number}}">{{l.name}}</option>
+             {%endfor%}
+        </select>
+              <br>
+            <input type="submit" value="Create Line">
+        </form>
+    </div>
+{% endblock %}
+
+
+{% block splits %}
+{% endblock %}

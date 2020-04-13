@@ -1,0 +1,37 @@
+{% extends "base/base_map.html" %}
+{% load crispy_forms_tags %}
+
+{%block map%}{%endblock%}
+
+{% block content %}
+
+
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+
+    {%if waypoint_id%}
+    <h1>Edit Waypoint</h1>
+    {%else%}
+    <h1>New Waypoint</h1>
+    {%endif%}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+
+        {%if form_id == "quick" %}
+            <input type="hidden" name="track" value="{{ track }}" />
+        {%endif%}
+
+        <input type="submit" value="OK">
+    </form>
+
+
+{%endblock%}

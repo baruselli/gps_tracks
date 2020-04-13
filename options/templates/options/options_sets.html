@@ -1,0 +1,36 @@
+{% extends "base/base.html" %}
+{% load mathfilters %}
+
+{%block map%}
+{%endblock%}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="tracks_table">
+
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Active</td>
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for set  in sets %}
+                <tr>
+                    <td>
+                        <a href="{% url 'edit_options' id=set.pk %}"> {{set.pk}}</a>
+                    </td>
+                    <td>{{set.is_active}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+{%endblock%}

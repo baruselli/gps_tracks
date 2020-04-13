@@ -1,0 +1,227 @@
+{% extends "tracks/base_track.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load mathfilters %}
+{% load leaflet_tags %}
+
+{%block stylesheet%}
+    {{block.super}}
+        #map {
+            height: 60%;
+            width: 70%;
+        }
+        #plots_block {
+            display: block;
+        }
+{%endblock%}
+
+
+
+{%block title %}
+    <h1><a href="{% url 'track_detail' track_id=track.pk %}?reduce_points=smooth3">{{track.name_wo_path_wo_ext}}</a></h1>
+{%endblock %}
+
+
+{%block buttons %}
+    <button onclick="location.href='{% url 'smoothed_track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
+    <button onclick="location.href='{% url 'smoothed_track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
+    <button onclick="location.href='{% url 'track_to_line' track_id=track.pk  %}'" type="button">Create Line</button>
+{%endblock%}
+
+{% block form %}
+    <div>
+    {{ form.media }}
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+    <div>
+        Select one algorithm from gpxpy and its parameter:
+    </div>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Submit">
+    </form>
+    </div>
+{%endblock%}
+
+
+{% block table0 %}
+    <div>
+    <h4>Results</h4>
+    <div class="row" id ="table" width=100%>
+       <table>
+                    <tbody>
+                        <tr><td>Points</td> <td>{{track.n_points}}
+                                {%if track.n_points_smooth3%}-> {{track.n_points_smooth3}} <div id="n_points"> - </div>{%endif%}   </td></tr>
+                        <tr><td> Length  </td> <td>{{track.length_3d|div:1000|floatformat:-2}}km
+                        {% if track.length_3d_smooth3 %}-> {{track.length_3d_smooth3|div:1000|floatformat:-2}}km{%endif%}
+                        <tr><td> Length(csv)  </td> <td>{{track.total_dist_csv|div:1000|floatformat:-2}}km</td></tr>
+
+                        <tr><td> Speed  </td> <td> </td></tr>
+
+                    <tr><td>Points smoothed</td> <td>
+                            {%if track.n_points_smooth%} {{track.n_points_smooth}}{%endif%}
+                            {%if track.n_points_smooth2%}, {{track.n_points_smooth2}}{%endif%}
+                    </td></tr>
+                    <tr><td> Length smoothed </td> <td>
+                    {% if track.length_3d_smooth %} {{track.length_3d_smooth|div:1000|floatformat:-2}}km{%endif%}
+                    {% if track.length_3d_smooth2 %}, {{track.length_3d_smooth2|div:1000|floatformat:-2}}km{%endif%}
+                    <tr><td>
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    <div style = "clear:both;"></div>
+{%endblock%}
+
+
+{%block splits%}
+{%endblock%}
+
+{%block laps%}
+{%endblock%}
+
+{% block mapjs %}
+    <script>
+    function get_url(){
+        return '{% url 'track_json_list_of_points' track_id=track.pk %}?reduce_points=smooth3'
+    }
+
+    function map_init_basic (map, options) {
+
+        map_right_click(map,options,point_link,waypoint_link,{{track.pk}} );
+
+        map.addControl(new L.Control.Fullscreen());
+
+        //parameters for plotting track
+
+        {% if track.avg_dist_points and every %}
+            radius=Math.max(Math.min({{track.avg_dist_points}}*{{every}},{{default_radius}}),1)
+        {%else%}
+            radius={{default_radius}}
+        {%endif%}
+
+        opacity=1
+        fillopacity=0.5
+        weight=3
+
+        //starting params for bounds
+        max_lat=-400
+        min_lat=400
+        max_long=-400
+        min_long=400
+
+
+        //bounds
+        min_lat=Math.min(min_lat,{{track.min_lat}})
+        max_lat=Math.max(max_lat,{{track.max_lat}})
+        min_long=Math.min(min_long,{{track.min_long}})
+        max_long=Math.max(max_long,{{track.max_long}})
+
+        var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+        map.fitBounds(mapBounds);
+
+        ///////////geoJSON
+
+        var geojsonMarkerOptions = {radius: radius,fillOpacity:fillopacity,stroke:true,opacity:opacity, weight:weight};
+        url=get_url()
+
+        icon1="{% static 'png/marker-icon-red.png' %}"
+        icon2="{% static 'png/marker-icon-lightblue.png' %}"
+        icons=[icon1,icon2]
+        console.log(url)
+        $.getJSON(url,function(data){
+            ////Leaflet
+            read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+            ////C3, use the same data as leaflet
+            console.log(data)
+            var width=600
+            var height=200
+            //speed
+            height=200
+         width=600
+
+        options1={
+                    "type":"scatter",
+                    "show_legend":false,
+                    "height":height,
+                    "width":width,
+                    "x_type":"time",
+                    "show_legend":false
+                }
+        options2={
+                    "x_label":"Distance(km)",
+                    "type":"line",
+                    "show_legend":false,
+                    "height":height,
+                    "width":width,
+                    "show_legend":false
+                }
+
+      data=data["Track"]["{{track.name_wo_path_wo_ext}}"]
+
+        //speed
+        options1["y_label"]="Speed(km/h)"
+        options1["bind_to"]="#c3_11"
+        var chart1=c3plotjsondata(data,"DeltaTimeString",["Speed"],options1)
+        options2["y_label"]="Speed(km/h)"
+        options2["bind_to"]="#c3_21"
+        var chart5=c3plotjsondata(data,"Distance", ["Speed"],options2)
+
+      //alt //vertical speed
+      console.log(data)
+        {% if track.has_alts %}
+            options1["y_label"]="Altitude(m)"
+            options1["bind_to"]="#c3_14"
+            var chart4=c3plotjsondata(data,"DeltaTimeString", ["Altitude"],options1)
+            options2["y_label"]="Altitude(m)"
+            options2["bind_to"]="#c3_24"
+            var chart8=c3plotjsondata(data,"Distance", ["Altitude"],options2)
+            options1["y_label"]="Slope(%)"
+            options1["bind_to"]="#c3_13"
+            var chart3=c3plotjsondata(data,"DeltaTimeString",["Slope"],options1)
+            options2["y_label"]="Slope(%)"
+            options2["bind_to"]="#c3_23"
+            var chart7=c3plotjsondata(data,"Distance",["Slope"],options2)
+        {% endif %}
+        //heartrate
+        {% if track.has_hr %}
+            options1["y_label"]="Heartbeat(bpm)"
+            options1["bind_to"]="#c3_16"
+            options1["colors_"]="ColorHeartrateGroup"
+            options1["pointcolor"]=true
+            var chart11=c3plotjsondata(data,"DeltaTimeString",["Heartrate"],options1)
+            options1["colors_"]=undefined //reset
+            options1["pointcolor"]=false //reset
+            options2["y_label"]="Heartbeat(bpm)"
+            options2["bind_to"]="#c3_26"
+            var chart12=c3plotjsondata(data,"Distance",["Heartrate"],options2)
+        {% endif %}
+        //frequency //step length
+        {% if track.has_freq %}
+            options1["y_label"]="Frequency"
+            options1["bind_to"]="#c3_12"
+            var chart2=c3plotjsondata(data,"DeltaTimeString",["Frequency"],options1)
+            options2["y_label"]="Frequency"
+            options2["bind_to"]="#c3_22"
+            var chart6=c3plotjsondata(data,"Distance",["Frequency"],options2)
+            options1["y_label"]="Step Length(m)"
+            options1["bind_to"]="#c3_15"
+            var chart9= c3plotjsondata(data,"DeltaTimeString",["StepLength"],options1)
+            options2["y_label"]="Step Length(m)"
+            options2["bind_to"]="#c3_25"
+            var chart10=c3plotjsondata(data,"Distance",["StepLength"],options2)
+        {% endif %}
+
+        })
+    }
+
+    </script>
+{% endblock %}
+
+{% block content %}
+<div id="map_block"></div>
+{% endblock %}

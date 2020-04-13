@@ -1,0 +1,37 @@
+{% extends "base/base.html" %}
+
+{%block map%}
+{%endblock%}
+
+{% block content %}
+
+
+<html>
+  <head>
+
+
+
+</head>
+
+<body>
+<h2>Log for track  <a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a></h2>
+
+<h3>Errors</h3>
+{{track.log.errors|linebreaksbr}}
+
+<h3>Warnings</h3>
+{{track.log.warnings|linebreaksbr}}
+
+<h3>Infos</h3>
+{{track.log.infos|linebreaksbr}}
+
+
+
+
+
+</body>
+
+</html>
+
+
+{%endblock%}

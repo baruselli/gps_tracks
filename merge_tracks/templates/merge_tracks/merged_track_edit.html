@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block map %}
+{% endblock %}
+
+{% block buttons %}
+    {% if id %}
+        <button onclick="location.href='{% url 'merged_track' id=id  %}'" type="button">Back to Object</button>
+    {% endif %}
+{% endblock%}
+
+{% block content %}
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+</head>
+
+
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+
+    {%if id%}
+    <h1>Edit Merged Track {{obj}}</h1>
+    {%else%}
+    <h1>New  Merged Track</h1>
+    {%endif%}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="OK">
+    </form>
+
+  {% if obj %}
+  <table>
+      <body>
+      <tr>
+          <td>Input Tracks</td>
+          <td>{% for t in input_tracks %}
+            {{t}}<br>
+              {% endfor %}
+          </td>
+      </tr>
+      </body>
+  </table>
+  {% endif %}
+
+
+{%endblock%}
+

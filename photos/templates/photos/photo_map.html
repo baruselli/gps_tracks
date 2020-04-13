@@ -1,0 +1,62 @@
+{% extends "base/base_map.html" %}
+{% load static %}
+{% load mathfilters %}
+{% load leaflet_tags %}
+
+{% block stylesheet %}
+{{block.super}}
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        #map {
+            height: 70%;
+            width: 100%;
+        }
+{% endblock%}
+
+
+
+{%block buttons%}
+    <a href="{% url 'photo_index' %}?{{request}}">Photos List  </a>
+    <a href="{% url 'photos_show' %}?{{request}}">Only Photos</a>
+{%endblock%}
+
+
+{% block table %}
+
+      <div  id="photos_div">
+      <!-- add photos here by AJAX-->
+      </div>
+
+{%endblock%}
+
+{% block js %}
+<script type="text/javascript">
+
+
+    function map_init_basic (map, options) {
+
+    init_map_base(map,options,mapBounds=null,add_basemaps=false)
+
+    url='{% url 'allphotos_json'%}?{{request}}'
+    console.log(url)
+
+    $.getJSON(url,function(data){
+
+    //console.log(data)
+     read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+   //read_data_leaflet_allphotos(data,geojsonMarkerOptions,map,options)
+
+
+  add_photos_ajax(data,links=true,request="")
+
+    })
+
+    }
+</script>
+
+
+
+
+{%endblock%}

@@ -1,0 +1,134 @@
+{% extends "base/base_map.html" %}
+
+
+{%block buttons%}
+<button onclick=
+    "location.href='{% url 'create_line' line_id=line.pk %}'" type="button">
+    Edit line</button>
+<button onclick="deleteline_fct()" type="button">Delete line</button>
+<button onclick="location.href='{% url 'geopy_line' line_id=line.pk  %}'" type="button">Get infos on endpoints</button>
+<button onclick="location.href='{% url 'gpx_line' line_id=line.pk  %}'" type="button">Export as GPX</button>
+<button onclick="location.href='{% url 'kml_line' line_id=line.pk  %}'" type="button">Export as KML</button>
+<button onclick="location.href='{% url 'alts_line' line_id=line.pk  %}'" type="button">Get Altitudes</button>
+{%endblock%}
+
+{% block content %}
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+        <body>
+<h1>Line {{line.pk}}: {{line.name}}</h1>
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-bordered table-hover" id="import_table">
+    
+                <thead>
+                </thead>
+    
+                <tbody>
+    
+     
+    
+                    <tr><td>Id</td> <td>{{line.pk}}</td> </tr>
+                    <tr><td>Name</td> <td>{{line.name}}</td> </tr>
+                    <tr><td>Type</td> <td>{{line.line_type}}</td> </tr>
+                    <!-- <tr><td>Color</td> <td>{{line.color}}</td> </tr> -->
+                    <tr><td>Latitudes</td> <td>{{line.lats}}</td> </tr>
+                    <tr><td>Longitudes</td> <td>{{line.long}}</td> </tr>
+                    <tr><td>Altitudes</td> <td>{{line.alts}}</td> </tr>
+                    <tr><td>Lengths (km)</td> <td>{{line.lengths}}</td> </tr>
+                    <tr><td>Total Length (km)</td> <td>{{line.total_length}}</td> </tr>
+                    <tr><td>Time</td> <td>{{line.created}}</td> </tr>
+                    <tr><td>Points</td> <td>{{line.n_points}}</td> </tr>
+                    <tr><td>Closed</td> <td>{{line.closed}}</td> </tr>
+                    <tr><td>Beginning Address</td> <td>{{line.beg_address}}</td> </tr>
+                    <tr><td>Ending Address</td> <td>{{line.end_address}}</td> </tr>
+                    <tr><td>From Track</td> <td>{%if line.track %}<a href="{% url 'track_detail' track_id=line.track.pk  %}">{{line.track.name_wo_path_wo_ext}}</a>{%endif%}</td> </tr>
+                    
+
+
+    
+                </tbody>
+    
+            </table>
+        </div>
+    </div>
+
+
+
+</body>
+
+
+<script>
+
+function deleteline_fct() {
+    var r=confirm("Really delete line?");
+    if (r == true) {
+        location.href='{% url 'delete_line' line_id=line.pk  %}'
+}
+} 
+</script>
+
+
+<script type="text/javascript">
+    function map_init_basic (map, options) {
+
+    map_right_click(map,options,point_link,waypoint_link);
+
+    var overlayMaps = {};
+    map.addControl(new L.Control.Fullscreen());
+
+    lats={{line.lats}}
+    long={{line.long}}
+    alts={{line.alts|safe}}
+
+    points=[]    
+    {%if line.color%}
+    color="{{line.color}}"
+    {%else%}
+    color="gray"
+    {%endif%}
+
+    for (i=0;i<lats.length;i++){
+        point=[lats[i],long[i]];
+        points.push(point);
+    };
+
+    var polyline = new L.Polyline(points, {
+        color: color,
+        weight: 3,
+        opacity: 0.5,
+        smoothFactor: 1
+    });
+
+    polyline.addTo(map);
+
+    text_s="<font color='"+color+"'>smoothed track</font>"
+    overlayMaps[text_s]=polyline
+    
+
+
+    min_lat= Math.min.apply(Math, lats);
+    min_long= Math.min.apply(Math, long);
+    max_lat= Math.max.apply(Math, lats);
+    max_long= Math.max.apply(Math, long);
+    var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+    map.fitBounds(mapBounds);
+
+console.log(mapBounds);
+baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+   L.control.layers(baseMaps).addTo(map);
+
+    }
+</script>
+
+
+
+</body>
+</html>
+
+{%endblock%}

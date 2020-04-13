@@ -1,0 +1,46 @@
+{% extends "base/base.html" %}
+{% load staticfiles%}
+
+{% block map %}
+{% endblock %}
+
+{% block title %}
+<div><h1>User {{user.name}}</h1></div>
+{%endblock%}
+
+{% block buttons %}
+<button onclick="location.href='{% url 'edit_user' user_id=user.pk %}'" type="button">Modify user</button>
+<button onclick="deleteuser_fct()" type="button">Delete user</button>
+<button onclick="location.href='{% url 'assignfreetrackstouser' user_id=user.pk %}'" type="button">Assign all free tracks to user</button>
+{%endblock%}
+
+
+{%block table%}
+<div>
+        <table class="table table-bordered table-hover" id="import_table">
+
+                <thead>
+                </thead>
+                <tbody>
+                <tr>  <td>Id</td><td>{{user.pk}}</td></tr>
+                <tr>  <td>Name</td><td>{{user.name}}</td></tr>
+                <tr>  <td>Maximum heartrate</td><td>{{user.max_heartrate}}</td></tr>
+                <tr>  <td>Default</td><td>{{user.is_default}}</td></tr>
+                 </tbody>
+    
+            </table>
+</div>
+{%endblock%}
+
+
+{% block js %}
+<script>
+
+        function deleteuser_fct() {
+            var r=confirm("Really delete user?");
+            if (r == true) {
+                location.href='{% url 'delete_user' user_id=user.pk  %}'
+        }
+        } 
+</script>
+{%endblock%}

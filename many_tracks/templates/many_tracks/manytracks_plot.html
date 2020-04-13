@@ -1,0 +1,22 @@
+{% extends "groups/group_plots_base.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block title%}
+    <h1>Scatter Plots</h1>
+{%endblock%}
+
+{% block js %}
+
+
+    <script>
+        function get_data_url(){
+        return '{% url 'tracks_as_lines_json' %}?track_ids={{track_ids}}&flat=true&use_color=true&ranks=1&date_order=1'
+                   }
+    </script>
+
+    {{block.super}}
+
+{%endblock%}

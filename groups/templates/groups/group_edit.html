@@ -1,0 +1,49 @@
+{% extends "base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block map %}
+{% endblock %}
+
+{% block head_title %}
+    <title>Group {{group.name}}</title>
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+</head>
+
+
+<body>
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+
+    {%if group_id%}
+    <h1>Edit Group</h1>
+    {%else%}
+    <h1>New Group</h1>
+    {%endif%}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form |crispy}}
+        <input type="submit" value="OK">
+    </form>
+
+</body>
+
+
+</html>
+
+{%endblock%}

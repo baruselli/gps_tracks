@@ -1,0 +1,189 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block stylesheet %}
+    {{block.super}}
+    #photo_form{
+        display: none;
+    }
+{% endblock %}
+
+
+{%block title %}
+    <h1>Photo {{photo.name}}</h1>
+{%endblock%}
+
+{%block buttons %}
+{%endblock%}
+
+{% block content %}
+
+
+
+<html>
+  <head>
+    {% load leaflet_tags %}
+    {% load mathfilters %}
+    {% load static %}
+
+
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+         #map {
+            height: 500;
+            width: 100%;
+            float: left;
+        }
+
+            #svg_plot {
+            height: 80%;
+            width: 50%;
+        }
+
+            #table{
+                float:left;
+            }
+
+            .axis path,
+            .axis line{
+                fill:none;
+                stroke: black;
+                shaüe-rendering: crispEdges;
+            }
+
+            .axis text{
+            font-family: sans-serif;
+            font-size: 11px;
+            }
+
+            cirasse:hover{
+                fill:orange
+            }
+
+
+    </style>
+
+
+
+<script type="text/javascript">
+
+    function map_init_basic (map, options) {
+    None=undefined
+
+        lat={{photo.lat}}
+        long={{photo.long}}
+
+        deduced_lat={{photo.deduced_lat}}
+        deduced_long={{photo.deduced_long}}
+
+
+    alt={{photo.alt}}
+    time="{{photo.time|safe}}"
+    
+    
+    point=[lat,long];
+    deduced_point=[deduced_lat,deduced_long];
+    name=String(parseInt(alt)) +"m " +time;
+        console.log(point);
+
+       try{
+          L.marker(point,{radius:2}).addTo(map)
+             .bindPopup(name)}
+      catch(error){}
+      try{
+          L.marker(deduced_point,{radius:2}).addTo(map)
+             .bindPopup("Deduced position from track") //.openPopup();
+          }
+          catch(error){}
+
+lat = parseFloat(lat)
+deduced_lat = parseFloat(deduced_lat)
+long = parseFloat(long)
+deduced_long = parseFloat(deduced_long)
+
+var mapBounds = L.latLngBounds([
+                    [Math.min(lat||1000,deduced_lat||1000)-0.01,
+                        Math.min(long||1000,deduced_long||1000)-0.01],
+                    [Math.max(lat||-1000,deduced_lat||-1000)+0.01,
+                        Math.max(long||-1000,deduced_long||-1000)+0.01],
+                ]);
+map.fitBounds(mapBounds);
+console.log(mapBounds);
+baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+       L.control.layers(baseMaps).addTo(map);
+  
+
+
+    
+      
+    
+    
+        }
+    </script>
+
+  </head>
+  
+  <body>
+
+
+
+ <div> <img src="{{photo.url_path}}"alt="img" width="100%"></div>
+
+
+
+<table class="table table-bordered table-hover" id="import_table">
+<tbody>
+<tr><td>Track(s)</td> <td> </td></tr>
+{% for track in  photo.tracks.all %}
+<tr><td></td> <td><a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a>
+</td></tr> 
+{%endfor%}
+<tr><td>Date</td><td>{{photo.time}}</td> </tr>
+<tr><td>Path</td><td>{{photo.path}}</td> </tr>
+<tr><td>Latitude</td><td>{{photo.lat}}</td> </tr>
+<tr><td>Longitude    </td><td> {{photo.long}}  </td> </tr>
+<tr><td>Track Latitude</td><td>{{photo.deduced_lat}}</td> </tr>
+<tr><td>Track Longitude    </td><td> {{photo.deduced_long}}  </td> </tr>
+<tr><td>Altitude     </td><td>{{photo.alt}}   </td> </tr>
+<tr><td>Country    </td><td>  {{photo.country}} </td> </tr>
+<tr><td>Region    </td><td> {{photo.region}}  </td> </tr>
+<tr><td>City   </td><td> {{photo.city}}  </td> </tr>
+<tr><td>Address    </td><td> {{photo.address}}  </td> </tr>
+<tr><td>Description    </td><td> {{photo.description}}  </td> </tr>
+<tr><td>Infos    </td><td> {{photo.info|linebreaks}}  </td> </tr>
+</tbody>
+</table>
+
+
+{% if photo.lat != 0 or photo.deduced_lat != 0 %}
+<div id="map">
+{%leaflet_map "map" callback="window.map_init_basic"%}
+</div>
+{%endif%}
+
+</body>
+
+</html>
+
+{% endblock %}
+
+{% block form%}
+<br><br>
+<br><br>
+    <button onclick="$('#photo_form').toggle()">Edit</button>
+<div id="photo_form">
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    <form action="" method="post">
+        {{ form|crispy }}
+        {% csrf_token %}
+    <input type="hidden" name="track" value="{{ track }}" />
+    <input type="submit" value="OK">
+</div>
+{% endblock%}

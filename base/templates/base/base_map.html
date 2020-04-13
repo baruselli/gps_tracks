@@ -1,0 +1,53 @@
+<!--base template for pages with map-->
+
+{% extends "base/base.html" %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block map%}
+    <div id="map" >
+        {%leaflet_map "map" callback="window.map_init_basic"%}
+        <div class="modal"></div>
+    </div>
+{%endblock%}
+
+{% block stylesheet %}{% endblock %}
+
+{% block base_js %}
+    <script>
+        //global variables, needed by all maps
+        baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+        point_link="{% url 'track_index' %}"
+        waypoint_link="{% url 'create_waypoint'  %}"
+
+        //paths of icons
+        icons={
+                "red":"{% static 'png/marker-icon-red.png' %}",
+                "red2":"{% static 'png/marker-icon-red_2.png' %}",
+                "red3":"{% static 'png/marker-icon-red_3.png' %}",
+                "red4":"{% static 'png/marker-icon-red_4.png' %}",
+                "red5":"{% static 'png/marker-icon-red_5.png' %}",
+                "lightblue":"{% static 'png/marker-icon-lightblue.png' %}",
+                "yellow":"{% static 'png/marker-icon-yellow.png' %}",
+                "purple":"{% static 'png/marker-icon-purple.png' %}",
+                //add new icons here
+              }
+        //leaflet objects
+        icon_objs={}
+        for (icon in icons){
+            icon_objs[icon]=L.icon({iconUrl: icons[icon], iconAnchor:   [12, 40],})
+        }
+
+        geojsonMarkerOptions ={radius: 5,fillOpacity: 1}
+
+
+
+
+    </script>
+{% endblock %}
+
+{%block form%}
+{% endblock%}
+
+{% block form0 %}{%endblock%}

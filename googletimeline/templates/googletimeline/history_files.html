@@ -1,0 +1,103 @@
+{% extends "base/base.html" %}
+
+{% block map %}
+{% endblock %}
+
+{% block stylesheet %}
+    {{block.super}}
+
+    #history_table tr td {
+        height: 0px;
+    }
+
+{% endblock %}
+
+{% block buttons %}
+    <button onclick="location.href='{% url 'download_googlehistory'  %}'" type="button">Download Google history tracks (experimental, needs chromium drivers)</button>
+    <button onclick="location.href='{% url 'import_history_files'  %}'" type="button">Import files</button>
+    {%if group_pk%}<a href="{% url 'group_detail' group_id=group_pk %}">Google Timeline Group</a>{%endif%}
+{% endblock %}
+
+{% block content %}
+<h1>Downloaded files</h1>
+
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="history_table">
+
+            <thead>
+            <tr>
+                <td>Date</td>
+                <td>File</td>
+                <td>Track</td>
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for file in files %}
+                <tr>
+                    <td>{{file.date|date:"Y/m/d"}}</td>
+                    <td>{%if file.file%}{{file.file}}{%else%}No file{%endif%}</td>
+                    <td>{%if file.pk%}<a href="{% url 'track_detail' track_id=file.pk %}">{{file.file}}</a>{%endif%}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot>
+            <tr>
+                <td>Date</td>
+                <td>File</td>
+                <td>Track</td>
+            </tr>
+            </tfoot>
+
+
+        </table>
+    </div>
+</div>
+
+
+
+
+{%endblock%}
+
+{%block tablejs%}
+<script>
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#history_table')
+        .DataTable({
+            paging: true,
+            searching:true,
+            "order": [[ 0, "desc" ]],
+            dom: 'Bfrtip',
+            "pageLength": 50,
+            select: true,
+            buttons: [],
+            "bInfo" : false,
+            initComplete: function () {
+                        this.api().columns([0,1]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()).empty() )
+                .on( 'change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                if(true){
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                }
+            } );
+
+                    })
+            }
+    } )});
+
+    </script>
+{%endblock%}

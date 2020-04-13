@@ -1,0 +1,141 @@
+{% extends "base/base_map.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+        <style>
+
+             #map {
+                height: 85%;
+                width: 100%;
+            }
+            </style>
+    
+</head>
+
+<body>
+
+        <form action="" method="get">
+                Search Location:
+                <input type="text" name="search">
+        <input type="submit" value="Submit">
+            </form>
+<div>
+Enter coordinates by hand, or right click on the map
+</div>      
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    {% if address %}
+    Address:    {{address}}
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Submit">
+    </form>
+
+    <button onclick="remove_last_point()" type="button">Remove last point</button>
+
+</body>
+
+
+<script type="text/javascript">
+
+    function map_init_basic (map, options) {
+
+    map_right_click_line(map,options,point_link,waypoint_link );
+
+
+    var overlayMaps = {};
+    map.addControl(new L.Control.Fullscreen());
+
+
+
+    {% if line%}
+    lats={{line.lats}}
+    long={{line.long}}
+    alts={{line.alts|safe}}
+baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+    L.control.layers(baseMaps).addTo(map);
+
+    points=[]    
+    color="red"
+    for (i=0;i<lats.length;i++){
+        point=[lats[i],long[i]];
+        points.push(point);
+    };
+
+    var polyline = new L.Polyline(points, {
+        color: color,
+        weight: 3,
+        opacity: 0.5,
+        smoothFactor: 1
+    });
+
+    polyline.addTo(map);
+
+    text_s="<font color='"+color+"'>smoothed track</font>"
+    overlayMaps[text_s]=polyline
+    
+
+
+    min_lat= Math.min.apply(Math, lats);
+    min_long= Math.min.apply(Math, long);
+    max_lat= Math.max.apply(Math, lats);
+    max_long= Math.max.apply(Math, long);
+    var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+    map.fitBounds(mapBounds);
+ 
+{% elif min_lat %}
+var mapBounds = L.latLngBounds([
+                    [{{min_lat}}, {{min_long}}],
+                    [{{max_lat}}, {{max_long}}],
+                ]);
+{%else%}
+
+var mapBounds = L.latLngBounds([
+                    [{{lat}}-0.1, {{long}}-0.1],
+                    [{{lat}}+0.1, {{long}}+0.1],
+                ]);
+{%endif%}
+map.fitBounds(mapBounds);
+
+}
+    </script>
+
+</html>
+
+
+<script>
+
+function remove_last_point () {
+
+document.getElementById("id_lats_text").value =remove_last_number(document.getElementById("id_lats_text").value);
+document.getElementById("id_long_text").value =remove_last_number(document.getElementById("id_long_text").value);
+document.getElementById("id_alts_text").value =remove_last_number(document.getElementById("id_alts_text").value);
+}
+
+function remove_last_number (text) {
+
+parts = text.split(',');
+parts.pop();parts.pop();
+new_text = parts.join(',')
+if(new_text.length>0){new_text+=","}
+return new_text;
+}
+
+    </script>
+{%endblock%}
+

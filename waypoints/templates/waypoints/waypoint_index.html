@@ -1,0 +1,62 @@
+{% extends "base/base.html" %}
+    {% load leaflet_tags %}
+    {% load mathfilters %}
+    {% load static %}
+
+{%block map%}{%endblock%}
+
+{%block buttons%}
+    <a href="{% url 'waypoints_map' %}?{{request}}">Waypoints Map</a>
+{%endblock%}
+
+
+
+{%block title%}
+    <h2>Waypoints</h2>
+{%endblock%}
+
+{% block table %}
+    <div id="block_table">
+        <table id="import_table">
+            <thead>
+                <tr>
+                    <td>Id</td>
+                    <td>Name</td>
+                    <td>Time</td>
+                    <td>Altitude</td>
+                    <td>Track</td>
+                    <td>Country</td>
+                    <td>Region</td>
+                    <td>City</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+{%endblock%}
+
+{%block js %}
+    <script>
+     url='{% url 'allwps_json'%}?{{request}}&do_cluster=0'
+
+     $.getJSON(url,function(data){
+        console.log(url)
+        console.log(data)
+        var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
+        })
+    </script>
+
+{%endblock%}

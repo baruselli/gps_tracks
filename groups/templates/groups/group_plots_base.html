@@ -1,0 +1,333 @@
+{% extends "groups/base_group.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block buttons %}
+{%endblock%}
+
+{% block style %}
+    {{block.super}}
+{%endblock%}
+
+
+{%block plots%}
+    <div>
+    <div id="plots_block">
+
+        <div style = "clear:both;"></div>
+
+        <div>
+
+        <div style="float:left; margin-left: 2%">
+            <div id="c3_11"      style="width:90%; "></div>
+        </div>
+        </div>
+        <div style = "clear:both;"></div>
+            <div class="modal"></div>
+    </div>
+{%endblock%}
+
+{% block form0 %}
+<div>
+    <form method="GET" action="" id="searchform">
+        X<select name="x" id="form_x"></select>
+        Y<select name="y" id="form_y"></select>
+        Color<select name="z" id="form_z"></select>
+        Radius<select name="r" id="form_r"></select>
+        Highlight<select name="h" id="form_h"></select>
+        <input type="checkbox" name="by_rank" id="by_rank"> Use rank on x axis
+        <input type="checkbox" name="invert_axis" id="invert_axis"> Rotate axes
+        {% if track_ids %}
+            <input type="hidden" id="track_ids" name="track_ids" value={{track_ids}}>
+        {%endif %}
+        <input type="submit" value="Update">
+    </form>
+    <button onclick='saveSvgAsPng(document.getElementsByTagName("svg")[0], "{%if group%}{{group}}{%else%}tracks{%endif%}.png");'>Download PNG</button>
+    <br><br>
+</div>
+{%endblock%}
+
+
+{%block js %}
+    {{block.super}}
+
+
+    <script type="text/javascript">
+
+    url= get_data_url()
+
+    console.log(url)
+
+    alt=ver_speed=hrs=freq=step_length=false
+
+    var width=1200
+    var height=500
+
+
+     $.getJSON(url,function(data_orig){
+
+        for (a in data_orig){
+            console.log(a)
+        }
+        data=data_orig["Tracks"]
+
+
+        data.sort(function(a, b){
+            c=new Date(a["time"]);
+            d=new Date(b["time"]);
+            return d - c;
+        });
+
+        //console.log(data[0]["time"])
+        console.log("data", data)
+
+        options={{options|safe}}
+        
+
+        console.log("options", options)
+
+         var sel_x = document.getElementById('form_x');
+         var sel_y = document.getElementById('form_y');
+         var sel_z = document.getElementById('form_z');
+         var sel_r = document.getElementById('form_r');
+         var sel_h = document.getElementById('form_h');
+
+        //add uniform by hand
+        const other_options = ["Uniform"]
+        other_options.forEach(function (option, index) {
+              var optr = document.createElement('option');
+              optr.value = option;
+              optr.appendChild( document.createTextNode( option ));
+              sel_r.appendChild(optr);
+        });
+        //add uniform by hand
+        const other_options2 = ["None", "Last" ]
+        other_options2.forEach(function (option, index) {
+              var opth = document.createElement('option');
+              opth.value = option;
+              opth.appendChild( document.createTextNode( option ));
+              sel_h.appendChild(opth);
+        });
+
+        const keys = Object.keys(options)
+
+        console.log("keys",keys)
+
+        // qualitative features: use category x axis, do not format, and do not put on y
+        qs=["City", "Country","Month","Activity Type", "Heartrate Group","Year"]
+        no_y=["Date"]
+
+        for (const element of data){
+            if(element.name){
+                if (true){
+                    var opth = document.createElement('option');
+                    opth.value = element.name;
+                    opth.appendChild( document.createTextNode(element.name ));
+                    sel_h.appendChild(opth);
+                    }
+            }
+            }
+
+        for (const k of keys){
+            element=options[k]
+
+            if(element.feature_name){
+                if (true){
+                    var optx = document.createElement('option');
+                    optx.value = k;
+                    optx.appendChild( document.createTextNode(k ));
+                    sel_x.appendChild(optx);
+                    }
+                if(!qs.includes(k) & !no_y.includes(k)){
+                    var opty = document.createElement('option');
+                    console.log()
+                    opty.value = k;
+                    opty.appendChild( document.createTextNode(k ));
+                    sel_y.appendChild(opty);
+                }
+                }
+            if(element.feature_color){
+                if (true) { //(data[0][element.feature_color]  !=undefined){
+                    var optz = document.createElement('option');
+                    optz.value = k;
+                    optz.appendChild( document.createTextNode( k ));
+                    sel_z.appendChild(optz);
+                    }
+                }
+            if(element.feature_radius){
+                var optr = document.createElement('option');
+                optr.value = k;
+                optr.appendChild( document.createTextNode( k ));
+                sel_r.appendChild(optr);
+                }
+            }
+
+
+            // read params from GET
+            var url_string = window.location.href
+            var url = new URL(url_string);
+            var x_choice = url.searchParams.get("x");
+            var y_choice = url.searchParams.get("y");
+            var z_choice = url.searchParams.get("z");
+            var r_choice = url.searchParams.get("r");
+            var h_choice = url.searchParams.get("h");
+            var by_rank = url.searchParams.get("by_rank");
+            var invert_axis = url.searchParams.get("invert_axis");
+
+            // set default values
+            if (x_choice===null) x_choice="Ordinal number"
+            if (y_choice===null) y_choice="Length"
+            if (z_choice===null) z_choice="Duration"
+            if (r_choice===null) r_choice="Uniform"
+            if (h_choice===null) h_choice="Last"
+
+            console.log("x_choice", x_choice);
+            console.log("y_choice", y_choice);
+            console.log("z_choice", z_choice);
+            console.log("r_choice", r_choice);
+            console.log("by_rank", by_rank);
+            console.log("invert_axis", invert_axis);
+
+            x=options[x_choice]
+            y=options[y_choice]
+            z=options[z_choice]
+            r=options[r_choice]
+
+            $('#form_x').val(x_choice);
+            $('#form_y').val(y_choice);
+            $('#form_z').val(z_choice);
+            $('#form_r').val(r_choice);
+            $('#form_h').val(h_choice);
+            if (by_rank) {
+                $('#by_rank').attr('checked', true);
+              }
+            if (invert_axis) {
+                $('#invert_axis').attr('checked', true);
+            }
+
+            console.log("x", x)
+            console.log("y", y)
+            console.log("z", z)
+            console.log("r", r)
+
+            //console.log(data[0][z["feature_color"]])
+
+            colors_legend=data_orig["colors_legend"][z["feature_color"]]
+            grades=data_orig["grades"][z["feature_color"]]
+
+            // add h:m or m:s for times
+            details_legend=data_orig["details_legend"][z["feature_name"]]
+            if(details_legend && z_choice=="Pace"){
+                if(details_legend=="time_ms"){
+                    z_choice_legend=z_choice+"(min/km)"
+                }else if(details_legend=="time_hm"){
+                    z_choice_legend=z_choice+"(h/km)"
+                }   
+            }else if(details_legend && z_choice=="Duration"){
+                if(details_legend=="time_ms"){
+                    z_choice_legend=z_choice+"(m:s)"
+                }else if(details_legend=="time_hm"){
+                    z_choice_legend=z_choice+"(h:m)"
+                }   
+            }else{
+                z_choice_legend=z_choice
+            }
+
+            console.log("z_choice_legend",z_choice_legend)
+
+            // qualitative features: do not format these
+            if (qs.includes(z_choice)){
+                decimals=-1
+            }else{
+                decimals=z["decimals"]
+                if (decimals===undefined) decimals=0
+            }
+
+            if (z_choice!= "Ordinal Color") legend_fct(null,colors_legend, grades, "legend", z_choice_legend,decimals=decimals, father_id="plots_block")
+            if(["Date","Month"].includes(x_choice)){
+                ts="ts"
+            }
+            else if(["Pace","Duration"].includes(x_choice)){
+                ts="time_min"
+            }else if (qs.includes(x_choice)){
+                ts="category"
+            }else{
+                ts="number"
+            }
+            if(["Date","Month"].includes(y_choice)){
+                y_ts="ts"
+            }
+            else if(["Pace","Duration"].includes(y_choice)){
+                y_ts="time_min"
+            }else if (qs.includes(y_choice)){
+                y_ts="category"
+            }else{
+                y_ts="number"
+            }
+
+            if(r_choice==="Uniform") {
+                radius=10
+            }else{
+                radius=r["feature_radius"]
+            }
+
+            if (by_rank!=undefined){
+                x_decimals=0
+                ts="number"
+            }else{
+                x_decimals=x["decimals"]
+            }
+
+                console.log("x_decimals",x_decimals)
+
+            graph_options={
+                        "colors_": z["feature_color"],
+                        "x_label": x["feature_label"],
+                        "y_label": y["feature_label"],
+                        "bind_to": '#c3_11',
+                        "type":"scatter",
+                        "show_legend":false,
+                        "height":height,
+                        "width":width,
+                        "pointcolor":true,
+                        "radius":radius,
+                        "highlight":h_choice,
+                        "popup_fct":track_popup,
+                        "popup_fct_options":options,
+                        "on_click":"link",
+                        "x_type":ts,
+                        "filter_and_sort":true,
+                        "invert_axis":invert_axis!=undefined,
+                        "y_type":y_ts,
+                        "x_tick_count":10,
+                        "x_decimals":x_decimals,
+                        adjust_x:true,
+                        adjust_y:true,
+                        debug:true
+            }
+            if (by_rank!=undefined){
+                graph_options["x_label"]+= " - Rank"
+                // remove points with no data (they might have a spurious rank)
+                data=data.filter(a => a[x["feature_name"]]!=null)
+                var chart1=c3plotjsondata(data,x["feature_rank"],[y["feature_name"]],graph_options)
+            }else{
+                var chart1=c3plotjsondata(data,x["feature_name"],[y["feature_name"]],graph_options)
+            }
+
+
+        })
+
+    </script>
+{% endblock %}
+
+
+{% block map %}{% endblock %}
+
+{%block splits%}{% endblock %}
+
+{%block laps%}{% endblock %}
+
+{%block mapjs%}{% endblock %}
+

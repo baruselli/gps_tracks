@@ -1,0 +1,78 @@
+{% extends "base/base_map.html" %}
+
+{% load static %}
+{% load mathfilters %}
+{% load leaflet_tags %}
+
+{%block stylesheet %}
+{{block.super}}
+             #map {
+                height: 90%;
+                width: 100%;
+            }
+{% endblock %}
+
+{%block buttons%}
+{%endblock%}
+
+
+{%block plots%}
+{%endblock%}
+
+
+{%block js%}
+
+<script>
+    function data_url(){return '{% url 'tracks_alts_json' %}?{{request}}' }
+</script>
+{% endblock %}
+
+
+{%block mapjs%}
+    <script type="text/javascript">
+        function map_init_basic (map, options) {
+        var nan=0
+
+        init_map_base(map,options,mapBounds=null,add_basemaps=false)
+
+        url=data_url()
+
+        console.log("map url", url)
+
+        ////then, add data to map
+        $.getJSON(url,function(data){
+            var t0 = performance.now();
+            console.log(url)
+            console.log(data)
+
+            read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+            data=data["data"]
+            addressPoints = data.map(function (p) { return [p[0], p[1]]; });
+
+            var heat = L.heatLayer(data,
+            {
+              minOpacity: 0.1,
+              max: 800,
+              radius: 30,
+              blur: 30,
+              gradient: {
+                0.4:  '#f23e45',
+                0.50: 'lime',
+                0.70: 'yellow',
+                0.95: '#FF8300',
+                1.0:  'red'
+                }
+              }).addTo(map);
+
+
+            var t1 = performance.now();
+            console.log("AJAX call took " + (t1 - t0) + " milliseconds.")
+        })
+
+    };
+    </script>
+
+{%endblock%}
+
+{% block form %}
+{%endblock%}

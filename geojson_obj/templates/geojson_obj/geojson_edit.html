@@ -1,0 +1,44 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block map %}
+{% endblock %}
+
+{% block buttons %}
+    {% if obj %}
+        <button onclick="location.href='{% url 'geojsonobj' geojsonobj_id=obj.pk  %}'" type="button">Back to Object</button>
+    {% endif %}
+{% endblock%}
+
+{% block content %}
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+</head>
+
+
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+
+    {%if waypoint_id%}
+    <h1>Edit Geojson</h1>
+    {%else%}
+    <h1>New Geojson</h1>
+    {%endif%}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="OK">
+    </form>
+
+
+{%endblock%}
+

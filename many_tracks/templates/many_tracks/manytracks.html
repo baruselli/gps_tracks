@@ -1,0 +1,338 @@
+{% extends "groups/base_group.html" %}
+
+{% load static %}
+{% load mathfilters %}
+{% load leaflet_tags %}
+
+{%block buttons%}
+    <button onclick="location.href='{% url 'many_tracks_group' %}?track_ids={{track_ids}}'" type="button">
+            Create Group</button>
+    <button onclick="location.href='{% url 'many_tracks_alts' %}?track_ids={{track_ids}}'" type="button">
+            Altitudes</button>
+{%endblock%}
+
+
+{%block plots%}
+    <form method="GET" action="{% url 'many_tracks' %}" id="searchform">
+        Show points:
+        <select name="use_points">
+            <option value=1 {%if use_points %} selected="selected" {%endif%}>Points</option>
+            <option value=0 {%if not use_points %} selected="selected" {%endif%}>Lines</option>
+        </select>
+
+        Reduce points:
+        <select name="reduce_points" id ="reduce_points">
+            <option name="all" value="all" {%if reduce_points == "all" %} selected="selected" {%endif%}>All</option>
+            <option name="smooth1" value="smooth1" {%if reduce_points == "smooth1" %} selected="selected" {%endif%}>Ramer-Douglas-Peucker 10m</option>
+            <option name="smooth2" value="smooth2" {%if reduce_points == "smooth2" %} selected="selected" {%endif%}>Less than 100</option>
+            <option name="smooth3" value="smooth3" {%if reduce_points == "smooth3" %} selected="selected" {%endif%}>Custom</option>
+            <option name="single" value="single" {%if reduce_points == "single" %} selected="selected" {%endif%}>Single point</option>
+            <option name="every" value="every" {%if reduce_points == "every" %} selected="selected" {%endif%}>Every n points</option>
+        </select>
+        Every (0 for automatic choice):
+        <input type="number" style="width: 40" value={%if every %}{{every}}{%else %}0{%endif%} id="every" name="every">
+        <input type="checkbox" name="do_plots" value=1 {% if do_plots %}checked {%endif%}>Add plots
+        <input type="checkbox" name="with_waypoints" value=1 {% if with_waypoints %}checked {%endif%}>Waypoints
+        <input type="checkbox" name="with_photos" value=1 {% if with_photos %}checked {%endif%}>Photos
+        <input type="checkbox" name="with_global" value=1 {% if with_global %}checked {%endif%}>Global objects
+        <!-- <input type="hidden" id="track_ids" name="track_ids" value="{{track_ids}}"> -->
+        {{form.media}}
+        {{form.as_p}}
+        {{from.errors}}
+        {{from.non_field_errors}}
+        <!-- <input type="submit" value="Refresh" id="submit_button"> -->
+    </form>
+    <button value="Refresh" id="submit_button"  type="button" style="float:left; margin-left: 1%">Refresh </button>
+    <div style="float:left;margin-left: 3%">
+        <a href="{% url 'photos_show' %}?track_ids={{track_ids}}">Photos</a>
+        <a href="{% url 'waypoints_map' %}?track_ids={{track_ids}}">Waypoints</a>
+    </div>
+
+
+
+    <div style="height:10%" id="c3_1">
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_11"      style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_21"      style="width:90%; "></div>
+        </div>
+    </div>
+
+    <div style="height:10%" id="c3_2">
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_12"    style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_22"    style="width:90%; "></div>
+        </div>
+    </div>
+    <div style="height:10%" id="c3_3">
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_13"      style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_23"      style="width:90%; "></div>
+        </div>
+    </div>
+
+    <div style="height:10%" id="c3_4">
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_14"    style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_24"    style="width:90%; "></div>
+        </div>
+    </div>
+
+    <div style="height:10%" id="c3_5">
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_15"    style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_25"    style="width:90%; "></div>
+        </div>
+    </div>
+
+    <div style="height:10%" id="c3_6">
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_16"    style="width:90%; "></div>
+        </div>
+        <div style="float:left; margin-left: 2%;margin-top: 2%">
+            <div id="c3_26"    style="width:90%; "></div>
+        </div>
+    </div>
+
+
+    <div style="width:98%;float:left; margin-left: 2%;margin-top: 2%">
+        <div id="c3_5"    style="width:90%; "></div>
+    </div>
+{%endblock%}
+
+
+{%block js%}
+
+<script>
+
+
+
+
+</script>
+{% endblock %}
+
+
+{%block mapjs%}
+    <script type="text/javascript">
+        function map_init_basic (map, options) {
+        var nan=0
+
+        // allow change of every only when every is chosen in reduce_points
+        $( "#reduce_points" ).change(function () {
+            console.log(  $("#reduce_points option:selected").attr('name'));
+            if ( $("#reduce_points option:selected").attr('name')=="every"){
+                $("#every").prop('disabled',false);
+            }
+            else{
+                $("#every").prop('disabled', "disabled");
+            }
+
+        })
+        .change();
+
+        // pass ids parameters instead of tracks
+        $("#submit_button").click(function(){        
+            input = $("#id_tracks").val()
+            if (input && input.length>0){
+                ids=""
+                for (i in input){
+                    ids+=String(input[i])+"_"
+                }
+                ids=ids.slice(0,-1)  //toglie l'ultimo _
+                $('#searchform').attr("ids2",ids);
+                $("#searchform").append('<input type="hidden" name="track_ids" value='+ids+' /> ');
+                $('#id_tracks').remove(); //dont pass tracks parameters
+                $("#searchform").submit(); // Submit the form
+            }
+
+        });
+
+
+        init_map_base(map,options,mapBounds=null,add_basemaps=false)
+
+        url_many_tracks="{% url 'many_tracks' %}?track_ids="
+        url_many_tracks_group="{% url 'many_tracks_group'%}?track_ids="
+        url_many_tracks_merge="{% url 'many_tracks_merge'%}?track_ids="
+        url_many_tracks_delete="{% url 'many_tracks_delete' %}?track_ids="
+
+
+        {% if use_points %}
+            use_points=true
+        {% else %}
+            use_points=false
+        {% endif %}
+        do_plots={{do_plots}}
+
+        plots_url = '{% url 'tracks_as_point_lists_json' %}?{{request}}&use_color=1'
+        table_data_url = '{% url 'tracks_as_lines_json' %}?{{request}}&use_color=1'
+
+        if(use_points){
+            map_url = plots_url  //list of points
+        }else{
+            map_url = table_data_url    //multilinestring
+        }
+
+
+        console.log("plots_url", plots_url)
+        console.log("table_data_url", table_data_url)
+        console.log("map_url", map_url)
+
+        url_many_tracks="{% url 'many_tracks' %}?track_ids="
+        url_many_tracks_group="{% url 'many_tracks_group'%}?track_ids="
+        url_many_tracks_merge="{% url 'many_tracks_merge'%}?track_ids="
+        url_many_tracks_delete="{% url 'many_tracks_delete' %}?track_ids="
+        url_many_tracks_plot="{% url 'many_tracks_plots' %}?track_ids="
+
+        ////first, create table from table_data_url (tracks as lines)
+        $.getJSON(table_data_url,function(data){
+            console.log(table_data_url)
+            //console.log(data)
+            var table=create_table(
+                '#import_table',
+                data,
+                url_many_tracks,
+                url_many_tracks_group,
+                url_many_tracks_delete,
+                url_many_tracks_merge,
+                url_many_tracks_plot
+            )
+
+            //show table -> copied from base_group
+            table.on( 'select', function ( e, dt, type, indexes ) {
+                console.log("--------select row---------")
+                if ( type === 'row' ) {
+                // I take all selected rows 
+                var pks = table.rows( '.selected' ).data().pluck( 'pk' );
+                // and highlight correponding points (=tracks) on the map
+                highlight_leaflet_points(number=null,class_name="leaflet_track_marker", track_pks=pks)
+                highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
+                }
+            } );
+            //same as above on deselect
+            table.on( 'deselect', function ( e, dt, type, indexes ) {
+                console.log("--------deselect row---------")
+                if ( type === 'row' ) {
+                var pks = table.rows( '.selected' ).data().pluck( 'pk' );
+                highlight_leaflet_points(number=null,class_name="leaflet_track_marker", track_pks=pks)
+                highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
+                }
+            } );
+
+            document.getElementById("table_div").style.display = "block"
+
+            options["table"]=table
+
+            if(!use_points){
+                read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+            }
+
+        })
+
+        ////then, add data to map
+        if (do_plots || use_points ){
+            $.getJSON(plots_url,function(data){
+                var t0 = performance.now();
+                console.log(plots_url)
+                //console.log(data)
+
+                if(use_points){
+                read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+                }
+
+
+                if (do_plots){
+                    colors=[]
+                    console.log("colors", colors)
+                    data_tot_c3=[]
+                    for (d in data["Tracks"]){
+                        data_tot_c3.push.apply(data_tot_c3, data["Tracks"][d])
+                        colors.push(data["colors"][d])
+                    }
+                    track_names=Object.keys(data["Tracks"]) //get_track_names(data)
+                    console.log("track_names",track_names)
+
+                    //add to c3plots
+                    xs=["DeltaTimeString","Distance","DeltaTimeString","Distance","DeltaTimeString","Distance","DeltaTimeString","Distance"]
+                    ids=['#c3_11','#c3_21','#c3_14','#c3_24','#c3_16','#c3_26','#c3_12','#c3_22']
+                    yys=["Speed","Speed","Altitude","Altitude", "Heartrate","Heartrate","Frequency","Frequency"]
+                    //xlabels=["Time(min)","Distance(km)","Time(min)","Distance(km)","Time(min)","Distance(km)","Time(min)","Distance(km)"]
+                    ylabels=["Speed(km/h)","Speed(km/h)","Altitude(m)","Altitude(m)",  "Heartbeat(bpm)",  "Heartbeat(bpm)","Frequency","Frequency"]
+                    //types=["scatter","line","scatter","line","scatter","line","scatter","line"]
+                    //types=["scatter","scatter","scatter","scatter","scatter","scatter","scatter","scatter"]
+
+                    //flatten objects (c3 wants one big list)
+                    for (i=0;i<yys.length;i++){
+                        console.log(xs[i],yys[i])
+                        data_chart=convert_data_many_tracks(data_tot_c3,yys[i]) //substitute y column names with track names for legend
+                        options={
+                            "colors_":colors,
+                            "y_label":ylabels[i] ,
+                            "bind_to":ids[i],
+                            "show_legend":true
+                        }
+
+                        if (i%2==0){
+                            options["x_type"]="time",
+                            options["type"]="scatter",
+                            options["x_label"]=undefined //use default for time
+                        }else{
+                            options["x_type"]="indexed",
+                            options["type"]="scatter", //line does not work
+                            options["x_label"]="Distance(km)"
+                        }
+
+
+                        var chart=c3plotjsondata(data_chart,xs[i],track_names,options)
+                    }
+
+
+
+                    // hide empty plots
+                    has_times=data["features"]["has_times"]
+                    has_alts=data["features"]["has_alts"]
+                    has_freq=data["features"]["has_freq"]
+                    has_hr=data["features"]["has_hr"]
+                    if (!has_freq){
+                        document.getElementById('c3_2').style.display = 'none';
+                    }
+                    if (!has_hr){
+                        document.getElementById('c3_6').style.display = 'none';
+                    }
+                    if (!has_alts){
+                        document.getElementById('c3_4').style.display = 'none';
+                    }
+
+                }
+
+
+                var t1 = performance.now();
+                console.log("AJAX call took " + (t1 - t0) + " milliseconds.")
+            })
+        }
+
+        if(!do_plots){
+                    document.getElementById('c3_1').style.display = 'none'
+                    document.getElementById('c3_2').style.display = 'none'
+                    document.getElementById('c3_3').style.display = 'none'
+                    document.getElementById('c3_4').style.display = 'none'
+                    document.getElementById('c3_5').style.display = 'none'
+                    document.getElementById('c3_6').style.display = 'none'
+                }
+
+
+    };
+    </script>
+
+{%endblock%}
+
+{% block form %}
+{%endblock%}

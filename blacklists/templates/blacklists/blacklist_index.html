@@ -1,0 +1,71 @@
+{% extends "base/base.html" %}
+
+{% load leaflet_tags %}
+{% load mathfilters %}
+{% load static %}
+
+{%block title%}
+<h1>Blacklist</h1>
+{%endblock%}
+
+{% block buttons %}
+<button onclick="location.href='{% url 'new_blo' %}'" type="button">Create blacklisted file</button>
+{%endblock%}
+
+
+{%block table%}
+<p>Files in the blacklist are not imported.</p>
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="import_table">
+
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Name</td>
+                <td>Regex</td>
+                <td>Comment</td>
+                <td>Files</td>
+
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for blo in blacklist_objs %}
+                <tr>
+                    <td>{{blo.pk}}</td>
+                    <td><a href="{% url 'blacklist_obj' blo_id=blo.pk %}">{{blo.file_name}}</a> </td>
+                    <td>{%if blo.interpret_regex%}Yes{%endif%}</td>
+                    <td>{%if blo.comment%}{{blo.comment}}{%endif%}</td>
+                    <td>{%if blo.files%}{{blo.files|linebreaksbr}}{%endif%}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+{%endblock%}
+
+
+{%block js%}
+<script>
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#import_table')
+        .DataTable({
+            paging: false,
+            "order": [[ 1, "asc" ]],
+            dom: 'Bfrtip',
+            select: false,
+            searching: false, 
+            info: false,
+            buttons:[],
+            });
+    } );
+</script>
+{%endblock%}
+
+
+{% block map%}{%endblock%}

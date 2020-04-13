@@ -1,0 +1,34 @@
+{% extends "base/base.html" %}
+
+{% block map %}
+{% endblock %}
+
+{% block content %}
+
+
+
+<h3>Supported file formats</h3>
+
+
+<ul>
+
+    <li><a href="https://en.wikipedia.org/wiki/GPS_Exchange_Format">gpx</a>: this is the standard </li>
+    <li><a href="https://developers.google.com/kml/">kml</a>: this it the standard developed by Google</li>
+    <li>kmz: a kmz file is simply a compressed kml file, hence it shares all its features</li>
+    <li><a href="https://en.wikipedia.org/wiki/Training_Center_XML">tcx</a>: this is the standard introduced by Garmin; it supports</li>
+    <li>csv: this is a general data format; the program parses csv files from TomTom and Polar</li>
+
+</ul>
+
+Note that the format by TomTom, fit, is a binary file which cannot be freely read.
+
+
+<h3>Main libraries used</h3>
+<ul>
+<li>gpxpy: to read and export gpx files (<a href="https://github.com/tkrajina/gpxpy">https://github.com/tkrajina/gpxpy</a>)</li>
+<li>tcx: to read tcx files (<a href="https://github.com/cwygoda/tcx">https://github.com/cwygoda/tcx</a>) </li>
+<li>geopy: for geocoding (<a href="https://github.com/geopy/geopy">https://github.com/geopy/geopy</a>)</li>
+<li>fastkml: to write KML files (<a href="https://github.com/cleder/fastkml">https://github.com/cleder/fastkml)</a></li>
+</ul>
+
+{%endblock%}

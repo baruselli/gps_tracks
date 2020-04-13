@@ -1,0 +1,216 @@
+{% extends "tracks/base_track.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block buttons %}
+{%endblock%}
+
+{%block title%}
+    <h1>Scatter Plots for <a href="{% url 'track_detail' track_id=track.pk %}?reduce_points={{reduce_points}}">{{track.name_wo_path_wo_ext}}</a></h1>
+{%endblock%}
+
+{%block plots%}
+    <div>
+        {{block.super}}
+            <div class="modal"></div>
+    </div>
+{%endblock%}
+
+{% block form %}
+<div>
+    <form method="GET" action="{% url 'track_statistics' track_id=track.pk%}" id="searchform">
+        X<select name="x" id="form_x"></select>
+        Y<select name="y" id="form_y"></select>
+        Color<select name="z" id="form_z"></select>
+        <input type="submit" value="Update">
+    </form>
+    <button onclick='saveSvgAsPng(document.getElementsByTagName("svg")[0], "{{track}}.png");'>Download PNG</button>
+</div>
+{%endblock%}
+
+
+{%block js %}
+    {{block.super}}
+    <script type="text/javascript">
+
+    url='{% url 'track_json_list_of_points' track_id=track.pk %}?reduce_points={{reduce_points}}'
+
+    console.log(url)
+
+    alt=ver_speed=hrs=freq=step_length=false
+
+
+
+    var width=1200
+    var height=500
+
+    colors=[]
+
+    x_choice = "Distance"
+    y_choice = "Step Length"
+    z_choice="Split"
+
+
+
+     $.getJSON(url,function(data_orig){
+
+         console.log("data_orig", data_orig)
+
+        data=data_orig["Track"]["points"]
+
+         options={
+            "Speed":   {"feature_name":"Speed", "feature_color":"ColorSpeed", "feature_label":"Speed(km/h)"},
+            "Altitude":{"feature_name":"Altitude", "feature_color":"ColorAltitude", "feature_label":"Altitude(m)"},
+            "Vertical speed":   {"feature_name":"VerticalSpeed", "feature_color":"ColorVerticalSpeed", "feature_label":"Vertical Speed(m/s)"},
+            "Split":   {"feature_name":"Split", "feature_color":"ColorSplit", "feature_label":"Split number"},
+            "Lap":   {"feature_name":"Lap", "feature_color":"ColorLap", "feature_label":"Lap number"},
+            "Heartrate":   {"feature_name":"Heartrate", "feature_color":"ColorHeartrate", "feature_label":"Heartrate"},
+            "Heartrate group":   {"feature_name":"Heartrate Group", "feature_color":"ColorHeartrate Group", "feature_label":"Heartrate"},
+            "Frequency":   {"feature_name":"Frequency", "feature_color":"ColorFrequency", "feature_label":"Frequency"},
+            "Distance":   {"feature_name":"Distance", "feature_color":"ColorDistance", "feature_label":"Distance(km)"},
+            "Time":   {"feature_name":"DeltaTime", "feature_color":"", "feature_label":"Time(min)"},
+            "Step Length":   {"feature_name":"StepLength", "feature_color":"", "feature_label":"Step Length(m)"},
+            "Slope":   {"feature_name":"Slope", "feature_color":"ColorSlope", "feature_label":"Slope(%)"},
+            "Segment":   {"feature_name":"Segment", "feature_color":"ColorSegment", "feature_label":"Segment number"},
+            "Subtrack":   {"feature_name":"Subtrack", "feature_color":"ColorSubtrack", "feature_label":"Subtrack number"},
+            }
+
+         var sel_x = document.getElementById('form_x');
+         var sel_y = document.getElementById('form_y');
+         var sel_z = document.getElementById('form_z');
+
+        const keys = Object.keys(options)
+
+        qs=[ "Heartrate group"] //qualitative feature
+
+        for (const k of keys){
+            element=options[k]
+            if(element.feature_name){
+                if (data[0][element.feature_name] !=undefined){
+                    var optx = document.createElement('option');
+                    optx.value = k;
+                    optx.appendChild( document.createTextNode(k ));
+                    sel_x.appendChild(optx);
+                    if(!qs.includes(k)){
+                        var opty = document.createElement('option');
+                        opty.value = k;
+                        opty.appendChild( document.createTextNode(k ));
+                        sel_y.appendChild(opty);
+                    }
+                    }
+                }
+            if(element.feature_color){
+                if (data[0][element.feature_color]  !=undefined){
+                    var optz = document.createElement('option');
+                    optz.value = k;
+                    optz.appendChild( document.createTextNode( k ));
+                    sel_z.appendChild(optz);
+                    }
+                }
+            }
+
+
+            // read params from GET
+            var url_string = window.location.href
+            var url = new URL(url_string);
+            var x_choice = url.searchParams.get("x");
+            var y_choice = url.searchParams.get("y");
+            var z_choice = url.searchParams.get("z");
+
+            // set default values
+            if (x_choice===null) x_choice="Distance"
+            if (y_choice===null) y_choice="Altitude"
+            if (z_choice===null) z_choice="Speed"
+
+
+            console.log(data)
+
+            console.log("x_choice", x_choice);
+            console.log("y_choice", y_choice);
+            console.log("z_choice", z_choice);
+
+
+            x=options[x_choice]
+            y=options[y_choice]
+            z=options[z_choice]
+
+            $('#form_x').val(x_choice);
+            $('#form_y').val(y_choice);
+            $('#form_z').val(z_choice);
+
+            console.log("x", x)
+            console.log("y", y)
+            console.log("z", z)
+
+
+            if (qs.includes(x_choice)){
+                ts="category"
+            }else{
+                ts="number"
+            }
+
+            try{
+                x_decimals=data_orig["legend"][x_choice]["decimals"]
+            }catch(error){
+                x_decimals=2
+            }
+            try{
+                x_title=data_orig["legend"][x_choice]["title"]
+            }catch(error){
+                x_title=x["feature_label"]
+            }
+            try{
+                y_title=data_orig["legend"][y_choice]["title"]
+            }catch(error){
+                y_title=y["feature_label"]
+            }
+
+            options={
+                    "colors_":z["feature_color"],
+                    "x_label":x_title, 
+                    "y_label":y_title, 
+                    "bind_to":'#c3_11',
+                    "type":"scatter",
+                    "height":height,
+                    "width":width,
+                    "pointcolor":true,
+                    "radius":10,
+                    "show_legend":false,
+                    "grid_x":true,
+                    "grid_y":true,
+                    "x_tick_count":20,
+                    "x_type":ts,
+                    "zoom_rescale":true,
+                    "x_decimals":x_decimals,
+                    "filter_and_sort":true //fix manually the order otherwise c3 screws up; same as group_plots_base.html
+            }
+
+            var chart1=c3plotjsondata(data,
+                        x["feature_name"],[y["feature_name"]],options)
+
+            console.log("z",z)
+            console.log("z['feature_name']",z["feature_name"])
+            console.log('data_orig["legend"]',data_orig["legend"])
+
+            colors_legend=data_orig["legend"][z["feature_name"]]["legend"]
+            grades=data_orig["legend"][z["feature_name"]]["grades"]
+            decimals = data_orig["legend"][z["feature_name"]]["decimals"]
+            title = data_orig["legend"][z["feature_name"]]["title"]
+
+            legend_fct(null,colors_legend, grades, "legend", title,decimals=decimals, father_id="plots_block")
+        })
+
+    </script>
+{% endblock %}
+
+
+{% block map %}{% endblock %}
+
+{%block splits%}{% endblock %}
+
+{%block laps%}{% endblock %}
+
+{%block mapjs%}{% endblock %}
+

@@ -1,0 +1,83 @@
+{% extends "groups/base_group.html" %}
+{% load staticfiles%}
+
+{% load crispy_forms_tags %}
+
+{% block head_title %}
+    <title>Group {{group.name}}</title>
+{% endblock %}
+
+{% block title %}
+    <div><h1>Group {{group.name}}</h1></div>
+{%endblock%}
+
+{% block buttons %}
+    <button onclick="location.href='{% url 'edit_group' group_id=group.pk form="normal" %}'" type="button">Edit</button>
+    <button onclick="location.href='{% url 'edit_group' group_id=group.pk form="quick" %}'" type="button">Quick edit</button>
+    <button onclick="deletegroup_fct()" type="button">Delete group</button>
+    <button onclick="location.href='{% url 'resave_group' group_id=group.pk %}'" type="button">Resave group</button>
+    <button onclick="location.href='{% url 'group_plots' group_id=group.pk %}'" type="button">Custom plots</button>
+    <button onclick="location.href='{% url 'group_statistics' group_id=group.pk %}'" type="button">Statistics</button>
+{%endblock%}
+
+
+{% block js %}
+    <script>
+        function deletegroup_fct() {
+            var r=confirm("Really delete group?");
+            if (r == true) {
+                location.href='{% url 'delete_group' group_id=group.pk  %}'
+            }
+        } 
+
+
+        function data_url(){
+            url='{% url 'tracks_as_lines_json'%}'+"?{{request}}&group_pk={{group.pk}}&use_color=1"
+            return url
+        }
+    </script>
+{%endblock%}
+
+
+{% block content %}
+    {% if group %}
+    <h2><a href="{% url 'track_index' %}?special_search=similar_to_group&special_search_pk={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Similar tracks</a></h2>
+    <!-- <h2><a href="{% url 'track_index' %}?similar_to_group={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Similar tracks</a></h2> -->
+    <!-- <h2><a href="{% url 'track_index' %}?close_to_group={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Nearby tracks</a></h2> -->
+    <h2><a href="{% url 'track_index' %}?special_search=close_to_group&special_search_pk={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Nearby tracks</a></h2>
+    {% endif %}
+{% endblock %}
+
+
+{% block form %}
+  <br>
+   <h2>Edit</h2>
+  <div id="waypoint_form">
+      <form action="" method="post">
+      {{ form.media }}
+      {{ form.non_field_errors }}
+      {{ form.errors }}
+       {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="OK">
+          </form>
+  </div>
+{%endblock%}
+
+{% block form0 %}
+    {% if group %}
+    <div style="float:left; margin-left: 1%">
+        <form method="GET" action="{% url 'group_detail' group_id=group.pk %}" id="searchform">
+            <input type="checkbox" name="with_waypoints" value=1 {% if with_waypoints %}checked {%endif%}>Waypoints
+            <input type="checkbox" name="with_photos" value=1 {% if with_photos %}checked {%endif%}>Photos
+            <input type="submit" value="Update">
+        </form>
+    </div>
+    <div style="float:left;margin-left: 3%">
+        <a href="{% url 'photos_show' %}?group_pk={{group.pk}}">Photos</a>
+        <a href="{% url 'waypoints_map' %}?group_pk={{group.pk}}">Waypoints</a>
+    </div>
+
+    <div style="clear:left;"></div>
+    {% endif %}
+{%endblock%}

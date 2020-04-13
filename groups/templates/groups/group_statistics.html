@@ -1,0 +1,42 @@
+{% extends "groups/base_group.html" %}
+{% load staticfiles%}
+
+
+{% block head_title %}
+    <title>Group {{group.name}}</title>
+{% endblock %}
+
+{% block title %}
+    <div><h1>Statistics for group <a href="{% url 'group_detail' group_id=group.pk %}">{{group.name}}</a></h1></div>
+{%endblock%}
+
+{% block buttons %}
+{%endblock%}
+
+
+{% block js %}
+    <script>
+        url="{% url 'group_json_statistics' group_id=group.pk %}"
+        url_plots="{% url 'group_plots' group_id=group.pk %}"
+        console.log(url)
+        $( document ).ready(add_group_stats(document,url,url_plots))
+    </script>
+{%endblock%}
+
+{% block table %}
+{% endblock %}
+
+{% block map %}
+{% endblock %}
+
+{% block mapjs %}
+{% endblock %}
+
+
+{% block content %}
+<div>
+    <p>Total number of tracks: <b>{{group.tracks.count}}</b> - Min Date: <b>{{group.min_date}}</b> - Max Date: <b>{{group.max_date}}</b>  </p>
+</div>
+
+    <div id="group_stats"></div>
+{%endblock%}

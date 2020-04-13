@@ -1,0 +1,131 @@
+{% extends "base/base_map.html" %}
+{% load crispy_forms_tags %}
+
+{% block stylesheet %}
+    {{block.super}}
+    #waypoint_form{
+        display: none;
+    }
+{% endblock %}
+
+{%block buttons%}
+    <button onclick="deletewaypoint_fct()" type="button">Delete waypoint</button>
+    <button onclick=
+        "location.href='{% url 'geopy_waypoint' waypoint_id=waypoint.pk %}'" type="button">
+        Get location info</button>
+{%endblock%}
+
+{% block content %}
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+        <body>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-bordered table-hover" id="import_table">
+    
+                <thead>
+                </thead>
+    
+                <tbody>
+    
+     
+    
+                    <tr><td>Id</td> <td>{{waypoint.pk}}</td> </tr>
+                    <tr><td>Name</td> <td>{{waypoint.name}}</td> </tr>
+                    <tr><td>Description</td> <td>{{waypoint.description}}</td> </tr>
+                    <tr><td>Comment</td> <td>{{waypoint.comment}}</td> </tr>
+                    <tr><td>Lat</td> <td>{{waypoint.lat}}</td> </tr>
+                    <tr><td>Long</td> <td>{{waypoint.long}}</td> </tr>
+                    <tr><td>Alt</td> <td>{{waypoint.alt}}</td> </tr>
+                    <tr><td>Country</td> <td>{{waypoint.country}}</td> </tr>
+                    <tr><td>Region</td> <td>{{waypoint.region}}</td> </tr>
+                    <tr><td>City</td> <td>{{waypoint.city}}</td> </tr>
+                    <tr><td>Address</td> <td>{{waypoint.address}}</td> </tr>
+                    <!-- <tr><td>geom</td> <td>{{waypoint.geom}}</td> </tr>
+                    <tr><td>geom</td> <td>{{geom}}</td> </tr> -->
+                    <tr><td>Time</td> <td>{{waypoint.time}}</td> </tr>
+                    <tr><td>Created by hand</td> <td>{{waypoint.created_by_hand}}</td> </tr>
+                    <tr><td>Beginning of a track</td> <td>{{waypoint.inizio}}</td> </tr>
+                    <tr><td>Autocreated</td> <td>{{waypoint.auto_generated}}</td> </tr>
+
+                    <tr><td>Track</td> <td> {% if track %}<a href="{% url 'track_detail' track_id=track.pk %}">{{track.name}}</a>{%endif%}</td> </tr>
+                    <tr><td>Secondary Track</td> <td> {% if waypoint.track2 %}<a href="{% url 'track_detail' track_id=waypoint.track2.pk %}">{{waypoint.track2.name}}</a>{%endif%}</td> </tr>
+
+                    {% comment %}
+                    <tr><td><a href="{% url 'many_tracks' track_ids=ids %}">Nearby Tracks</a></td> <td></td> </tr>
+                    {% for t in tracks%}
+                    <tr><td></td><td><a href="{% url 'track_detail' track_id=t.pk %}">{{t.name}}</a> </td></tr>
+                    {%endfor%}
+                    {% endcomment %}
+                    <tr><td>Nearby tracks</td> <td> <a href='{% url "track_index" %}?lat={{waypoint.lat}}&lng={{waypoint.long}}&dist=10'>List</a>  </td> </tr>
+
+    
+                </tbody>
+    
+            </table>
+        </div>
+    </div>
+
+
+    
+
+
+</body>
+
+
+<script>
+
+function deletewaypoint_fct() {
+    var r=confirm("Really delete waypoint?");
+    if (r == true) {
+        location.href='{% url 'delete_waypoint' waypoint_id=waypoint.pk  %}'
+}
+} 
+</script>
+
+
+<script type="text/javascript">
+    function map_init_basic (map, options) {
+
+    map_right_click(map,options,point_link,waypoint_link );
+
+        var point={"coordinates":[{{waypoint.lat}},{{waypoint.long}}]}
+    console.log(point)
+        L.marker(point.coordinates).addTo(map);
+
+var mapBounds = L.latLngBounds([
+                    [parseFloat(point.coordinates[0])-0.001, parseFloat(point.coordinates[1])-0.001],
+                    [parseFloat(point.coordinates[0])+0.001, parseFloat(point.coordinates[1])+0.001],
+                ]);
+map.fitBounds(mapBounds);
+console.log(mapBounds);
+baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+   L.control.layers(baseMaps).addTo(map);
+
+    }
+</script>
+
+
+{%endblock%}
+
+{% block form %}
+  <br>
+    <button onclick="$('#waypoint_form').toggle()">Edit</button>
+  <div id="waypoint_form">
+      <form action="" method="post">
+      {{ form.media }}
+      {{ form.non_field_errors }}
+      {{ form.errors }}
+       {% csrf_token %}
+        {{ form|crispy }}
+        <!-- <input type="hidden" name="track" value="{{ waypoint.track }}" /> -->
+        <input type="submit" value="OK">
+          </form>
+  </div>
+{%endblock%}

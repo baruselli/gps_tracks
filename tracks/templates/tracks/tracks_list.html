@@ -1,0 +1,166 @@
+{% extends "groups/group.html" %}
+
+{% block head_title %}
+    <title>Tracks List</title>
+{% endblock %}
+
+{% block stylesheet %}
+    {{block.super}}
+    
+    #map {
+        width: 75%;
+        float: left;
+    }
+
+    .select2-container
+    {
+        width: 75%;
+    }
+    
+{%endblock%}    
+
+{% block title %}
+{%endblock%}
+
+{% block buttons%}
+{%endblock%}
+
+{% block js %}
+    <script>
+        lat="{{initial_lat}}"
+        long="{{initial_long}}"
+        if (lat && long){
+            lat=parseFloat(lat)
+            long=parseFloat(long)
+            var mapBounds = L.latLngBounds([
+                [lat-0.1, long-0.1],
+                [lat+0.1, long+0.1],
+            ]);
+        }
+
+        function data_url(){return '{% url 'tracks_as_lines_json' %}?{{request}}&use_color=1' }
+    </script>
+    <script>
+        $( document ).ready(function() {
+    
+            // pass ids parameters instead of tracks
+            $("#submit_button").click(function(){        
+                input = $("#id_tracks").val()
+                console.log("input",input)
+                if (input && input.length>0 && input !=[""]){
+                    ids=""
+                    for (i in input){
+                        ids+=String(input[i])+"_"
+                    }
+                    ids=ids.slice(0,-1)  //toglie l'ultimo _
+                    $('#searchform').attr("ids2",ids);
+                    $("#searchform").append('<input type="hidden" name="track_ids" value='+ids+' /> ');
+                    $('#id_tracks').remove(); //dont pass tracks parameters
+                }
+         
+             $("#searchform").submit(); // Submit the form
+    
+    
+            });
+    
+        })
+    </script>
+{%endblock%}
+
+{%block table%}
+    {{block.super}}
+{%endblock%}
+
+{%block map%}
+    {{block.super}}
+    <div style="float: left width= 25%";>
+        <h2>Search -  <a href="{% url 'track_gen_index' %}">Simple searches</a> </h2>
+        <form method="GET" action="{% url 'track_index' %}" id="searchform">
+            {{track_form.media}}
+            {{track_form.as_p}}
+            {{track_form.errors}}
+            {{track_form.non_field_errors}}
+            {{group_form.media}}
+            {{group_form.as_p}}
+            {{group_form.errors}}
+            {{group_form.non_field_errors}}
+
+            Name<input class="searchfield" id="searchbox1" name="name" type="text" value="{{name}}" placeholder="Name"/><br>
+            Last n days<input class="searchfield" id="searchbox2" name="n_days" type="number" value="{{n_days}}" placeholder="Last n days"/><br>
+            Year<select  id="searchbox3" name="year">
+                {% for y in year_options %}
+                    <option value='{{y}}'{% if y and y == year %} selected {%endif%}>{{y}}</option>
+                {% endfor %}
+                </select><br>
+            Extension<select  id="searchbox4" name="extension">
+                {% for e in ext_options %}
+                    <option value='{{e}}'{% if e and e == extension %} selected {%endif%}>{{e}}</option>
+                {% endfor %}
+                </select><br>
+            Country<select  id="searchbox5" name="country">
+                {% for c in country_options %}
+                    <option value='{{c}}'{% if c and c == country %} selected {%endif%}>{{c}}</option>
+                {% endfor %}
+                </select><br>
+            Timezone<select  id="searchbox15" name="time_zone">
+                    {% for c in timezone_options %}
+                        <option value='{{c}}'{% if c and c == time_zone %} selected {%endif%}>{{c}}</option>
+                    {% endfor %}
+                    </select><br>
+            Address<input class="searchfield" id="searchbox10" name="address" type="text" value="{{address}}" placeholder="Address"/><br>
+            Term<input class="searchfield" id="searchbox7" name="q" type="text" value="{{q}}" placeholder="Search for term (slow)"/><br>
+            Min date<input class="searchfield" id="searchbox8" name="min_date" type="date" value="{{min_date}}" data-date-format="DD MM YYYY" placeholder="Min date"/><br>
+            Max date<input class="searchfield" id="searchbox9" name="max_date" type="date" value="{{max_date}}" placeholder="Max date"/><br>
+            Max results<input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/><br>
+            Latitude<input class="searchfield" id="searchbox_lat" name="lat" type="text" value="{{lat}}" placeholder="Lat"/><br>
+            Longitude<input class="searchfield" id="searchbox_long" name="lng" type="text" value="{{lng}}" placeholder="Long"/><br>
+            Distance (km)<input class="searchfield" id="searchbox14" name="dist" type="number" value="{{dist}}" placeholder="Dist"/><br>
+            Heartrate<select  id="searchbox16" name="heartbeat">
+                    <option value=''{% if not heartbeat %} selected {%endif%}></option>
+                    <option value='yes'{% if  heartbeat == "yes" %} selected {%endif%}>Yes</option>
+                    <option value='no'{% if  heartbeat == "no" %} selected {%endif%}>No</option>
+                </select><br>
+            Frequency<select  id="searchbox17" name="frequency">
+                    <option value=''{% if not frequency %} selected {%endif%}></option>
+                    <option value='yes'{% if  frequency == "yes" %} selected {%endif%}>Yes</option>
+                    <option value='no'{% if  frequency == "no" %} selected {%endif%}>No</option>
+                </select><br>
+            Last created tracks<input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="Number of tracks"/><br>
+            Deleted Tracks
+            <select  id="searchbox18" name="deleted_tracks">
+                <option value=''{% if not deleted_tracks %} selected {%endif%}>Hide deleted tracks</option>
+                <option value='1'{% if  deleted_tracks == "1" %} selected {%endif%}>Only deleted tracks</option>
+                <option value='2'{% if  deleted_tracks == "2" %} selected {%endif%}>Include deleted tracks</option>
+            </select><br>
+            Special search
+            <select  id="searchbox19" name="special_search">
+                <option value=''{% if not special_search %} selected {%endif%}></option>
+                <option value='wrong_coords'{% if special_search == "wrong_coords" %} selected {%endif%}>Wrong or missing coordinates</option>
+                <option value='merged_tracks'{% if special_search == "merged_tracks" %} selected {%endif%}>Merged Tracks</option>
+                <option value='duplicated_tracks'{% if special_search == "duplicated_tracks" %} selected {%endif%}>Duplicated Tracks</option>
+                <option value='empty_tracks'{% if special_search == "empty_tracks" %} selected {%endif%}>Empty Tracks</option>
+                <option value='similar_to_track'{% if special_search == "similar_to_track" %} selected {%endif%}>Similar to track (requires track pk)</option>
+                <option value='close_to_track'{% if special_search == "close_to_track" %} selected {%endif%}>Close to track (requires track pk)</option>
+                <option value='similar_to_group'{% if special_search == "similar_to_group" %} selected {%endif%}>Similar to group (requires group pk)</option>
+                <option value='close_to_group'{% if special_search == "close_to_group" %} selected {%endif%}>Close to group (requires group pk)</option>
+            </select><br>
+            Special search pk<input class="searchfield" id="searchbox20" name="special_search_pk" type="number" value="{{special_search_pk}}"/><br>
+            <input type="checkbox" name="with_waypoints" value=1 {% if with_waypoints %}checked {%endif%}>Waypoints
+            <input type="checkbox" name="with_photos" value=1 {% if with_photos %}checked {%endif%}>Photos
+            <input type="checkbox" name="with_global" value=1 {% if with_global %}checked {%endif%}>Global objects
+            <input type="checkbox" name="exclude_excluded_groups" value=1 {% if exclude_excluded_groups %}checked {%endif%}>Exclude excluded groups
+            <br>
+
+            
+
+            <input type="submit" value="Search" id ="submit_button">
+            <!-- <input type="reset" value="Reset"> -->
+            <button type="button" onclick="window.location.href = '{% url  'track_index' %}?no_search=1'">Reset</button>
+        </form>
+    </div>
+{%endblock%}
+
+
+{% block form %}
+
+{%endblock%}

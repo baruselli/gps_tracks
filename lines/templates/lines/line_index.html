@@ -1,0 +1,146 @@
+{% extends "base/base.html" %}
+
+{% block map%}
+{% endblock %}
+
+{% block head_title %}
+    <title>Lines</title>
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<html>
+  <head>
+    {% load leaflet_tags %}
+    {% load mathfilters %}
+    {% load static %}
+
+
+</head>
+
+<body>
+
+<button onclick="location.href='{% url 'create_line' %}'" type="button">Create Line</button>
+<a href='{% url 'lines_map'  %}'>Lines map</a>
+
+<h2>All Lines</h2>
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="import_table">
+
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Name</td>
+                <td>Time</td>
+                <td>Type</td>
+                <!-- <td>lat</td>
+                <td>long</td> -->
+                <!-- <td>Altitude</td>
+                <td>Track</td> -->
+                <!-- <td>is_start</td> -->
+                <!-- <td>by_hand</td> -->
+                <td>Country</td>
+                <td>Region</td>
+                <td>City</td>
+                <td>Global</td>
+                <td>Modify</td>
+
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for wp in all_lines  %}
+                <tr>
+                    <td>{{wp.pk}}</td>
+                    <td>
+                        <a href="{% url 'line_detail' line_id=wp.pk %}">{{wp.name}}</a>
+                    </td>
+                    <td>{{wp.created|date:"Y/m/d"}}</td>
+                    <!-- <td>{{wp.lat}}</td>
+                    <td>{{wp.long}}</td> -->
+                    <!-- <td>{{wp.alt}}</td>
+
+                    {%comment%}
+                    <td>
+                        
+                        {%if wp.track%}
+                        <a href="{% url 'track_detail' track_id=wp.track.pk %}">{{wp.track.name}}</a>
+                        {%endif%}
+                    </td>
+                    {%endcomment%} -->
+                    <!-- <td>{{wp.inizio}}</td> -->
+                    <!-- <td>{{wp.created_by_hand}}</td> -->
+                    <!-- <td>{%if wp.track_name%}<a href="{% url 'track_detail' track_id=wp.track_pk %}">{{wp.track_name}}</a>{%endif%}</td> -->
+                    <td>{{wp.line_type}}</td>
+                    <td>{{wp.beg_country}}</td>
+                    <td>{{wp.beg_region}}</td>
+                    <td>{{wp.beg_city}}</td>
+                    <td>{{wp.is_global}}</td>
+                    <td><a href='{% url 'create_line' line_id=wp.pk %}'>Edit line</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <!-- <td>lat</td>
+                    <td>long</td> -->
+                    <td></td>
+                    <td></td>
+                    <!-- <td>is_start</td> -->
+                    <!-- <td>by_hand</td> -->
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+    
+                </tr>
+                </tfoot>
+        </table>
+    </div>
+</div>
+
+<script>
+$(document).ready( function () {
+    var events = $('#events');
+    var table =    $('#import_table')
+    .DataTable({
+        "pageLength": 10,
+        "lengthMenu":[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        "order": [[ 2, "desc" ]],
+       // dom: 'Bfrtip',
+        buttons: [],
+       // select: true
+       initComplete: function () {
+            this.api().columns([3,4,5,6,7]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+console.log("column",column)
+                            column.draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d.substr(0,20)+'</option>' )
+                } );
+            } );
+        }
+    } );
+} );
+</script>
+</body>
+
+{%endblock%}

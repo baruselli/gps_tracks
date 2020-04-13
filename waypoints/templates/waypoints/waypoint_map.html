@@ -1,0 +1,139 @@
+{% extends "base/base_map.html" %}
+
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block buttons%}
+    <a href="{% url 'waypoint_index' %}?{{request}}">Waypoints List</a>
+    <button onclick="location.href='{% url 'create_waypoint' %}'" type="button">New waypoint</button>
+{%endblock%}
+
+{%block form0%}
+    <div style="float: left width= 25%";>
+        <h2>Search -  <a href="{% url 'waypoint_gen_index' %}">Simple searches</a> </h2>
+        <form method="GET" action="" id="searchform">
+            {{wps_form.media}}
+            {{wps_form.as_p}}
+            {{wps_form.errors}}
+            {{wps_form.non_field_errors}}
+            {{group_form.media}}
+            {{group_form.as_p}}
+            {{group_form.errors}}
+            {{group_form.non_field_errors}}
+            {{track_form.media}}
+            {{track_form.as_p}}
+            {{track_form.errors}}
+            {{track_form.non_field_errors}}
+    
+
+            Name<input class="searchfield" id="searchbox1" name="name" type="text" value="{{name}}" placeholder="Name"/><br>
+            Last n days<input class="searchfield" id="searchbox2" name="n_days" type="number" value="{{n_days}}" placeholder="Last n days"/><br>
+            Year<select  id="searchbox3" name="year">
+                {% for y in year_options %}
+                    <option value='{{y}}'{% if y and y == year %} selected {%endif%}>{{y}}</option>
+                {% endfor %}
+                </select><br>
+            Country<select  id="searchbox5" name="country">
+                {% for c in country_options %}
+                    <option value='{{c}}'{% if c and c == country %} selected {%endif%}>{{c}}</option>
+                {% endfor %}
+                </select><br>
+            Timezone<select  id="searchbox15" name="time_zone">
+                    {% for c in timezone_options %}
+                        <option value='{{c}}'{% if c and c == time_zone %} selected {%endif%}>{{c}}</option>
+                    {% endfor %}
+                    </select><br>
+            Address<input class="searchfield" id="searchbox10" name="address" type="text" value="{{address}}" placeholder="Address"/><br>
+            Term<input class="searchfield" id="searchbox7" name="q" type="text" value="{{q}}" placeholder="Search for info/description"/><br>
+            Min date<input class="searchfield" id="searchbox8" name="min_date" type="date" value="{{min_date}}" data-date-format="DD MM YYYY" placeholder="Min date"/><br>
+            Max date<input class="searchfield" id="searchbox9" name="max_date" type="date" value="{{max_date}}" placeholder="Max date"/><br>
+            Max results<input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/><br>
+            Latitude<input class="searchfield" id="searchbox_lat" name="lat" type="text" value="{{lat}}" placeholder="Lat"/><br>
+            Longitude<input class="searchfield" id="searchbox_long" name="lng" type="text" value="{{lng}}" placeholder="Long"/><br>
+            Distance<input class="searchfield" id="searchbox14" name="dist" type="number" value="{{dist}}" placeholder="Dist"/><br>
+            Last waypoints by ID<input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="By ID"/><br>
+    
+            <input type="submit" value="Search" id="submit_button">
+            <button type="button" onclick="window.location.href = '{% url  'waypoints_map' %}?no_search=1'">Reset</button>
+        </form>
+    </div>
+{%endblock%}
+
+{% block stylesheet %}
+  {{block.super}}
+    body {
+      padding: 0;
+      margin: 0;
+    }
+    html, body, #map {
+      height: 80%;
+      width: 100%;
+    }
+{% endblock%}
+
+
+
+{% block js %}
+<script type="text/javascript">
+
+
+    function map_init_basic (map, options) {
+
+      init_map_base(map,options, mapBounds=null,add_basemaps=false)
+
+
+    url='{% url 'allwps_json'%}?{{request}}'
+    console.log(url)
+
+    $.getJSON(url,function(data){
+    read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+  //read_data_leaflet_allwps(data,geojsonMarkerOptions,map,options)
+    })
+
+
+
+    }
+
+  $( document ).ready(function() {
+
+        // pass ids parameters instead of tracks
+        $("#submit_button").click(function(){        
+            input = $("#id_tracks").val()
+            console.log("input",input)
+            if (input && input.length>0){
+                ids=""
+                for (i in input){
+                    ids+=String(input[i])+"_"
+                }
+                ids=ids.slice(0,-1)  //toglie l'ultimo _
+                $('#searchform').attr("ids2",ids);
+                $("#searchform").append('<input type="hidden" name="track_ids" value='+ids+' /> ');
+                $('#id_tracks').remove(); //dont pass tracks parameters
+            }
+            input = $("#id_waypoints").val()
+            console.log("input",input)
+            if (input && input.length>0){
+                ids=""
+                for (i in input){
+                    ids+=String(input[i])+"_"
+                }
+                ids=ids.slice(0,-1)  //toglie l'ultimo _
+                $('#searchform').attr("ids3",ids);
+                $("#searchform").append('<input type="hidden" name="wps_ids" value='+ids+' /> ');
+                $('#id_waypoints').remove(); //dont pass waypoints parameters
+            }
+           // $("#searchform").submit(); // Submit the form
+
+
+        });
+
+  })
+</script>
+
+
+
+</body>
+</html>
+
+{% endblock %}

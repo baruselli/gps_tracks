@@ -1,0 +1,179 @@
+{% extends "base/base_map.html" %}
+
+{% load leaflet_tags %}
+{% load mathfilters %}
+{% load static %}
+
+{% block head_title %}
+    <title>Groups</title>
+{% endblock %}
+
+
+{%block title%}
+    <h1>Groups</h1>
+{%endblock%}
+
+{% block buttons %}
+    <button onclick="location.href='{% url 'create_group' %}'" type="button">Create Group</button>
+    <button onclick="location.href='{% url 'resave_all_groups' %}'" type="button">Resave all groups</button>
+{%endblock%}
+
+{%block table%}
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="import_table">
+
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <!-- <td>Avg Lat</td>
+                <td>Avg Long</td> -->
+                <th>Tracks</th>
+                <th>From Path</th>
+                <!-- <td>Color</td> -->
+                <!--<td>Points</td>-->
+                <!--<td>WayPoints</td>-->
+                <th>Created</th>
+                <th>Modified</th>
+                <!-- <th></th> -->
+                <!-- <th></th> -->
+
+            </tr>
+            </thead>
+        
+    
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    {% if group.color%}
+                    <td><font color="{{group.color}}">{{group.pk}}</font></td>
+                    {%else%}
+                    <td><font color="{{group.temp_color}}">{{group.pk}}</font></td>
+                    {%endif%}
+                    <td><a href="{% url 'group_detail' group_id=group.pk %}">{{group.name}}</a> </td>
+                    <!-- <td>{{group.avg_lat}}</td>
+                    <td>{{group.avg_long}}</td> -->
+                    <td>{{group.size}}</td>
+                    <td>{% if group.is_path_group %}Yes{%else%}No{%endif%}</td>
+                    <!-- <td>{{group.color}}</td> -->
+                    <!--<td>{{group.total_points}}</td>-->
+                    <!--<td>{{group.n_waypoints}}</td>-->
+                    <td data-sort={{group.created|date:"YmdHis"}}>{{group.created}}</td>
+                    <td data-sort={{group.modified|date:"YmdHis"}}>{{group.modified}}</td>
+                    <!-- <td>
+                        <button onclick="location.href='{% url 'edit_group' group_id=group.pk form="normal" %}'" type="button">Edit</button>
+                        <button onclick="location.href='{% url 'edit_group' group_id=group.pk form="quick" %}'" type="button">Quick edit</button>
+                    </td> -->
+                    <!-- <td>
+                        <button onclick="location.href='{% url 'resave_group' group_id=group.pk %}'" type="button">Resave group</button>
+                    </td> -->
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <!-- <td></td> -->
+                    <!-- <td></td> -->
+                    </tr>
+                </tfoot>
+        </table>
+    </div>
+</div>
+
+{%endblock%}
+
+
+{%block mapjs%}
+
+<script type="text/javascript">
+
+    function map_init_basic (map, options) {
+
+        init_map_base(map,options,mapBounds=null,add_basemaps=false)
+
+        geojsonMarkerOptions ={radius: 5,fillOpacity: 1}
+
+
+//    request="?"+"{{request|safe}}"
+
+    url='{% url 'allgroups_json'%}'
+    console.log(url)
+
+    $.getJSON(url,function(data){
+        console.log(data)
+         read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+        //read_data_leaflet_group_index(data,geojsonMarkerOptions,map,options)
+
+    //filter_point_type="group"
+    })
+
+
+
+
+
+    }
+</script>
+
+</body>
+
+<script>
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#import_table')
+        .DataTable({
+            paging: true,
+            "order": [[ 5, "desc" ]],
+            dom: 'Bfrtip',
+            select: true,
+            searching: true, 
+            info: true,
+            //keys: true,
+            buttons:[],
+            initComplete: function () {
+                this.api().columns([3]).every( function () {
+                    dft_value="No"
+                    var column = this;
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo( $(column.footer()).empty() )
+                        .on( 'keyup change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+    
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+
+    
+                    column.data().unique().sort().each( function ( d, j ) {
+                        if (d==dft_value){
+                            select.append( '<option selected="selected" value="'+d+'">'+d+'</option>' )
+                        }else{
+                        select.append( '<option value="'+d+'">'+d+'</option>' )
+                        }
+                    } );
+                    //select no at the beginning
+                    // select.val('No').attr('selected', 'selected');
+                    //select no at the beginning
+                    $(table).ready(function() {
+                        console.log("aaaaaaaa", dft_value, column)
+                        val=dft_value
+                        column.search( val ? '^'+val+'$' : '', true, false ).draw();
+                    });
+                } );
+            }
+        });
+    });
+    </script>
+
+
+{%endblock%}
+

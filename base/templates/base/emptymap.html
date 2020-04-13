@@ -1,0 +1,69 @@
+{% extends "base/base_map.html" %}
+{% load crispy_forms_tags %}
+
+
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+{%block stylesheet %}
+             #map {
+                height: 80%;
+                width: 100%;
+            }
+{% endblock %}
+
+{% block head_title %}
+    <title>Map</title>
+{% endblock %}
+
+
+{% block content %}
+
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    {% if address %}
+    Address:    {{address}}
+    {% endif %}
+
+    <form action="" method="get">
+        Look for <input class="searchfield" id="searchbox_name" name="location_name" type="text" value="{{location_name}}" placeholder=""/>
+        <input type="submit" value="Submit">
+    </form>
+    {% if lat and long %}
+        <a href="{% url 'track_index' %}?lat={{lat}}&lng={{long}}&how_many=20&exclude_excluded_groups=1">Nearby tracks</a>
+    {% endif %}
+
+
+{% endblock %}
+
+{% block js %}
+
+<script type="text/javascript">
+
+    function map_init_basic (map, options) {
+
+        {% if min_lat %}
+        var mapBounds = L.latLngBounds([
+                            [{{min_lat}}, {{min_long}}],
+                            [{{max_lat}}, {{max_long}}],
+                        ]);
+        {%else%}
+
+        var mapBounds = L.latLngBounds([
+                            [{{lat}}-0.1, {{long}}-0.1],
+                            [{{lat}}+0.1, {{long}}+0.1],
+                        ]);
+        {%endif%}
+
+        init_map_base(map,options,bounds=mapBounds)
+    }
+</script>
+
+
+
+{%endblock%}
+
+

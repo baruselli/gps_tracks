@@ -1,0 +1,46 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block map %}
+{% endblock %}
+
+{% block content %}
+
+
+
+
+<html>
+  <head>
+        {% load leaflet_tags %}
+        {% load static %}
+        {% load mathfilters %}
+
+        <style>
+
+             #map {
+                height: 85%;
+                width: 100%;
+            }
+            </style>
+    
+</head>
+
+<body>
+
+ 
+    {{ form.media }}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Submit">
+    </form>
+
+</body>
+
+
+
+{%endblock%}

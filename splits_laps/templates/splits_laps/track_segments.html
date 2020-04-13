@@ -1,0 +1,133 @@
+{% extends "tracks/base_track.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block stylesheet%}
+    {{block.super}}
+        #map {
+            height: 50%;
+            width: 100%;
+        }
+        splits_block{
+            display: block;
+        }
+{%endblock%}
+
+
+{% block title %}
+    <h1>Segments for <a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a></h1>
+{% endblock %}
+
+
+{%block plots_title%}
+    <h2>Plots<button onclick="hide_show('plots_block')">Hide/Show</button></h2>
+{%endblock%}
+
+
+{% block mapjs %}
+    <script type="text/javascript">
+
+        function map_init_basic (map, options) {
+
+                opacity=1
+                fillopacity=0.5
+                weight=3
+
+                //starting params for bounds
+                max_lat=-400
+                min_lat=400
+                max_long=-400
+                min_long=400
+
+                //bounds
+                min_lat=Math.min(min_lat,{{track.min_lat}})
+                max_lat=Math.max(max_lat,{{track.max_lat}})
+                min_long=Math.min(min_long,{{track.min_long}})
+                max_long=Math.max(max_long,{{track.max_long}})
+
+                var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+                map.fitBounds(mapBounds);
+                init_map_base(map,options,mapBounds=mapBounds,add_basemaps=false,track_pk={{track.pk}})
+
+                ///////////geoJSON
+
+                var geojsonMarkerOptions = {radius: {{default_radius}},fillOpacity:fillopacity,stroke:true,opacity:opacity, weight:weight};
+                url='{% url 'track_json_segments' track_id=track.pk %}?{{request}}'
+                console.log(url)
+                $.getJSON(url,function(data){
+
+                    //leaflet
+                    read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+
+                    // c3 plots
+                    colors=[]
+                    segments_num=[]
+                    segments_name=[]
+                    for (segment in data["Segments"]){
+                        segments_num.push(data["Segments"][segment]["number"])
+                        segments_name.push(data["Segments"][segment]["name"])
+                        colors.push(data["Segments"][segment]["color"])
+                    }
+
+                    var width=600
+                    var height=200
+
+                    hide_absent_data(data,document)
+
+                    data_track=data["Track"]["points"]
+
+                    //add to c3plots
+                    xs=["Distance","DeltaTimeString","Distance","DeltaTimeString","Distance","DeltaTimeString","Distance","DeltaTimeString"]
+                    ids=['#c3_11','#c3_21','#c3_14','#c3_24','#c3_16','#c3_26','#c3_12','#c3_22']
+                    yys=["Speed","Speed","Altitude","Altitude", "Heartrate","Heartrate","Frequency","Frequency"]
+                    xlabels=["Distance(km)","Time","Distance(km)","Time","Distance(km)","Time","Distance(km)","Time"]
+                    ylabels=["Speed(km/h)","Speed(km/h)","Altitude(m)","Altitude(m)",  "Heartbeat(bpm)",  "Heartbeat(bpm)","Frequency","Frequency"]
+                    types=["scatter","scatter","scatter","scatter","scatter","scatter","scatter","scatter"]
+
+
+                    for (i=0;i<yys.length;i+=1){
+                        console.log(xs[i],yys[i])
+                        //substitute y column names with segment names for legend
+                        data_chart = convert_data_c3(data_track,y=yys[i], feature="Segment", feature_name="Segment")
+
+                        if (i%2==0){
+                            x_type="indexed"
+                        }else{
+                            x_type="time"
+                        }
+
+                        options={
+                            "colors_":colors,
+                            "x_label":xlabels[i],
+                            "y_label":ylabels[i] ,
+                            "bind_to":ids[i],
+                            "type":types[i],
+                            "show_legend":true,
+                            x_type:x_type
+
+                        }
+                        var chart=c3plotjsondata(data_chart,xs[i],segments_name,options)
+                    }
+
+                 })
+
+            }
+    </script>
+{% endblock %}
+
+{% block splits %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

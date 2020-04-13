@@ -1,0 +1,76 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{% block buttons %}
+{%endblock%}
+
+{% block content %}
+
+
+
+{{ form.media }}
+
+{{ form.non_field_errors }}
+{{ form.errors }}
+
+
+    {%if id%}
+    <h1>Edit Options</h1>
+    {%else%}
+    <h1>Create Options Set</h1>
+    {%endif%}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+
+        <div id="maps"><h3>Maps</h3>
+        <p>See <a href="https://leaflet-extras.github.io/leaflet-providers/preview/">https://leaflet-extras.github.io/leaflet-providers/preview/</a><br></p>
+        </div>
+
+        <input type="submit" value="OK">
+    </form>
+
+
+
+
+{%endblock%}
+
+
+{%block js%}
+<script>
+    function add_option(string){
+        return "<div><input type='checkbox' id='"+
+                string+
+                "' name='maps_checks' value="+
+                string+
+                "><label for='"+
+                string+
+                "'>"+
+                string+
+                "</label></div>"
+    }
+
+    $( document ).ready(function() {
+        providers=get_basemaps_names(mapbox_token="{{mapbox_token}}",basemaps_mapbox={{basemaps_mapbox|safe}})
+        checked_options={{basemaps|safe}}
+        for (i in providers){
+            name=providers[i]
+            $("#maps").append(add_option(name))
+            if (checked_options.includes(name)){
+                document.getElementById(name).checked = true;
+            }
+        }
+    });
+
+
+
+
+</script>
+{%endblock%}
+
+
+{% block map%}{%endblock%}

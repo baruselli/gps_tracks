@@ -25,6 +25,7 @@ python-dateutil==2.8.1
 python-memcached==1.59
 python-tcxparser==1.1.0
 pytz==2019.3
+scipy==1.4.1
 selenium==3.141.0
 six==1.14.0
 sqlparse==0.3.1

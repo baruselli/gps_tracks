@@ -350,7 +350,7 @@ def find_files_in_dir_by_prefix(dir_, prefix):
     import os
 
     files = []
-    logger.info("find_files_in_dir_by_prefix")
+    logger.info("find_files_in_dir_by_prefix %s, dir %s" %(prefix,dir_))
     for root, dirs, filess in os.walk(dir_):
         for file in filess:
             if os.path.splitext(file)[0]==prefix:

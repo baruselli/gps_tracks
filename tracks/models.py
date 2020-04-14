@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 import gpxpy
 import gpxpy.gpx
 import json
-
+import os
 from django.urls import reverse
 import logging
 from pprint import pprint
@@ -244,6 +244,33 @@ class Track(models.Model):
             self.final_lat = self.td.lats[-1]
             self.final_lon = self.td.long[-1]
             self.save()
+
+    def find_file(self,ext):
+        """
+        try to find the import files, in case it has been moved
+        """
+        from import_app.utils import find_files_in_dir_by_prefix
+        file_exists=False
+        prop_name=ext+"_file"
+        existing_path = getattr(self,prop_name,None)
+        if existing_path:
+            if os.path.isfile(existing_path):
+                file_exists=True
+        if file_exists:
+            return existing_path
+        else:
+            self.info("Cannot find input file, trying to search for it...")
+            files = find_files_in_dir_by_prefix(settings.TRACKS_DIR, self.name_wo_path_wo_ext)
+            for f in files:
+                _, extension = os.path.splitext(f)
+                if extension.replace(".","")==ext.replace(".",""):
+                    setattr(self,prop_name,f)
+                    self.save()
+                    self.info("..found: %s" %f)
+                    return f
+            else:
+                self.error(".. input file not found.")
+                return None
 
     def set_all_properties(self):
         # if It do not already have a gpx file, I create a gpx obj to use all the utilities of gpxpy
@@ -1136,38 +1163,25 @@ class Track(models.Model):
         #self.ending_index = 0
         self.save()
         try:
-            self.log.reset()
-            if extension == "kml":
-                from_files_to_tracks([self.kml_file], update=True,ignore_blacklist=True)
-            elif extension == "kmz":
-                from_files_to_tracks([self.kmz_file], update=True,ignore_blacklist=True)
-            elif extension == "gpx":
-                from_files_to_tracks([self.gpx_file], update=True,ignore_blacklist=True)
-            elif extension == "csv":
-                from_files_to_tracks([self.csv_file], update=True,ignore_blacklist=True)
-            elif extension == "tcx":
-                from_files_to_tracks([self.tcx_file], update=True,ignore_blacklist=True)
-            elif extension:
-                status = "KO reimport: unknown extension"
-                logger.warning(status)
+            if extension:
+                # use file with fiven extension
+                file_path = self.find_file(ext=extension)
+                if file_path:
+                    from_files_to_tracks([file_path], update=True,ignore_blacklist=True)
+                else:
+                    status="Cannot find input file!"
             else:
-                if self.csv_file:
-                    from_files_to_tracks([self.csv_file], update=True, ignore_blacklist=True)
-                elif self.gpx_file:
-                    from_files_to_tracks([self.gpx_file], update=True, ignore_blacklist=True)
-                elif self.tcx_file:
-                    from_files_to_tracks([self.tcx_file], update=True, ignore_blacklist=True)
-                elif self.kml_file:
-                    from_files_to_tracks([self.kml_file], update=True, ignore_blacklist=True)
-                elif self.kmz_file:
-                    from_files_to_tracks([self.kmz_file], update=True, ignore_blacklist=True)
-
+                for extension in ["csv","gpx","tcx","kml","kmz"]:
+                    file_path = self.find_file(ext=extension)
+                    if file_path:
+                        from_files_to_tracks([file_path], update=True,ignore_blacklist=True)
+                        break
             status = "OK reimport"
 
         except Exception as e:
             import traceback
             traceback.print_exc()
-            status = "KO reimport " + str(e)
+            status = "KO reimport %s" %e
             logger.error(status)
 
         return status
@@ -2718,61 +2732,63 @@ class Track(models.Model):
 
         try:
             self.info("Reading points")
-            main_folder=list(k.features())[0]
-            self.info("Main folder: %s %s " %(main_folder.name,main_folder))
-            #folders=list(main_folder.features())[0]
+            features=list(k.features())
+            if features:
+                main_folder=features[0]
+                self.info("Main folder: %s %s " %(main_folder.name,main_folder))
+                #folders=list(main_folder.features())[0]
 
-            # all_folders=[n for n in get_all_nodes(main_folder,"features") if n.__class__.__name__=="Folder"]
-            # self.info("All folders: %s" %([f.name for f in all_folders]))
-            
-            all_placemarks=[n for n in get_all_nodes(main_folder,"features") if n.__class__.__name__=="Placemark"]
-            from pprint import pformat
-            try:
-                self.info("All placemarks: %s" %pformat(([(p.geometry,p.name,p.description, p.geometry.__class__.__name__) for p in all_placemarks if p])))
-            except:
-                pass
-            #self.info("All placemarks: %s" %pformat(([p.geometry.__class__ for p in all_placemarks])))
-
-            try:
-                tracks=[p for p in all_placemarks if p and p.geometry and p.geometry.__class__.__name__ in ["MultiLineString","LineString"] ]
-                ok_lc=True
-            except:
-                ok_lc=False
-            if not ok_lc:
-                tracks=[]
-                for p in all_placemarks:
-                    try:
-                        if p and p._geometry and  p.geometry and p.geometry.__class__.__name__ in ["MultiLineString","LineString"]:
-                                tracks.append(p)
-                    except Exception as e:
-                        import traceback
-                        traceback.print_exc()
-                        self.error("Cannot add track %s: %s" %(p,e))
-            try:
-                waypoints=[p for p in all_placemarks if p and p.geometry and p.geometry.__class__.__name__=="Point"]
-                ok_lc=True
-            except:
-                ok_lc=False
-            if not ok_lc:
-                waypoints=[]
-                for p in all_placemarks:
-                    try:
-                        if p and p._geometry and  p.geometry and p.geometry.__class__.__name__ in ["Point",]:
-                                waypoints.append(p)
-                    except Exception as e:
-                        import traceback
-                        traceback.print_exc()
-                        self.error("Cannot add waypoint %s: %s" %(p,e))
-
-            d=""
-            for i,p in enumerate(all_placemarks):
+                # all_folders=[n for n in get_all_nodes(main_folder,"features") if n.__class__.__name__=="Folder"]
+                # self.info("All folders: %s" %([f.name for f in all_folders]))
+                
+                all_placemarks=[n for n in get_all_nodes(main_folder,"features") if n.__class__.__name__=="Placemark"]
+                from pprint import pformat
                 try:
-                    d+="(%s) %s : %s \n" %(i+1, p.name, p.description)
+                    self.info("All placemarks: %s" %pformat(([(p.geometry,p.name,p.description, p.geometry.__class__.__name__) for p in all_placemarks if p])))
                 except:
                     pass
-            self.kml_description=d
-            self.info(d)
-            self.save()
+                #self.info("All placemarks: %s" %pformat(([p.geometry.__class__ for p in all_placemarks])))
+
+                try:
+                    tracks=[p for p in all_placemarks if p and p.geometry and p.geometry.__class__.__name__ in ["MultiLineString","LineString"] ]
+                    ok_lc=True
+                except:
+                    ok_lc=False
+                if not ok_lc:
+                    tracks=[]
+                    for p in all_placemarks:
+                        try:
+                            if p and p._geometry and  p.geometry and p.geometry.__class__.__name__ in ["MultiLineString","LineString"]:
+                                    tracks.append(p)
+                        except Exception as e:
+                            import traceback
+                            traceback.print_exc()
+                            self.error("Cannot add track %s: %s" %(p,e))
+                try:
+                    waypoints=[p for p in all_placemarks if p and p.geometry and p.geometry.__class__.__name__=="Point"]
+                    ok_lc=True
+                except:
+                    ok_lc=False
+                if not ok_lc:
+                    waypoints=[]
+                    for p in all_placemarks:
+                        try:
+                            if p and p._geometry and  p.geometry and p.geometry.__class__.__name__ in ["Point",]:
+                                    waypoints.append(p)
+                        except Exception as e:
+                            import traceback
+                            traceback.print_exc()
+                            self.error("Cannot add waypoint %s: %s" %(p,e))
+
+                d=""
+                for i,p in enumerate(all_placemarks):
+                    try:
+                        d+="(%s) %s : %s \n" %(i+1, p.name, p.description)
+                    except:
+                        pass
+                self.kml_description=d
+                self.info(d)
+                self.save()
 
         except Exception as e:
             import traceback

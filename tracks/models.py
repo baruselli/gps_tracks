@@ -1163,6 +1163,7 @@ class Track(models.Model):
         #self.ending_index = 0
         self.save()
         try:
+            self.log.reset()
             if extension:
                 # use file with fiven extension
                 file_path = self.find_file(ext=extension)
@@ -1832,8 +1833,12 @@ class Track(models.Model):
                             t = datetime.strptime(duration_string, "%Mmin %Ss")
                             delta = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
                         except:
-                            t = datetime.strptime(duration_string, "%Hh %Mm")
-                            delta = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+                            try:
+                                t = datetime.strptime(duration_string, "%Hh %Mm")
+                                delta = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+                            except:
+                                #usually <1min
+                                delta = timedelta(seconds=0)
 
                         if not self.end: self.end=self.beginning+delta
                         if not self.duration: self.duration = delta.total_seconds()

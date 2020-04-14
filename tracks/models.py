@@ -1837,8 +1837,11 @@ class Track(models.Model):
                                 t = datetime.strptime(duration_string, "%Hh %Mm")
                                 delta = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
                             except:
+                                if duration_string=="1h":
+                                    delta = timedelta(hours=1)
                                 #usually <1min
-                                delta = timedelta(seconds=0)
+                                else:
+                                    delta = timedelta(seconds=0)
 
                         if not self.end: self.end=self.beginning+delta
                         if not self.duration: self.duration = delta.total_seconds()
@@ -1860,7 +1863,7 @@ class Track(models.Model):
                         #     pass
 
                 except Exception as e:
-                    self.error(e)
+                    self.error("Error in reading sygic style: %s" %e)
 
             self.info("OK Set activity group")
             self.save()

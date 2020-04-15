@@ -681,17 +681,7 @@ class TrackSourceView(View):
 
         if raw_view:
             template_name = "tracks/track_source.html"
-            if extension=="gpx":
-                text=track.gpx
-            elif extension=="kml":
-                text=track.gpx
-            elif extension=="kmz":
-                text=track.kmz
-            elif extension=="tcx":
-                text=track.kml
-            elif extension=="csv":
-                text=track.csv
-
+            text=getattr(track,extension) #track.gpx, track.kml etc.
 
             return render(request, template_name, {"track": track,"extension":extension,"text":text})
         else:

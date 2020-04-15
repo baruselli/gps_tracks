@@ -536,7 +536,7 @@ class Track(models.Model):
                     self.save()
                     self.td.save()
                 else:
-                    self.warning("Cannot set splits: n_points=0")
+                    self.warning("Cannot set laps: n_points=0")
                     reduced_laps=[]   
                     laps_stats = {}
             except Exception as e:

@@ -361,14 +361,36 @@
       <!-- <tr><td>  color  </td> <td>{{track.color}}</td> </tr> -->
     <h2>
         <a href="{% url 'waypoints_map' %}?track_ids={{track.pk}}"> Waypoints  </a>
-        <button onclick="hide_show('wps_block')">Hide/Show</button></h2>
+        <button onclick="hide_show('wps_block')">Hide/Show</button>
+    </h2>
     <div id="wps_block" style="display: none;">
-    {% for wp in track.waypoint_set.all %}
-        <a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a><br>
-    {% endfor %}
-    {% for wp in track.waypoints2.all %}
-        <a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a><br>
-    {% endfor %}
+        <table id="table_waypoints">
+            <tr>
+                <th align= "left">Name</th>
+                <th align= "left">Time</th>
+                <th align= "left">Altitude</th>
+                <th align= "left">Description</th>
+                <th align= "left">Comment</th>
+            </tr>
+            {% for wp in track.waypoint_set.all %}
+                <tr>
+                    <td><a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a></td>
+                    <td>{{wp.time}}</td>
+                    <td>{{wp.alt}}</td>
+                    <td>{{wp.description}}</td>
+                    <td>{{wp.comment}}</td>
+                </tr>
+            {% endfor %}
+            {% for wp in track.waypoints2.all %}
+                <tr>
+                    <td><a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a></td>
+                    <td>{{wp.time}}</td>
+                    <td>{{wp.alt}}</td>
+                    <td>{{wp.description}}</td>
+                    <td>{{wp.comment}}</td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
     {%endif%}
 

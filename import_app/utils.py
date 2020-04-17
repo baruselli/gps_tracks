@@ -346,7 +346,7 @@ def find_files_in_dir(dir_, extensions):
     return files
 
 def find_files_in_dir_by_prefix(dir_, prefix):
-    """Automatically finds file in dir and its subdirs"""
+    """Automatically finds file in dir and its subdirs with name prefix and all extensions"""
     import os
 
     files = []
@@ -650,3 +650,60 @@ def reimport_failed_tracks():
 
     for t in tracks:
         t.reimport()
+
+def find_duplicated_files(dir_, extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
+    """
+    find files with the same names(which are considered as a single track by us)
+    """
+    logger.info("find_duplicated_files")
+    files=find_files_in_dir(dir_=dir_, extensions=extensions)
+
+    dict_name_files={}
+
+    for file in files:
+        base_name=name_wo_path_wo_ext(file)
+        if base_name in dict_name_files:
+            dict_name_files[base_name].append(file)
+        else:
+            dict_name_files[base_name]=[file]
+
+    duplicated_files_list=[]
+    for name, files in dict_name_files.items():
+        names_wo_path = [os.path.basename(f) for f in files]
+        # print(names_wo_path,set(names_wo_path))
+        if len(set(names_wo_path))!=len(names_wo_path):
+            import collections
+            duplicated_name_extensions=set([x for x in names_wo_path if names_wo_path.count(x) > 1])
+            for name_ext in duplicated_name_extensions:
+                duplicated_files=[f for f in files if os.path.basename(f)==name_ext]
+                duplicated_files_sizes=[os.stat(f).st_size for f in duplicated_files]
+                same_size =all([a==duplicated_files_sizes[0] for a in duplicated_files_sizes])
+                duplicated_files_list.append({
+                    "name_wo_path":name_ext,
+                    "files":[
+                        {
+                            "name":f,
+                            "size": os.stat(f).st_size,
+                        } 
+                        for f in duplicated_files
+                    ],
+                    "same_size":same_size
+                })
+
+    ## add track infos
+    track_names=set([name_wo_path_wo_ext(a["name_wo_path"]) for a in duplicated_files_list])
+    
+    tracks = Track.all_objects.filter(name_wo_path_wo_ext__in=track_names).only("pk","name_wo_path_wo_ext")
+    dict_name_pk={t.name_wo_path_wo_ext: t.pk for t in tracks}
+
+    for d in duplicated_files_list:
+        d["track_name"] = name_wo_path_wo_ext(d["name_wo_path"])
+        d["track_pk"] = dict_name_pk.get(d["track_name"],None)
+
+
+    return duplicated_files_list
+
+def name_wo_path_wo_ext(file):
+    "file name wo path wo extension"
+    base=os.path.basename(file)
+    return os.path.splitext(base)[0]

@@ -18,6 +18,10 @@ urlpatterns = [
     url(r"^import_update_tracks$", views.ImportUpdate.as_view(), name="import_update_tracks", ),
     # wrong tracks
     url(r"^failed_tracks_reimport/$", views.FailedTracksReimportView.as_view(), name="failed_tracks_reimport", ),
+    # list of duplicated file tracks tracks
+    url(r"^duplicated_files/$", views.DuplicatedFilesView.as_view(), name="duplicated_files", ),
+    # download a single file
+    url(r"^download_file/$", views.DownloadFileView.as_view(), name="download_file", ),
     # 1 track import
     url(r"^track_import/(?P<track_id>[0-9]+)/other_extensions/$", views.OtherExtensionsTrackView.as_view(),name="track_other_extensions", ),
     url(r"^track_reimport/(?P<track_id>[0-9]+)/(?P<ext>[a-z]+)/$", views.ReimportTrackView.as_view(),name="reimport_track", ),

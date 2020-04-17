@@ -191,3 +191,37 @@ class FailedTracksReimportView(View):
         messages.success(request, message)
 
         return redirect(reverse("import"))
+
+
+class DuplicatedFilesView(View):
+    template_name = "import_app/duplicated_files.html"
+    def get(self, request, *args, **kwargs):
+
+        logger.info("DuplicatedFilesView Track")
+        from .utils import find_duplicated_files
+        duplicated_files=find_duplicated_files(settings.TRACKS_DIR)
+
+        return render(request, self.template_name, {"duplicated_files":duplicated_files})
+
+class DownloadFileView(View):
+    def get(self, request, *args, **kwargs):
+        from django.contrib import messages
+        from tracks.models import Track
+        from django.http import HttpResponse
+        from wsgiref.util import FileWrapper
+        import os
+
+        file_path=request.GET.get("file_path", None)
+
+        if settings.TRACKS_DIR in file_path and os.path.exists(file_path):
+            wrapper = FileWrapper(open(file_path, "rb"))
+            response = HttpResponse(wrapper, content_type="application/force-download")
+            out_filename = os.path.basename(file_path).replace(",", "_")
+            response["Content-Disposition"] = "filename=" + out_filename
+            logger.info(response)
+            return response
+        else:
+            message = "Cannot find file " + file_path
+            messages.success(message)
+            logger.warning(message)
+            return redirect(reverse("track", track_id=track_id))

@@ -1,0 +1,100 @@
+{% extends "base/base.html" %}
+
+{% block map %}
+{% endblock %}
+
+{% block title %}
+    <h1>Duplicated track files</h1>
+{% endblock %}
+
+{% block table %}
+
+    <table id="duplicated_files_table">
+        <thead>
+            <th>Name</th>
+            <th>Same size</th>
+            <th>Track</th>
+            <th>Files</th>
+            <th>Sizes</th>
+        </thead>
+        <tbody>
+            {% for row in duplicated_files %}
+            <tr>
+                <td>{{row.name_wo_path}}</td>
+                <td>{{row.same_size}}</td>
+                <td>
+                    {% if row.track_pk %}
+                        <a href="{% url 'track_detail' track_id=row.track_pk %}">{{row.track_name}}</a>
+                    {% endif %}
+                </td>
+                <td>
+                    {% for file in row.files %}
+                        <a href="{% url 'download_file' %}?file_path={{file.name}}">{{file.name}}</a>
+                    {%endfor %}    
+                </td>
+                <td>
+                    {% for file in row.files %}
+                        {{file.size}}<br>
+                    {%endfor %}    
+                </td>
+            </tr>
+            {%endfor %}
+        </tbody>
+        <tfoot>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </thead>
+    </tfoot>
+
+{%endblock%}
+
+{% block js %}
+<script>
+
+    var table=$("#duplicated_files_table").DataTable( {
+        paging: true,
+        "order": [[ 0, "asc" ]],
+        //dom: 'rtipBf',
+        select: false,
+        searching: true,
+        info: true,
+        buttons: [],
+        initComplete: function () {
+            this.api().columns([0,1]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()).empty() )
+                .on( 'change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+                column.data().unique().sort().each( function ( d, j ) {
+                if(d){substr_d=d.substr(0,30)}
+                else{substr_d=""}
+                    select.append( '<option value="'+d+'">'+substr_d+'</option>' )
+                } );
+                //select no at the beginning
+                // select.val('No').attr('selected', 'selected');
+                //select no at the beginning
+                console.log(column,"column")
+                if (column[0]==1){
+                    $(table).ready(function() {
+                        val="False"
+                        column.search( val ? '^'+val+'$' : '', true, false ).draw();
+                    });
+                }
+
+            })
+        }
+    })
+
+</script>
+{%endblock%}

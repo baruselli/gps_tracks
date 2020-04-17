@@ -325,7 +325,7 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
         logger.info(g)
         import threading
         t = threading.Thread(
-            target=g.set_attributes, args=([a for a in updated_tracks_names])
+            target=g.set_attributes, args=([a for a in updated_tracks_names],)
         )
         t.start()
 

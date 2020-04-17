@@ -74,6 +74,11 @@
     <li>https://leafletjs.com/plugins.html#printexport</li>
     <li>vedere gli errori dei kml/kmz</li>
     <li>test tracks con waypoints</li>
+    <li>fix google timeline-> redicrect from stackoverflow</li>
+    <li>fix set_attributes when updating many tracks</li>
+    <li>npm</li>
+    <li>draw_png</li>
+    <li>11216</li>
 
 <h2>Last Tracks
      <!-- - <a href="{% url 'track_index' %}?no_search=1">Search</a> -->
@@ -185,7 +190,7 @@
 <div style = "clear:both;"></div>
 {%endif %}
 
-<div style="float:left; margin-left: 3%">
+<div style="float:left; margin-left: 3%;width:47%;">
 
     <div style="width:90%; float:left;">
         <h2>Last Waypoints</h2>
@@ -196,7 +201,7 @@
             <tr>
                 <td>Name</td>
                 <td>Time</td>
-                <td>Altitude</td>
+                <!-- <td>Altitude</td> -->
                 <td>Track</td>
                 <!--<td>Country</td>-->
                 <!--<td>City</td>-->
@@ -210,7 +215,7 @@
                         <a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a>
                     </td>
                     <td>{{wp.time|date:"Y/m/d"}}</td>
-                    <td>{{wp.alt}}</td>
+                    <!-- <td>{{wp.alt}}</td> -->
                     <td>
                         
                         {%if wp.track%}
@@ -235,7 +240,7 @@
 </div>
 
 
-<div style="float:left; margin-left: 3%">
+<div style="float:left; margin-left: 3%;width:47%;">
     <div style="width:90%; float:left;">
         <h2>Last groups</h2>
         <table class="table table-bordered table-hover" id="groups_table">

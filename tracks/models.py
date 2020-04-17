@@ -2430,7 +2430,8 @@ class Track(models.Model):
         #this part I do for both reading file and passing a gpxpy object
         try:
             self.debug("Part for both reading and passing an object")
-            self.gpx_creator = _gpx.creator
+            if hasattr(_gpx,"creator"):
+                self.gpx_creator = _gpx.creator
             self.length_2d = _gpx.length_2d()  # m
             self.length_3d = _gpx.length_3d()
             self.moving_time, self.stopped_time, self.moving_distance, self.stopped_distance, self.max_speed = (

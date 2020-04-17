@@ -59,6 +59,7 @@ class Group(models.Model):
 
         import numpy as np
         logger.info("Set_attributes %s" %self)
+        logger.info("updated_tracks %s" %str(updated_tracks))
         self.size= self.tracks.count()
         try:
             logger.info("Avg quantities")

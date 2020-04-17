@@ -27,9 +27,17 @@ def googlehistoryselenium():
 
     options = webdriver.ChromeOptions()
     #options.add_argument("--headless")
+    options.add_argument("--disable-web-security")
+    #options.add_argument("--user-data-dir")
+    options.add_argument("--allow-running-insecure-content")
     prefs = {'download.default_directory' :out_dir}
     options.add_experimental_option('prefs', prefs)
+    options.add_argument("start-maximized")
+    options.add_experimental_option("useAutomationExtension", False)
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+
     driver = webdriver.Chrome(OptionSet.get_option("CHROME_PATH"),options=options)
+
 
     initial_day= date.today()- timedelta(1)
     day=initial_day

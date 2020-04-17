@@ -268,8 +268,8 @@
                             Reimport GPX</button></td><td>
                         <button onclick="location.href='{% url 'download_source' track_id=track.pk ext='gpx' %}'" type="button">
                             Download GPX</button></td>
-                        {%endif%}
-                        {%if track.csv_file%}
+                    {%endif%}
+                    {%if track.csv_file%}
                         <tr><td>CSV file</td>
                         <td><a href="{% url 'track_source' track_id=track.pk ext="csv" %}">{{track.csv_file}}</a></td><td>
                         <button onclick="location.href='{% url 'reimport_track' track_id=track.pk ext='csv' %}'" type="button">
@@ -277,8 +277,8 @@
                         <button onclick="location.href='{% url 'download_source' track_id=track.pk ext='csv'%}'" type="button">
                             Download CSV</button>
                         </td>
-                        {%endif%}
-                        {%if track.tcx_file%}
+                    {%endif%}
+                    {%if track.tcx_file%}
                         <tr><td>TCX file</td>
                         <td><a href="{% url 'track_source' track_id=track.pk ext="tcx" %}">{{track.tcx_file}}</a></td><td>
                         <button onclick="location.href='{% url 'reimport_track' track_id=track.pk ext='tcx' %}'" type="button">
@@ -286,8 +286,8 @@
                         <button onclick="location.href='{% url 'download_source' track_id=track.pk ext='tcx' %}'" type="button">
                             Download TCX</button>
                         </td>
-                        {%endif%}
-                        {%if track.kml_file%}
+                    {%endif%}
+                    {%if track.kml_file%}
                         <tr><td>KML file</td>
                         <td><a href="{% url 'track_source' track_id=track.pk ext="kml" %}">{{track.kml_file}}</a></td><td>
                         <button onclick="location.href='{% url 'reimport_track' track_id=track.pk ext='kml' %}'" type="button">
@@ -295,8 +295,8 @@
                         <button onclick="location.href='{% url 'download_source' track_id=track.pk ext='kml' %}'" type="button">
                             Download KML</button>
                         </td>
-                        {%endif%}
-                        {%if track.kmz_file%}
+                    {%endif%}
+                    {%if track.kmz_file%}
                         <tr><td>KMZ file</td>
                         <td><a href="{% url 'track_source' track_id=track.pk ext="kmz" %}">{{track.kmz_file}}</a></td><td>
                         <button onclick="location.href='{% url 'reimport_track' track_id=track.pk ext='kmz' %}'" type="button">
@@ -304,7 +304,7 @@
                         <button onclick="location.href='{% url 'download_source' track_id=track.pk ext='kmz' %}'" type="button">
                             Download KMZ</button>
                         </td>
-                        {%endif%}
+                    {%endif%}
 
                         </tr>
 

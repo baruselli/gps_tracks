@@ -13,6 +13,7 @@ auth/*
 requirements_old.txt
 *pyc
 static/js/external/old/*
+static/css/old/*
 
 
 !media/Camera/.gitkeep

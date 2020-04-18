@@ -12,6 +12,7 @@ venv_old/*
 auth/*
 requirements_old.txt
 *pyc
+static/js/external/old/*
 
 
 !media/Camera/.gitkeep

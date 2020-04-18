@@ -2434,9 +2434,13 @@ class Track(models.Model):
                 self.gpx_creator = _gpx.creator
             self.length_2d = _gpx.length_2d()  # m
             self.length_3d = _gpx.length_3d()
-            self.moving_time, self.stopped_time, self.moving_distance, self.stopped_distance, self.max_speed = (
-                _gpx.get_moving_data()
-            )
+            try:
+                self.moving_time, self.stopped_time, self.moving_distance, self.stopped_distance, self.max_speed = (
+                    _gpx.get_moving_data()
+                )
+            except Exception as e:
+                self.warning("Error in _gpx.get_moving_data(): %s" %e)
+
             # self.avg_speed = self.moving_distance / self.moving_time
             self.uphill, self.downhill = _gpx.get_uphill_downhill()
 
@@ -2632,9 +2636,7 @@ class Track(models.Model):
             self.save()
             self.td.save()
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self.error(e)
+            self.error("Error in Part for both reading and passing an object: %s" %e)
         
         self.info("End Read Gpx")
 

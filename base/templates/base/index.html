@@ -4,10 +4,16 @@
 {%block map%}
 {%endblock%}
 
-
+{% block title %}
+<h1>GPS Tracks Viewer</h1>
+{%endblock%}
 
 {% block buttons %}
+{%endblock%}
+
+{% block content %}
 <div>
+    <h2>Quick Import</h2>
 <button title="Download and import tracks and photos from Google Drive and Google Photos"
      onclick="location.href='{% url 'quick_import'  %}'" type="button">Quick Import Google</button>
 <button title="Download and import tracks from TomTom" onclick="location.href='{% url 'quick_import_tomtom'  %}'" type="button">Quick Import TomTom</button>
@@ -18,79 +24,17 @@
     <input type="submit" value="Upload File" />
   </form>
 </div>
-{%endblock%}
 
-{% block content %}
 
-<h2>TODO</h2>
-<ul>
-    <li>reset button leaflet</li>
-    <li>export line as json, show line with tracks, convert to gpx</li>
-    <li>group short view without map </li>
-    <li>download from polar </li>
-    <li>pwx </li>
-    <li>help page</li>
-    <li>waypoints in gpx export</li>
-    <li>fit/fat</li>
-    <li>support for sqlite with textfields - remove array fields</li>
-    <li>fastkml for kml exporting</li>
-    <li>custom user https://wsvincent.com/django-tips-custom-user-model/</li>
-    <li>create line with https://django-leaflet.readthedocs.io/en/latest/widget.html </li>
-    <li> choose wchich photo is background -pass background image in track view</li>
-    <li>export page with excel, gpx, kml, geojson</li>
-    <li> add hr and freq to list of tracks if present</li>
-    <li>tests</li>
-    <li>export zip package gpx + photos</li>
-    <li>photos slideshow</li>
-    <li>splits many tracks</li>
-    <li>link next and previous track</li>
-    <li>overlapping features: draw icons; fix photos: popup photos side by side</li>
-    <li>set track group via api</li>
-    <li>heat map altitudes</li>
-    <li>similar tracks in django</li>
-    <li>global objects in all maps</li>
-    <li>add page titles to all templates</li>
-    <li>check that import other extensions works</li>
-    <li>add waypoint.track2 everywhere</li>
-    <li>timeline: tracks, photos, every day</li>
-    <li>duration and speed summed over each segment: netto e lordo</li>
-    <li>clustering looking at photos one after the other</li>
-    <li>many tracks  do everythin in ajax and add option to remove/add tracks</li>
-    <li>laps edit directly indices</li>
-    <li>
-        https://datatables.net/extensions/keytable/
-        https://www.gyrocode.com/articles/jquery-datatables-how-to-navigate-rows-with-keytable-plugin/
-    </li>
-    <li>add geopy in ajax in track list with lat and long</li>
-    <li>tracksplit - wps and photos?</li>
-    <li>better visualization of google history: description for segments http://127.0.0.1:8000/tracks/track/9280/?</li>
-    <li>rebuild venv, clean requirements, clean js</li>
-    <li>reduce points global done at db level, not only in output</li>
-    <li> waypoint merge map and table?</li>
-    <li>fix remove initial ppoints http://127.0.0.1:8000/tracks/track/8215/</li>
-    <li>plot for pace?</li>
-    <li>search track removing unicode https://stackoverflow.com/questions/38167273/python-regular-expression-to-remove-non-unicode-characters</li>
-    <li>initial index http://127.0.0.1:8000/tracks/track/11225/</li>
-    <li>https://leafletjs.com/plugins.html#printexport</li>
-    <li>vedere gli errori dei kml/kmz</li>
-    <li>test tracks con waypoints</li>
-    <li>fix google timeline-> redicrect from stackoverflow</li>
-    <li>fix set_attributes when updating many tracks</li>
-    <li>npm</li>
-    <li>draw_png</li>
-    <li>11216</li>
-
-<h2>Last Tracks
+<h2>
+    </div><a href="{% url 'track_index' %}?how_many=10">Last Tracks</a></div>
+</h2>
      <!-- - <a href="{% url 'track_index' %}?no_search=1">Search</a> -->
     <!-- -         <div style="float:left"></div><a href="{% url 'track_index' %}?n_days=30 ">Last 30 days</a></div> -->
 <!-- <div style="float:left"><form method="GET" action="{% url 'track_index' %}" id="searchform">
 <input class="searchfield" id="searchbox1" name="name" type="text" value="" placeholder="Name"/>
 <input type="submit" value="Search">
 </form></div> -->
-
-
-
-</h2>
 
 {{ track_form.media }}
 {{ track_form.non_field_errors }}
@@ -193,7 +137,10 @@
 <div style="float:left; margin-left: 3%;width:47%;">
 
     <div style="width:90%; float:left;">
-        <h2>Last Waypoints</h2>
+        <h2>
+            
+            <a href="{% url 'waypoints_map' %}?by_id=50">Last Waypoints</a></div>
+        </h2>
 
         <table class="table table-bordered table-hover" id="wps_table">
 
@@ -230,7 +177,7 @@
 
         </table>
         <br>
-                <div style="float:left"><a href="{% url 'waypoint_index' %}?n_days= 30 ">Last 30 days</a></div>
+                <!-- <div style="float:left"><a href="{% url 'waypoint_index' %}?n_days= 30 ">Last 30 days</a></div> -->
         <form method="GET" action="{% url 'waypoint_index' %}" id="searchform_w">
             <input class="searchfield" id="searchbox1_w" name="name" type="text" value="" placeholder="Name"/>
         <input type="submit" value="Search">
@@ -283,8 +230,10 @@
 
 <div style = "clear:both;"></div>
 
-<h2>Last Photos</h2>
-<div style="float:left"><a href="{% url 'photo_index' %}?n_days= 30 ">Last 30 days</a></div>
+<h2>
+    <a href="{% url 'photos_show' %}?by_id=50">Last Photos</a></div>
+</h2>
+<!-- <div style="float:left"><a href="{% url 'photo_index' %}?n_days= 30 ">Last 30 days</a></div> -->
 <form method="GET" action="{% url 'photo_index' %}" id="searchform_p">
 <input class="searchfield" id="searchbox1_p" name="name" type="text" value="" placeholder="Name"/>
 <input type="submit" value="Search">

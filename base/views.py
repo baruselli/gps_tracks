@@ -285,3 +285,15 @@ def context_base_settings(request):
 #                 "request": request.GET.urlencode(),
 #             },
 #         )
+
+###test
+class Todo(View):
+    template_name = "base/todo.html"
+    def get(self, request, *args, **kwargs):
+
+
+
+        return render(
+            request,
+            self.template_name,
+        )

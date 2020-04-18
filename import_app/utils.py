@@ -129,6 +129,14 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
                 # fix for Feb_10,_2018_11_37_27_rakov_neve_1577980160410
                 # find if exists file ending with _ and 13 numbers
             import re
+            r = re.compile(r"_[0-9]{12}$")
+            if r.search(name_simple):
+                logger.info("Name %s has 12 numbers at the end: checking if it has to be ignored" % (name_simple))
+                name3 = name_simple[:-13]
+                if name3 in existing_files.keys():
+                    file_probably_exists.append([file])
+                    logger.info("File %s probably_exists as %s" %(file, name3))
+                    fpar = True
             r = re.compile(r"_[0-9]{13}$")
             if r.search(name_simple):
                 logger.info("Name %s has 13 numbers at the end: checking if it has to be ignored" % (name_simple))

@@ -760,6 +760,8 @@ def filter_tracks(request,silent=True):
         if isinstance(tracks,list):
             tracks=tracks[:how_many] #list
         else:
+            from django.db.models import F
+            tracks=tracks.order_by(F("beginning").desc(nulls_last=True))
             tracks.query.set_limits(0, how_many) #queryset
 
     # len_tracks =  tracks.count()

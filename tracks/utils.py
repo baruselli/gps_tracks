@@ -1074,7 +1074,7 @@ def get_options():
                     "feature_rank":"speed_speed_rank","feature_symbol":"km/h"},
         "Pace":{"feature_name":"pace_pace", "feature_color":"pace_pace_color", "feature_label":"Pace",
                     "feature_formatted":"pace_pace_string","feature_radius":"pace_pace_radius","decimals":2,
-                    "feature_rank":"pace_pace_rank","feature_symbol":"min/km","decimals":-1},
+                    "feature_rank":"pace_pace_rank","feature_symbol":"min/km","decimals":-1,"is_time":1},
         # "Pace":{"feature_name":"", "feature_color":"", "feature_label":"Pace(min/km)",
         #             "feature_formatted":"pace_pace_string","feature_radius":"","decimals":1,
         #             "feature_symbol": "min/km"},
@@ -1132,14 +1132,17 @@ def format_feature(value, feature):
         n_dec = ov["decimals"]
     else:
         n_dec = 0
+    if n_dec==-1:
+        n_dec=0
+    
     format_string = "{:." + str(n_dec) + "f}"
 
     if "is_time" in ov and ov["is_time"]:
         formatted_value = format_minutes(value)
     else:
         formatted_value = format_string.format(value)
-        if "feature_symbol" in ov:
-            formatted_value += ov["feature_symbol"]
+    if "feature_symbol" in ov:
+        formatted_value += ov["feature_symbol"]
 
     return formatted_value
 

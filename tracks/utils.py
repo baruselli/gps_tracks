@@ -761,7 +761,10 @@ def filter_tracks(request,silent=True):
             tracks=tracks[:how_many] #list
         else:
             from django.db.models import F
-            tracks=tracks.order_by(F("beginning").desc(nulls_last=True))
+            try:
+                tracks=tracks.order_by(F("beginning").desc(nulls_last=True))
+            except:
+                pass
             tracks.query.set_limits(0, how_many) #queryset
 
     # len_tracks =  tracks.count()

@@ -19,6 +19,7 @@ gpxpy==1.4.0
 ipython==7.13.0
 ipython-genutils==0.2.0
 jedi==0.16.0
+joblib==0.14.1
 kiwisolver==1.2.0
 lxml==4.5.0
 matplotlib==3.2.1
@@ -36,9 +37,11 @@ python-dateutil==2.8.1
 python-memcached==1.59
 python-tcxparser==1.1.0
 pytz==2019.3
+scikit-learn==0.22.2.post1
 scipy==1.4.1
 selenium==3.141.0
 six==1.14.0
+sklearn==0.0
 sqlparse==0.3.1
 timezonefinder==4.2.0
 traitlets==4.3.3

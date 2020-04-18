@@ -325,7 +325,8 @@ class Track(models.Model):
         try:
             self.td.times_string = [str(t) for t in self.td.times]
             self.td.times_string_nodate = [t.strftime("%H:%M:%S") for t in self.td.times]
-            self.td.delta_times_string = [str(t - self.td.times[0]) for t in self.td.times]
+            #the split is to to prevent "0:00:11.960000" and just have "0:00:11"
+            self.td.delta_times_string = [str(t - self.td.times[0]).split(".")[0] for t in self.td.times]
             self.td.save()
         except Exception as e:
             self.warning(str(e) + " cannot set times_string")

@@ -513,7 +513,7 @@ def import_photos(path=None, update=False, files=None):
 
                         photo.save()
 
-                # if no gps info, parse at least datetime
+                # parse datetime
                 if not time_ok:
                     for tag, value in info.items():
                         key = TAGS.get(tag, tag)

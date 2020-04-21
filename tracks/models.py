@@ -435,6 +435,9 @@ class Track(models.Model):
             self.info("_%s - set_activity_group" %step)
             step += 1
             self.set_activity_group()
+        except Exception as e:
+            self.warning("Error in set_path_groups,set_activity_group: %s"  %e)
+        try:
             #
             self.info("_%s - draw_svg" %step)
             step += 1
@@ -443,17 +446,25 @@ class Track(models.Model):
             self.info("_%s - draw_png" %step)
             step += 1
             self.draw_png()
+        except Exception as e:
+            self.warning("Error in draw_svg,draw_png: %s"  %e)
+        try:
             #
             self.info("_%s - check_fields" %step)
             step += 1
             self.check_fields()
+        except Exception as e:
+            self.warning("Error in check_fields: %s"  %e)
+        try:
             #
             from geopy_app.utils import track_geopy
             if (not self.beg_address or not self.end_address or self.beg_address == "" or self.end_address == ""):
                 self.info("_%s - track_geopy" % step)
                 step += 1
                 track_geopy(self)
-            #
+        except Exception as e:
+            self.warning("Error in track_geopy: %s"  %e)
+        try:
             self.info("_%s - assign_country_to_wps" %step)
             step += 1
             self.assign_country_to_wps()
@@ -461,6 +472,9 @@ class Track(models.Model):
             self.info("_%s - assign_time_to_wps" %step)
             step += 1
             self.assign_time_to_wps()
+        except Exception as e:
+            self.warning("Error in assign_country_to_wps,assign_time_to_wps: %s"  %e)
+        try:
             #
             self.info("_%s - set_initial_final_coords" %step)
             step += 1
@@ -470,8 +484,7 @@ class Track(models.Model):
             step += 1
             self.set_timezone()
         except Exception as e:
-            self.warning(str(e))
-
+            self.warning("Error in set_initial_final_coords,set_timezone: %s"  %e)
         try:
             self.info("_%s - set_splits" %step)
             step += 1

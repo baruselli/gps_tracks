@@ -3453,13 +3453,16 @@ class Track(models.Model):
         waypoint does not already it set"""
         self.info("assign_time_to_wps")
         for wp in self.waypoint_set.all():
-            if not wp.time:
-                if self.end:
-                    wp.time = self.end
-                    wp.save()
-                elif self.beginning:
-                    wp.time = self.beginning
-                    wp.save()
+            try:
+                if not wp.time:
+                    if self.end:
+                        wp.time = self.end
+                        wp.save()
+                    elif self.beginning:
+                        wp.time = self.beginning
+                        wp.save()
+            except Exception as e:
+                self.warning("Error in assign_time_to_wps, %s: %s" %(wp,e))
 
     def set_heartrate_freq(self):
         """only used when merging tracks (it is usually done when importing)"""

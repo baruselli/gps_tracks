@@ -1396,20 +1396,23 @@ class Track(models.Model):
         return coordinates_1
 
     def get_coordinates_for_multilinestring(self):
-        coordinates_0 = [[lon, lat] for lon,lat in zip(self.td.long, self.td.lats) ]
-        segments = self.td.segment_indices or [0]
-        subtracks = self.td.subtrack_indices or [0]
-        # for history I have one segment per point, so I would get no lines
-        if len(segments)>=self.n_points:
-            segments=[0]
-        lons = self.td.long
-        lats = self.td.lats
-        all_indices = sorted(list(set(segments + subtracks)))
-        all_indices.append(len(lons))
         all_coordinates = []
-        for ind,ind_p1 in zip(all_indices,all_indices[1:]):
-            coordinates = [ [lons[i], lats[i]] for i in range(ind,ind_p1)  if i <len(lons)]
-            all_coordinates.append(coordinates)
+        try:
+            coordinates_0 = [[lon, lat] for lon,lat in zip(self.td.long, self.td.lats) ]
+            segments = self.td.segment_indices or [0]
+            subtracks = self.td.subtrack_indices or [0]
+            # for history I have one segment per point, so I would get no lines
+            if len(segments)>=self.n_points:
+                segments=[0]
+            lons = self.td.long
+            lats = self.td.lats
+            all_indices = sorted(list(set(segments + subtracks)))
+            all_indices.append(len(lons))
+            for ind,ind_p1 in zip(all_indices,all_indices[1:]):
+                coordinates = [ [lons[i], lats[i]] for i in range(ind,ind_p1)  if i <len(lons)]
+                all_coordinates.append(coordinates)
+        except Exception as e:
+            self.error("Error in get_coordinates_for_multilinestring: %s" %e)
         return all_coordinates
 
 

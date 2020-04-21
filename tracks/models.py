@@ -3630,13 +3630,18 @@ class TrackDetail(models.Model):
                 every = self.td.index_every
             else:
                 every = 1
+            ok_prop = json.loads(getattr(self, property_name))
+            # correct for times, which are stored as strings
+            if property_name in ["_times"]:
+                import dateutil.parser
+                ok_prop = [dateutil.parser.parse(x) for x in ok_prop]
             if limit_initial_final:
                 if self.td.ending_index:
-                    return json.loads(getattr(self, property_name))[::every][self.td.starting_index:self.td.ending_index]
+                    return ok_prop[::every][self.td.starting_index:self.td.ending_index]
                 else:
-                    return json.loads(getattr(self, property_name))[::every][self.td.starting_index:]
+                    return ok_prop[::every][self.td.starting_index:]
             else:
-                return json.loads(getattr(self, property_name))[::every]
+                return ok_prop[::every]
 
         @prop.setter
         def prop(self, value):

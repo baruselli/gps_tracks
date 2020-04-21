@@ -380,8 +380,9 @@ class Track(models.Model):
         step+=1
         try:
             if self.td.times:
-                self.beginning = self.td.times[0]
-                self.end = self.td.times[-1]
+                times = self.td.times
+                self.beginning = times[0].replace(tzinfo=None)
+                self.end = times[-1].replace(tzinfo=None)
             else:
                 self.end = None
                 self.beginning = None
@@ -591,7 +592,7 @@ class Track(models.Model):
             self.has_freq = True
         else:
             self.has_freq = False
-        logger.info("has_times %s, has_alts %s, has_hr %s, has_freq %s"%(self.has_times,self.has_alts, self.has_hr, self.has_freq))
+        self.info("has_times %s, has_alts %s, has_hr %s, has_freq %s"%(self.has_times,self.has_alts, self.has_hr, self.has_freq))
         self.save()
 
 
@@ -3447,14 +3448,16 @@ class Track(models.Model):
             try:
                 self.info("Fixing times with offset %s" %offset)
                 times_ok=[]
-                for t in self.td.times:
+                times = self.td.times
+                for t in times:
                     times_ok.append(t + offset)
                 self.td.times=times_ok
-                self.beginning=self.td.times[0]
-                self.end = self.td.times[-1]
-                self.td.times_string = [str(t) for t in self.td.times]
-                self.td.times_string_nodate = [t.strftime("%H:%M:%S") for t in self.td.times]
-                self.td.delta_times_string = [str(t - self.td.times[0]) for t in self.td.times]
+
+                self.beginning=times_ok[0]
+                self.end = times_ok[-1]
+                self.td.times_string = [str(t) for t in times_ok]
+                self.td.times_string_nodate = [t.strftime("%H:%M:%S") for t in times_ok]
+                self.td.delta_times_string = [str(t - times_ok[0]) for t in times_ok]
                 self.corrected_times=True
                 self.save()
                 self.td.save()

@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         profile.save()
 
     operations = [
-        migrations.RunPython(create_object),
+        # migrations.RunPython(create_object),
     ]
 
 

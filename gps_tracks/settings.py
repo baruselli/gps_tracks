@@ -115,16 +115,16 @@ WSGI_APPLICATION = "gps_tracks.wsgi.application"
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "gps_tracks",
-        #"NAME": "gps_tracks_2",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "localhost",
-        "PORT": "",
-    },
-    'default2': {
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": "gps_tracks",
+    #     #"NAME": "gps_tracks_2",
+    #     "USER": "postgres",
+    #     "PASSWORD": "postgres",
+    #     "HOST": "localhost",
+    #     "PORT": "",
+    # },
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'gps_tracks.sqlite3',
     }

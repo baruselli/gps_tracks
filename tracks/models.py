@@ -408,14 +408,14 @@ class Track(models.Model):
                         + "{:02}".format(int((self.pace - int(self.pace)) * 60))
                         + "min/km"
                     )
+                self.save()
+                self.info("OK beginning, end ,length")
         except Exception as e:
             import traceback
             traceback.print_exc()
-            self.warning(str(e) + " set_all_properties cannot set beginning, end ,length")
+            self.warning("Error set_all_properties cannot set beginning, end ,length: %s" %e)
 
         self.info("End common infos")
-
-
 
         try:
             self.info("_%s - rolling_quantities" %step)
@@ -1920,7 +1920,7 @@ class Track(models.Model):
             self.save()
 
         except Exception as e:
-            self.error(e)
+            self.error("Error in set_activity_group: %s" %e)
 
     def read_csv(self):
         """Reads csv files using the pandas library"""

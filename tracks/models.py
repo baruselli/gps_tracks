@@ -774,92 +774,107 @@ class Track(models.Model):
         self.info("__4 - splits, laps, segments, subtracks in track_json_2")
         ##splits
         #print(self.td.split_indices)
-        if (self.td.split_indices):
-            import bisect
-            split_indices = self.td.split_indices
-            from .utils import get_colors
-            colors_splits = get_colors(len(split_indices) - 1)
-            for i,a in enumerate(track_json_2):
-                split = bisect.bisect_right(split_indices, a["OriginalNumber"])
-                split=min(split, len(split_indices)-1) #otherwise the last one gets a +1
-                a.update({"Split": split,
-                          "SplitName": "Split "+str(split),
-                          "ColorSplit": colors_splits[split-1] if colors_splits else ""})
-                if "Distance" in a.keys():
-                    a.update({
-                          "SplitDistance": a["Distance"]-track_json_2[split_indices[split-1]]["Distance"] #distance wrt first point in the split
-                          })
+        try:
+            if (self.td.split_indices):
+                import bisect
+                split_indices = self.td.split_indices
+                from .utils import get_colors
+                colors_splits = get_colors(len(split_indices) - 1)
+                for i,a in enumerate(track_json_2):
+                    split = bisect.bisect_right(split_indices, a["OriginalNumber"])
+                    split=min(split, len(split_indices)-1) #otherwise the last one gets a +1
+                    a.update({"Split": split,
+                            "SplitName": "Split "+str(split),
+                            "ColorSplit": colors_splits[split-1] if colors_splits else ""})
+                    if "Distance" in a.keys():
+                        a.update({
+                            "SplitDistance": a["Distance"]-track_json_2[split_indices[split-1]]["Distance"] #distance wrt first point in the split
+                            })
+        except Exception as e:
+            self.error("Error in set_json_LD splits: %s" %e)
+
         ##segments
         # print(self.td.split_indices)
-        if not self.td.segment_indices:
-            self.td.segment_indices=[0]
-            self.td.save()
-        if self.td.segment_indices:
-            import bisect
-            from .utils import get_colors
-            split_indices = self.td.segment_indices
-            colors_splits = get_colors(len(split_indices))
-            for i, a in enumerate(track_json_2):
-                ### segments (here named splits) start from 1
-                split = bisect.bisect_right(split_indices, a["OriginalNumber"])
-                split = min(split, len(split_indices))  # otherwise the last one gets a +1, max is
-                a.update({"Segment": split,
-                          "SegmentName": "Segment " + str(split),
-                          "ColorSegment": colors_splits[split - 1]})
-                if "Distance" in a.keys():
-                    a.update({
-                        "SegmentDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
-                    # distance wrt first point in the split
-                    })
+        try:
+            if not self.td.segment_indices:
+                self.td.segment_indices=[0]
+                self.td.save()
+            if self.td.segment_indices:
+                import bisect
+                from .utils import get_colors
+                split_indices = self.td.segment_indices
+                colors_splits = get_colors(len(split_indices))
+                for i, a in enumerate(track_json_2):
+                    ### segments (here named splits) start from 1
+                    split = bisect.bisect_right(split_indices, a["OriginalNumber"])
+                    split = min(split, len(split_indices))  # otherwise the last one gets a +1, max is
+                    a.update({"Segment": split,
+                            "SegmentName": "Segment " + str(split),
+                            "ColorSegment": colors_splits[split - 1]})
+                    if "Distance" in a.keys():
+                        a.update({
+                            "SegmentDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
+                        # distance wrt first point in the split
+                        })
+        except Exception as e:
+            self.error("Error in set_json_LD segments: %s" %e)
 
         #subtracks
-        if not self.td.subtrack_indices:
-            self.td.subtrack_indices=[0]
-            self.td.save()
-        if self.td.subtrack_indices:
-            import bisect
-            from .utils import get_colors
-            split_indices = self.td.subtrack_indices
-            colors_splits = get_colors(len(split_indices))
-            for i, a in enumerate(track_json_2):
-                split = bisect.bisect_right(split_indices, a["OriginalNumber"])
-                split = min(split, len(split_indices))  # otherwise the last one gets a +1
-                a.update({"Subtrack": split,
-                          "SubtrackName": "Subtrack " + str(split),
-                          "ColorSubtrack": colors_splits[split - 1]})
-                if "Distance" in a.keys():
-                    a.update({
-                        "SubtracktDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
-                    # distance wrt first point in the split
-                    })
+        try:
+            if not self.td.subtrack_indices:
+                self.td.subtrack_indices=[0]
+                self.td.save()
+            if self.td.subtrack_indices:
+                import bisect
+                from .utils import get_colors
+                split_indices = self.td.subtrack_indices
+                colors_splits = get_colors(len(split_indices))
+                for i, a in enumerate(track_json_2):
+                    split = bisect.bisect_right(split_indices, a["OriginalNumber"])
+                    split = min(split, len(split_indices))  # otherwise the last one gets a +1
+                    a.update({"Subtrack": split,
+                            "SubtrackName": "Subtrack " + str(split),
+                            "ColorSubtrack": colors_splits[split - 1]})
+                    if "Distance" in a.keys():
+                        a.update({
+                            "SubtracktDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
+                        # distance wrt first point in the split
+                        })
+        except Exception as e:
+            self.error("Error in set_json_LD subtracks: %s" %e)
+
 
         ##laps
         #print(self.td.laps_indices)
         #print(self.td.laps_indices)
-        if (self.td.laps_indices):
-            import bisect
-            from .utils import get_colors
-            laps_indices = self.td.laps_indices
-            colors_laps = get_colors(len(laps_indices) - 1)
-            colors_laps = ["gray"]+colors_laps+["silver"]
-            laps_indices = [0]+ laps_indices + [laps_indices[-1]] # these are to eliminate "after" and "before"
-            for i, a in enumerate(track_json_2):
-                lap = bisect.bisect_right(laps_indices, a["OriginalNumber"])-1 #start from zero with "before"
-                lap = min(lap, len(laps_indices) - 2)  # otherwise the last one gets a +1
-                if lap==0:
-                    lap_name="Before"
-                elif lap==len(laps_indices) - 2:
-                    lap_name="After"
-                else:
-                    lap_name="Lap %s" %lap
+        try:
+            if (self.td.laps_indices):
+                import bisect
+                from .utils import get_colors
+                laps_indices = self.td.laps_indices
+                colors_laps = get_colors(len(laps_indices) - 1)
+                colors_laps = ["gray"]+colors_laps+["silver"]
+                laps_indices = [0]+ laps_indices + [laps_indices[-1]] # these are to eliminate "after" and "before"
+                for i, a in enumerate(track_json_2):
+                    lap = bisect.bisect_right(laps_indices, a["OriginalNumber"])-1 #start from zero with "before"
+                    lap = min(lap, len(laps_indices) - 2)  # otherwise the last one gets a +1
+                    if lap==0:
+                        lap_name="Before"
+                    elif lap==len(laps_indices) - 2:
+                        lap_name="After"
+                    else:
+                        lap_name="Lap %s" %lap
 
-                a.update({"Lap": lap,
-                          "LapName": lap_name,
-                          "ColorLap": colors_laps[lap],
-                          "LapDistance": a["Distance"] - track_json_2[laps_indices[lap]]["Distance"]
-                          # distance wrt first point in the split
-                          })
-            #print(lap,lap_name)
+                    a.update({"Lap": lap,
+                            "LapName": lap_name,
+                            "ColorLap": colors_laps[lap],
+                            "LapDistance": a["Distance"] - track_json_2[laps_indices[lap]]["Distance"]
+                            # distance wrt first point in the split
+                            })
+                #print(lap,lap_name)
+        except Exception as e:
+            self.error("Error in set_json_LD laps: %s" %e)
+
 
         import json
         self.info("__5 - dump track_json_3 to json_LD")

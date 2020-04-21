@@ -1455,6 +1455,7 @@ class Track(models.Model):
                                 range(0, self.n_points - 1, every)]
         except Exception as e:
             self.error("Error in set_track_single_geojson coordinates_1: %s" %e)
+            coordinates_1=[]
         # except:
         #     type_1 = "Point"
         #     coordinates_1 = [self.avg_long, self.avg_lat]

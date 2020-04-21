@@ -497,7 +497,7 @@ class Track(models.Model):
                 else:
                     indices = get_split_indices(self.td.computed_dist)
                 self.debug("split indices: %s" % indices)
-                self.td.split_indices = list(indices)
+                self.td.split_indices = [int(i) for i in indices]
                 self.save()
                 self.td.save()
                 splits = track_slices(self, self.td.split_indices, add_before_after=False, name="Split", every=1)
@@ -525,7 +525,8 @@ class Track(models.Model):
             from splits_laps.utils import find_laps,stats_from_slices, track_slices, get_reduced_slices
             try:
                 if self.n_points>0:
-                    self.td.laps_indices = find_laps(self, back_forth=True)["indices"]
+                    laps_indices = find_laps(self, back_forth=True)["indices"]
+                    self.td.laps_indices = [int(i) for i in laps_indices]
                     logging.info("laps indices: %s" %self.td.laps_indices)
                     self.save()
                     self.td.save()

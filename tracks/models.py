@@ -1445,13 +1445,16 @@ class Track(models.Model):
         # type_1 = "LineString"
         # point_type_1 = "track_as_line"
         # try:
-        if True:
-            if self.td.smooth2_indices:
-                coordinates_1 = [[self.td.long[i], self.td.lats[i]] for i in self.td.smooth2_indices if i<len(self.td.long)]
-            else:
-                every = int(self.n_points / 100) + 1
-                coordinates_1 = [[self.td.long[i], self.td.lats[i]] for i in
-                               range(0, self.n_points - 1, every)]
+        try:
+            if True:
+                if self.td.smooth2_indices:
+                    coordinates_1 = [[self.td.long[i], self.td.lats[i]] for i in self.td.smooth2_indices if i<len(self.td.long)]
+                else:
+                    every = int(self.n_points / 100) + 1
+                    coordinates_1 = [[self.td.long[i], self.td.lats[i]] for i in
+                                range(0, self.n_points - 1, every)]
+        except Exception as e:
+            self.error("Error in set_track_single_geojson coordinates_1: %s" %e)
         # except:
         #     type_1 = "Point"
         #     coordinates_1 = [self.avg_long, self.avg_lat]

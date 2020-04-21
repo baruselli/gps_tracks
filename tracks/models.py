@@ -427,34 +427,45 @@ class Track(models.Model):
             self.warning(str(e))
 
         try:
+            #
             self.info("_%s - set_path_groups" %step)
             step += 1
             self.set_path_groups()
+            #
             self.info("_%s - set_activity_group" %step)
             step += 1
             self.set_activity_group()
+            #
             self.info("_%s - draw_svg" %step)
             step += 1
             self.draw_svg()
+            #
             self.info("_%s - draw_png" %step)
             step += 1
             self.draw_png()
+            #
             self.info("_%s - check_fields" %step)
             step += 1
             self.check_fields()
+            #
             from geopy_app.utils import track_geopy
             if (not self.beg_address or not self.end_address or self.beg_address == "" or self.end_address == ""):
                 self.info("_%s - track_geopy" % step)
                 step += 1
                 track_geopy(self)
+            #
             self.info("_%s - assign_country_to_wps" %step)
             step += 1
             self.assign_country_to_wps()
+            #
             self.info("_%s - assign_time_to_wps" %step)
             step += 1
             self.assign_time_to_wps()
+            #
             self.info("_%s - set_initial_final_coords" %step)
             step += 1
+            self.set_initial_final_coords()
+            #
             self.info("_%s - set_timezone" %step)
             step += 1
             self.set_timezone()
@@ -1744,23 +1755,26 @@ class Track(models.Model):
 
         for file in (self.gpx_file,self.kml_file,self.kmz_file,self.csv_file,self.tcx_file):
             if file and file !="":
-                self.debug(file)
-                dir_=Path(os.path.relpath(file,settings.MEDIA_BASE_DIR )).parent
-                while dir_!=Path(""):
-                    group_name="|"+str(dir_)
-                    self.debug(group_name)
-                    dir_=dir_.parent
+                try:
+                    self.debug(file)
+                    dir_=Path(os.path.relpath(file,settings.MEDIA_BASE_DIR )).parent
+                    while dir_!=Path(""):
+                        group_name="|"+str(dir_)
+                        self.debug(group_name)
+                        dir_=dir_.parent
 
-                    query = Group.objects.filter(name=group_name)
-                    if query.count() == 1:
-                        group = query.first()
-                    elif query.count() == 0:
-                        group = Group()
-                        group.name = group_name
-                        group.is_path_group = True
-                        group.save()
-                    self.groups.add(group)
-                    #group.set_attributes() #might be slow
+                        query = Group.objects.filter(name=group_name)
+                        if query.count() == 1:
+                            group = query.first()
+                        elif query.count() == 0:
+                            group = Group()
+                            group.name = group_name
+                            group.is_path_group = True
+                            group.save()
+                        self.groups.add(group)
+                except Exception as e:
+                    self.warning("Error in set_path_groups, file %s: %s" %(file,e))
+                #group.set_attributes() #might be slow
         self.info("OK set_path_groups")
         self.save()          
 

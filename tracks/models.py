@@ -316,17 +316,20 @@ class Track(models.Model):
             self.info("_%s - delta_times" %step)
             step += 1
             try:
-                self.td.delta_times = [(t - self.td.times[0]).total_seconds() for t in self.td.times]
+                times = self.td.times
+                initial_time = times[0]
+                self.td.delta_times = [(t - initial_time).total_seconds() for t in times]
             except Exception as e:
                 self.warning(str(e) + " cannot set delta_times")
 
         self.info("_%s - times_string" %step)
         step += 1
         try:
-            self.td.times_string = [str(t) for t in self.td.times]
-            self.td.times_string_nodate = [t.strftime("%H:%M:%S") for t in self.td.times]
+            times = self.td.times
+            self.td.times_string = [str(t) for t in times]
+            self.td.times_string_nodate = [t.strftime("%H:%M:%S") for t in times]
             #the split is to to prevent "0:00:11.960000" and just have "0:00:11"
-            self.td.delta_times_string = [str(t - self.td.times[0]).split(".")[0] for t in self.td.times]
+            self.td.delta_times_string = [str(t - times[0]).split(".")[0] for t in times]
             self.td.save()
         except Exception as e:
             self.warning(str(e) + " cannot set times_string")

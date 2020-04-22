@@ -143,50 +143,51 @@ class MergedTrack(models.Model):
         }
         for i,t in enumerate(tracks):
             case=-1
-            logger.info("%s: beginning %s, end %s" %(t, t.td.times[0],t.td.times[-1]))
+            times=t.td.times
+            logger.info("%s: beginning %s, end %s" %(t, times[0],times[-1]))
             # first track, keep all
             if i==0:
                 # for the first track I keep everything
-                initial_t = t.td.times[0]
-                final_t = t.td.times[-1]
+                initial_t = times[0]
+                final_t = times[-1]
                 indices_track=[],[0,-1]
                 case=0
             else:
-                # print(initial_t,t.td.times[0],final_t,t.td.times[-1])
+                # print(initial_t,times[0],final_t,times[-1])
                 ## case 1: track is completely after the previous ones
-                if t.td.times[0]>=final_t:
+                if times[0]>=final_t:
                     # add nothing before, and all after
                     indices_track=[],[0,-1]
-                    final_t = t.td.times[-1]
+                    final_t = times[-1]
                     case=1
                 ## case 2: track is completely before the previous one
-                elif t.td.times[-1]<=initial_t:
+                elif times[-1]<=initial_t:
                     # add all before, and nothing after
                     indices_track=[0,-1],[]
-                    initial_t = t.td.times[0]
+                    initial_t = times[0]
                     case=2
                 ## case 3: track is partly after the previous ones
-                elif initial_t<=t.td.times[0]<=final_t<=t.td.times[-1]:
+                elif initial_t<=times[0]<=final_t<=times[-1]:
                     # add nothing before, and something after
-                    final_index = bisect.bisect_left(t.td.times, final_t)
+                    final_index = bisect.bisect_left(times, final_t)
                     indices_track=[],[final_index,-1]
-                    final_t = t.td.times[-1]
+                    final_t = times[-1]
                     case=3
                 ## case 4: track is partly before the previous ones
-                elif t.td.times[0]<=initial_t<=t.td.times[-1]<=final_t:
+                elif times[0]<=initial_t<=times[-1]<=final_t:
                     # add something before, and nothing after
-                    initial_index = bisect.bisect_right(t.td.times, initial_t)
+                    initial_index = bisect.bisect_right(times, initial_t)
                     indices_track=[0,initial_index],[]
-                    initial_t = t.td.times[0]
+                    initial_t = times[0]
                     case=4
                 ## case 5: track comprises the previous ones
-                elif t.td.times[0]<=initial_t<=final_t<=t.td.times[-1]:
+                elif times[0]<=initial_t<=final_t<=times[-1]:
                     # add something before and after
-                    initial_index = bisect.bisect_right(t.td.times, initial_t)
-                    final_index = bisect.bisect_left(t.td.times, final_t)
+                    initial_index = bisect.bisect_right(times, initial_t)
+                    final_index = bisect.bisect_left(times, final_t)
                     indices_track=[0,initial_index],[final_index,-1]
-                    initial_t = t.td.times[0]
-                    final_t = t.td.times[-1]
+                    initial_t = times[0]
+                    final_t = times[-1]
                     case=5
                 ##  case 6: track is comprised inside the previous one
                 else:

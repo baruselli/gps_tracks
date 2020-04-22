@@ -33,12 +33,14 @@ def track_slices(track,indices,every=None, name="Lap", add_before_after=True):
 
     #print(indices_ok)
 
+    times = track.td.times
+
     slices=[]
     for ind,(i,j) in enumerate(zip(indices_ok,indices_ok[1:])):
         logger.debug("i, j %s %s" %(i,j))
         #if j == 0: j = 1
-        if j >= len(track.td.times): j = len(track.td.times) - 1
-        if i >= len(track.td.times): i = len(track.td.times) - 1
+        if j >= len(times): j = len(times) - 1
+        if i >= len(times): i = len(times) - 1
 
         if track.td.alts:
             alts_i=track.td.alts[i]
@@ -70,17 +72,17 @@ def track_slices(track,indices,every=None, name="Lap", add_before_after=True):
 
         slice["beg_ind"]=i
         slice["fin_ind"]=j-1
-        if track.td.times:
-            slice["duration"]=track.td.times[j-1]-track.td.times[i]
+        if times:
+            slice["duration"]=times[j-1]-times[i]
         else:
             slice["duration"]=0
         if j>0:
             slice["computed_length"]=(track.td.computed_dist[j-1]-track.td.computed_dist[i])/1000
         else:
             slice["computed_length"]=0
-        if track.td.times:
-            slice["starting_point"]=[track.td.lats[i],track.td.long[i],alts_i,track.td.times[i].replace(tzinfo=None)]
-            slice["ending_point"]=[track.td.lats[j-1],track.td.long[j-1],alts_j1,track.td.times[j-1].replace(tzinfo=None)]
+        if times:
+            slice["starting_point"]=[track.td.lats[i],track.td.long[i],alts_i,times[i].replace(tzinfo=None)]
+            slice["ending_point"]=[track.td.lats[j-1],track.td.long[j-1],alts_j1,times[j-1].replace(tzinfo=None)]
         else:
             slice["starting_point"]=[track.td.lats[i],track.td.long[i],alts_i,0]
             slice["ending_point"]=[track.td.lats[j-1],track.td.long[j-1],alts_j1,0]
@@ -90,7 +92,7 @@ def track_slices(track,indices,every=None, name="Lap", add_before_after=True):
             slice["tcx_length"]=((track.td.dist_tcx[j-1] or 0) - (track.td.dist_tcx[i] or 0))/1000
 
         #arrays
-        slice["times"]=track.td.times[i:j]
+        slice["times"]=times[i:j]
         slice["computed_dists_m"]=track.td.computed_dist[i:j]
         slice["computed_dists"]=[a/1000 for a in slice["computed_dists_m"]]
         slice["alts"]=alts_ij
@@ -291,17 +293,19 @@ def find_laps_1(track, time_threshold, space_threshold, initial_point):
 
     # all points
 
+    times = track.td.times
+
     # find all points close to the initial selection
     if initial_point:
         logger.info("Using initial point %s, %s" % (initial_point[0], initial_point[1]))
         ps = []
-        for i, (la, lo, ti) in enumerate(zip(track.td.lats, track.td.long, track.td.times)):
+        for i, (la, lo, ti) in enumerate(zip(track.td.lats, track.td.long, times)):
             if is_same_point(initial_point, [la, lo], space_threshold):
                 ps.append([la, lo, ti, i])
     else:
         lats = track.td.lats
         long = track.td.long
-        times = track.td.times
+        times = times
         ps = [(lat, lon, t, i) for i, (lat, lon, t) in enumerate(zip(lats, long, times))]
 
     max_ps = 300

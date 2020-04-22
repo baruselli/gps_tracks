@@ -1038,6 +1038,7 @@ def get_sub_indices(a,b,ignore_not_subset=True):
     try:
         if len(set(b)-set(a))>0:
             if ignore_not_subset:
+                logger.info("%s %s %s %s" %(len(set(a)),len(set(b)),len(set(a-b)),len(set(b-a))))
                 logger.warning("get_sub_indices, b not included in a, reducing b to a subset of a (OK if using starting and ending index)")
                 b=[x for x in b if x in a]
         if len(set(b)-set(a))>0:

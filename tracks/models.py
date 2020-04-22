@@ -3653,7 +3653,7 @@ class TrackDetail(models.Model):
                 every = self.td.index_every
             else:
                 every = 1
-            ok_prop = json.loads(getattr(self, property_name))
+            ok_prop = getattr(self, property_name)
             if limit_initial_final:
                 if self.td.ending_index:
                     return ok_prop[::every][self.td.starting_index:self.td.ending_index]

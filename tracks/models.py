@@ -2560,6 +2560,21 @@ class Track(models.Model):
             _gpx2 = copy.deepcopy(_gpx)
             _gpx3 = copy.deepcopy(_gpx)
 
+            self.info("Reducing points with gpxpy")
+
+            ###################original data, so I can understand which points are selected by the algorithms
+            original_times=[]
+            original_lats = []
+            use_time = True
+            for track in _gpx.tracks:
+                for segment in track.segments:
+                    for i, point in enumerate(segment.points):
+                        if hasattr(point,"time") and point.time:
+                            original_times.append(point.time)
+                        else:
+                            use_time=False
+                        original_lats.append(point.latitude)
+
             _gpx.simplify(max_distance=10)  # algorithm
             _gpx2.reduce_points(max_points_no=100)  # min_distance or max_points_no
             _gpx3.reduce_points(min_distance=10)
@@ -2578,13 +2593,17 @@ class Track(models.Model):
                         lats.append(point.latitude)
 
             from .utils import get_sub_indices
+            
             if(use_time):
-                self.td.smooth_indices=get_sub_indices(self.td.times,times)
+                sub_indices = get_sub_indices(original_times,times)
             else:
-                self.td.smooth_indices = get_sub_indices(self.td.lats, lats)
+                sub_indices = get_sub_indices(original_lats, lats)
+            
+            self.td.smooth_indices = sub_indices
+            self.save()
 
-            self.debug("length %s"  %self.n_points)
-            self.debug("smoothed length %s" %len(lats))
+            # self.info("length %s"  %self.n_points)
+            self.info("_gpx smoothed length %s" %len(lats))
             self.length_2d_smooth = _gpx.length_2d()  # m
             self.length_3d_smooth = _gpx.length_3d()
             self.n_points_smooth = len(times)
@@ -2620,11 +2639,11 @@ class Track(models.Model):
 
             from .utils import get_sub_indices
             if(use_time):
-                self.td.smooth2_indices=get_sub_indices(self.td.times,times)
+                self.td.smooth2_indices=get_sub_indices(original_times,times)
             else:
-                self.td.smooth2_indices = get_sub_indices(self.td.lats, lats)
+                self.td.smooth2_indices = get_sub_indices(original_lats, lats)
 
-            self.debug("smoothed length2 %s" %len(lats))
+            self.info("_gpx2 smoothed length2 %s" %len(lats))
             self.length_2d_smooth2 = _gpx2.length_2d()  # m
             self.length_3d_smooth2 = _gpx2.length_3d()
             self.n_points_smooth2 = len(times)
@@ -2659,11 +2678,11 @@ class Track(models.Model):
 
             from .utils import get_sub_indices
             if(use_time):
-                self.td.smooth3_indices=get_sub_indices(self.td.times,times)
+                self.td.smooth3_indices=get_sub_indices(original_times,times)
             else:
-                self.td.smooth3_indices = get_sub_indices(self.td.lats, lats)
+                self.td.smooth3_indices = get_sub_indices(original_lats, lats)
 
-            self.debug("smoothed length3 %s" %len(lats))
+            self.info("_gpx3 smoothed length3 %s" %len(lats))
             self.length_2d_smooth3 = _gpx3.length_2d()  # m
             self.length_3d_smooth3 = _gpx3.length_3d()
             self.n_points_smooth3 = len(times)
@@ -2685,9 +2704,9 @@ class Track(models.Model):
             self.td.computed_speed_smooth3 = computed_speed
             dists = []
 
-
             self.save()
             self.td.save()
+            self.info("End reducing points with gpxpy")
         except Exception as e:
             self.error("Error in Part for both reading and passing an object: %s" %e)
         

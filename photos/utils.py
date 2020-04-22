@@ -302,29 +302,30 @@ def deduce_lat_long(photo,track):
     """gives location to photo from times of the track points"""
     # don't set if track is from google history, and I already have deduced_lat
     google_timeline=Group.objects.filter(name="Google timeline").first()
+    times = track.td.times 
     if google_timeline and google_timeline in track.groups.all() and photo.deduced_lat:
         return
-    if not track.td.times:
+    if not times:
         return
 
     # if time is outside bounds, take first or last point
     if not photo.deduced_lat:
-        if photo.time<track.td.times[0]:
+        if photo.time<times[0]:
             photo.deduced_lat = track.td.lats[0]
             photo.deduced_long = track.td.long[0]
             photo.save()
             return
-        if photo.time>track.td.times[-1]:
+        if photo.time>times[-1]:
             photo.deduced_lat = track.td.lats[-1]
             photo.deduced_long = track.td.long[-1]
             photo.save()
             return
 
     # in general, look for points close in time
-    for i,t in enumerate(track.td.times):
+    for i,t in enumerate(times):
         if photo.time < t:
-            dt1=(photo.time-track.td.times[i-1]).total_seconds()
-            dt2 =  (track.td.times[i] - photo.time).total_seconds()
+            dt1=(photo.time-times[i-1]).total_seconds()
+            dt2 =  (times[i] - photo.time).total_seconds()
             d1=dt1/(dt1+dt2)
             d2 = dt2/(dt1 + dt2)
             photo.deduced_lat=track.td.lats[i]*d1+track.td.lats[i-1]*d2

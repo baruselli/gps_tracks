@@ -282,12 +282,13 @@ class Track(models.Model):
         self.set_index_every()
         self.save()
         step+=1
+        times = self.td.times
         if not ".gpx" in self.extension:
             self.info("_%s - Creating gpx object" %step)
             step+=1
             from import_app.utils import convert_to_gpx
-            if self.td.times:
-                _gpx = convert_to_gpx(self.td.lats, self.td.long, times=self.td.times, alts=self.td.alts)
+            if times:
+                _gpx = convert_to_gpx(self.td.lats, self.td.long, times=times, alts=self.td.alts)
             else:
                 _gpx = convert_to_gpx(self.td.lats, self.td.long, alts=self.td.alts)
             self.read_gpx(_gpx=_gpx)
@@ -305,18 +306,17 @@ class Track(models.Model):
             self.avg_dist_points = np.median(
                 [b - a for a, b in zip(self.td.computed_dist, self.td.computed_dist[1:])])
             self.avg_delta_times = np.median(
-                [(b - a).total_seconds() for a, b in zip(self.td.times, self.td.times[1:])])
+                [(b - a).total_seconds() for a, b in zip(times, times[1:])])
             self.save()
         except Exception as e:
             self.warning(str(e) + " cannot set average distance")
             self.avg_dist_points=0
             self.avg_delta_times=0
 
-        if self.td.times:
+        if times:
             self.info("_%s - delta_times" %step)
             step += 1
             try:
-                times = self.td.times
                 initial_time = times[0]
                 self.td.delta_times = [(t - initial_time).total_seconds() for t in times]
             except Exception as e:
@@ -325,7 +325,6 @@ class Track(models.Model):
         self.info("_%s - times_string" %step)
         step += 1
         try:
-            times = self.td.times
             self.td.times_string = [str(t) for t in times]
             self.td.times_string_nodate = [t.strftime("%H:%M:%S") for t in times]
             #the split is to to prevent "0:00:11.960000" and just have "0:00:11"
@@ -379,8 +378,7 @@ class Track(models.Model):
         self.info("_%s - beginning, end ,length" %step)
         step+=1
         try:
-            if self.td.times:
-                times = self.td.times
+            if times:
                 self.beginning = times[0].replace(tzinfo=None)
                 self.end = times[-1].replace(tzinfo=None)
             else:
@@ -2208,7 +2206,7 @@ class Track(models.Model):
         except:
             every = 1
         #logger.info("every %s" % every)
-        logger.info("set_index_every at %s" %every)
+        self.info("set_index_every at %s" %every)
         self.index_every = every
         self.save()
         return self.index_every
@@ -3640,7 +3638,7 @@ class TrackDetail(models.Model):
             # correct for times, which are stored as strings
             if property_name in ["_times"]:
                 import dateutil.parser
-                ok_prop = [dateutil.parser.parse(x) for x in ok_prop]
+                ok_prop = [dateutil.parser.parse(x).replace(tzinfo=None) for x in ok_prop]
             if limit_initial_final:
                 if self.td.ending_index:
                     return ok_prop[::every][self.td.starting_index:self.td.ending_index]

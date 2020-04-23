@@ -528,7 +528,8 @@ class Track(models.Model):
                 self.td.save()
                 splits = track_slices(self, self.td.split_indices, add_before_after=False, name="Split", every=1)
                 splits_stats = stats_from_slices(splits)
-                self.td.splits_stats = str(splits_stats)
+                import json
+                self.td.splits_stats = json.dumps(splits_stats)
                 reduced_splits = get_reduced_slices(splits) #remove array fields
                 self.td.splits = str(reduced_splits)
                 self.save()
@@ -558,7 +559,8 @@ class Track(models.Model):
                     self.td.save()
                     laps = track_slices(self, self.td.laps_indices, every=1)
                     laps_stats=stats_from_slices(laps)
-                    self.td.laps_stats = str(laps_stats)
+                    import json
+                    self.td.laps_stats = json.dumps(laps_stats)
                     reduced_laps= get_reduced_slices(laps)
                     self.td.laps = str(reduced_laps)
                     self.save()

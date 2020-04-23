@@ -618,6 +618,19 @@ class TrackSmoothView(View):
             from django.utils import timezone
             # _gpx = gpxpy.parse(open(track.gpx_file, "r", encoding="utf8"))
             _gpx = gpxpy.parse(track.gpx)
+            original_times=[]
+            original_lats = []
+            original_lons = []
+            for track_ in _gpx.tracks:
+                for segment in track_.segments:
+                    for i, point in enumerate(segment.points):
+                        if hasattr(point,"time") and point.time:
+                            original_times.append(point.time)
+                        else:
+                            use_time=False
+                        original_lats.append(point.latitude)
+                        original_lons.append(point.longitude)
+
             if (algorithm == "1"):
                 _gpx.simplify(max_distance=parameter)
                 logger.info("_gpx.simplify(max_distance=%s)" % parameter)
@@ -652,8 +665,9 @@ class TrackSmoothView(View):
             times_ok = times
             from .utils import get_sub_indices
             track.td.smooth3_indices = get_sub_indices(
-                                            [(la,lo) for la,lo in zip(track.td.lats,track.td.long)],
-                                            [(la, lo) for la,lo in zip(lats, long)])
+                                            [(la,lo) for la,lo in zip(original_lats,original_lons)],
+                                            [(la, lo) for la,lo in zip(lats, long)]
+                                        )
 
             track.info("Setting smoothed quantities")
             track.info("Smoothed length3 %s" % len(lats))

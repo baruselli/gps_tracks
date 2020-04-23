@@ -56,7 +56,8 @@ class TrackView(View):
             print(track.td.splits)
             splits=[]
         try:
-            stats_splits=eval(track.td.splits_stats)
+            import json
+            stats_splits=json.loads(track.td.splits_stats)
         except Exception as e:
             logger.error("Cannot get stats splits: %s" %e)
             #print(track.td.splits_stats)
@@ -68,7 +69,8 @@ class TrackView(View):
             #print (track.td.laps)
             laps=[]
         try:
-            stats_laps=eval(track.td.laps_stats)
+            import json
+            stats_laps=json.loads(track.td.laps_stats)
         except Exception as e:
             logger.error("Cannot get stats laps: %s" %e)
             #print(track.td.laps_stats)

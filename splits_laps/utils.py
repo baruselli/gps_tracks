@@ -160,6 +160,10 @@ def track_slices(track,indices,every=None, name="Lap", add_before_after=True):
 
         slices.append(slice)
 
+    # from pprint import pprint
+
+    # print(slices[0]["duration"])
+
     return slices
 
 def get_reduced_slices(slices):

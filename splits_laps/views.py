@@ -46,7 +46,8 @@ class FindLapsView(View):
             #print (track.td.laps)
             laps=[]
         try:
-            stats=eval(track.td.laps_stats)
+            import json
+            stats=json.loads(track.td.laps_stats)
         except Exception as e:
             logger.error("Cannot get stats laps: %s" %e)
             print(track.td.laps_stats)
@@ -122,7 +123,8 @@ class FindLapsView(View):
             from splits_laps.utils import get_reduced_slices
             try:
                 track.info("Setting laps_stats and laps")
-                track.td.laps_stats = str(stats)
+                import json
+                track.td.laps_stats = json.dumps(stats)
                 reduced_laps= get_reduced_slices(laps)
                 track.td.laps = str(reduced_laps)
                 track.save()

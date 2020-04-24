@@ -3655,11 +3655,14 @@ class TrackDetail(models.Model):
                 every = self.td.index_every
             else:
                 every = 1
-            ok_prop = json.loads(getattr(self, property_name))
-            # correct for times, which are stored as strings
-            if property_name in ["_times"]:
-                import dateutil.parser
-                ok_prop = [dateutil.parser.parse(x).replace(tzinfo=None) for x in ok_prop]
+            ok_prop = getattr(self, property_name)
+            # only if i am using textfields instead of arrays
+            if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+                ok_prop = json.loads(ok_prop)
+                # correct for times, which are stored as strings
+                if property_name in ["_times"]:
+                    import dateutil.parser
+                    ok_prop = [dateutil.parser.parse(x).replace(tzinfo=None) for x in ok_prop]
             if limit_initial_final:
                 if self.td.ending_index:
                     return ok_prop[::every][self.td.starting_index:self.td.ending_index]

@@ -242,7 +242,7 @@ def find_laps(track, time_threshold=300, space_threshold=3, initial_point=None,
     if back_forth:
         # just divide the track in half according to distance
         # TODO: better algorithm
-        indices = get_split_indices(track.td.computed_dist, n_km=track.length_3d / 2 / 1000)
+        indices = [int(i) for i in get_split_indices(track.td.computed_dist, n_km=track.length_3d / 2 / 1000)]
         # you could also get a spurious third lap of almost zero length, delete it
         if len(indices) == 4:
             indices = [indices[0], indices[1], indices[3]]

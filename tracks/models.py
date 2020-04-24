@@ -2224,7 +2224,7 @@ class Track(models.Model):
         else:
             indices = get_split_indices(self.td.computed_dist, n_km)
         #self.info("split indices: %s" % indices)
-        self.td.split_indices = list(indices)
+        self.td.split_indices = [int(i) for i in indices]
         self.td.save()
 
     def set_cardio(self,series):

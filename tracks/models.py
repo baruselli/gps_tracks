@@ -3476,7 +3476,7 @@ class Track(models.Model):
                 self.end = times_ok[-1]
                 self.td.times_string = [str(t) for t in times_ok]
                 self.td.times_string_nodate = [t.strftime("%H:%M:%S") for t in times_ok]
-                self.td.delta_times_string = [str(t - times_ok[0]) for t in times_ok]
+                self.td.delta_times_string = [str(t - times_ok[0]).split(".")[0] for t in times_ok]
                 self.corrected_times=True
                 self.save()
                 self.td.save()

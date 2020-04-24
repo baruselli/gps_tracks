@@ -3234,7 +3234,7 @@ class Track(models.Model):
                 waypoint.long = float(long)
                 waypoint.alt = float(alt or 0)
                 import dateutil.parser
-                time = dateutil.parser.parse(time)
+                time = dateutil.parser.parse(time).replace(tzinfo=None)
                 waypoint.time = time + self.get_timezone_offset()
                 waypoint.track = self
                 # waypoint.geom = {'type': 'Point', 'coordinates': [waypoint.lat, waypoint.long]}

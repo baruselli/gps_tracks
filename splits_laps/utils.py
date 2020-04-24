@@ -74,8 +74,10 @@ def track_slices(track,indices,every=None, name="Lap", add_before_after=True):
         slice["fin_ind"]=j-1
         if times:
             slice["duration"]=times[j-1]-times[i]
+            slice["duration_string"]=str(slice["duration"]).split(".")[0]
         else:
             slice["duration"]=0
+            slice["duration_string"]=""
         if j>0:
             slice["computed_length"]=(track.td.computed_dist[j-1]-track.td.computed_dist[i])/1000
         else:

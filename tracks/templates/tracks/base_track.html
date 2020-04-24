@@ -177,7 +177,7 @@
                                     <tr>
                                         <td  data-sort={{l.number}}><font color="{{l.color}}">{{l.name}}</font></td>
                                         <td data-sort={{l.computed_length}}>{{l.computed_length|floatformat:-2}}km</td>
-                                        <td>{{l.duration}}</td>
+                                        <td>{{l.duration_string}}</td>
                                         <td data-sort={{l.avg_speed}}>{{l.avg_speed|floatformat:-2}}km/h</td>
                                         <td data-sort=-{{l.avg_speed}}>{{l.avg_pace}}</td>
                                         {% if track.td.frequencies %}<td>{{l.avg_frequency|floatformat:0}}</td>{%endif%}

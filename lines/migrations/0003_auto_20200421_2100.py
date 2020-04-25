@@ -10,20 +10,20 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='line',
-            name='alts',
-        ),
-        migrations.RemoveField(
-            model_name='line',
-            name='lats',
-        ),
-        migrations.RemoveField(
-            model_name='line',
-            name='lengths',
-        ),
-        migrations.RemoveField(
-            model_name='line',
-            name='long',
-        ),
+        # migrations.RemoveField(
+        #     model_name='line',
+        #     name='alts',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='line',
+        #     name='lats',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='line',
+        #     name='lengths',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='line',
+        #     name='long',
+        # ),
     ]

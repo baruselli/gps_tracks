@@ -10,24 +10,24 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='line',
-            old_name='alts',
-            new_name='_alts',
-        ),
-        migrations.RenameField(
-            model_name='line',
-            old_name='lats',
-            new_name='_lats',
-        ),
-        migrations.RenameField(
-            model_name='line',
-            old_name='lengths',
-            new_name='_lengths',
-        ),
-        migrations.RenameField(
-            model_name='line',
-            old_name='long',
-            new_name='_long',
-        ),
+        # migrations.RenameField(
+        #     model_name='line',
+        #     old_name='alts',
+        #     new_name='_alts',
+        # ),
+        # migrations.RenameField(
+        #     model_name='line',
+        #     old_name='lats',
+        #     new_name='_lats',
+        # ),
+        # migrations.RenameField(
+        #     model_name='line',
+        #     old_name='lengths',
+        #     new_name='_lengths',
+        # ),
+        # migrations.RenameField(
+        #     model_name='line',
+        #     old_name='long',
+        #     new_name='_long',
+        # ),
     ]

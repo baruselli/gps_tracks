@@ -3675,6 +3675,9 @@ class TrackDetail(models.Model):
             else:
                 every = 1
             ok_prop = getattr(self, property_name)
+            if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+                ok_prop=json.loads(ok_prop)
+
             if limit_initial_final:
                 if self.td.ending_index:
                     return ok_prop[::every][self.td.starting_index:self.td.ending_index]
@@ -3686,6 +3689,8 @@ class TrackDetail(models.Model):
         @prop.setter
         def prop(self, value):
             logging.info("Using %s setter" %property_name)
+            if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+                value=json.dumps(value)
             setattr(self, property_name, value)
 
         return prop

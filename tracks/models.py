@@ -19,6 +19,7 @@ from django.conf import settings
 from options.models import OptionSet
 import numpy as np
 from .utils import get_colors
+from django.core.serializers.json import DjangoJSONEncoder
 
 logger = logging.getLogger("gps_tracks")
 
@@ -1638,7 +1639,6 @@ class Track(models.Model):
 
         self.info("Saving json_properties to DB %s" %self)
         import json
-        from django.core.serializers.json import DjangoJSONEncoder
         self.json_properties = json.dumps(features, cls=DjangoJSONEncoder)
         self.save()
 
@@ -3677,6 +3677,10 @@ class TrackDetail(models.Model):
             ok_prop = getattr(self, property_name)
             if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
                 ok_prop=json.loads(ok_prop)
+                # correct for times, which are stored as strings
+                if property_name in ["_times"]:
+                    import dateutil.parser
+                    ok_prop = [dateutil.parser.parse(x).replace(tzinfo=None) for x in ok_prop]
 
             if limit_initial_final:
                 if self.td.ending_index:
@@ -3690,7 +3694,7 @@ class TrackDetail(models.Model):
         def prop(self, value):
             logging.info("Using %s setter" %property_name)
             if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
-                value=json.dumps(value)
+                value=json.dumps(value,cls=DjangoJSONEncoder)
             setattr(self, property_name, value)
 
         return prop

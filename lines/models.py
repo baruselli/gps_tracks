@@ -1,5 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from tracks.models import call_clsinit
+import logging
+logger = logging.getLogger("gps_tracks")
+from django.conf import settings
+import json
 
 #possible line types. if adding a new type, add the corresponding color in CreateLineView in views.py
 LINE_TYPES = (
@@ -10,6 +15,11 @@ LINE_TYPES = (
     ('other','Other'),
     )
 
+# def call_clsinit(cls):
+#     """https://stackoverflow.com/questions/12115357/calling-a-class-method-upon-creation-of-python-classes"""
+#     cls._clsinit()
+#     return cls
+@call_clsinit
 class Line(models.Model):
 
     name = models.CharField(
@@ -46,10 +56,10 @@ class Line(models.Model):
     lats_text = models.TextField(verbose_name="Lats", null=True, blank=True, unique=False,default="[]")
     long_text = models.TextField(verbose_name="Long", null=True, blank=True, unique=False,default="[]")
     alts_text = models.TextField(verbose_name="Alts", null=True, blank=True, unique=False,default="[]")
-    # lats = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    # long = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    # alts = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    # lengths = ArrayField(models.FloatField(), size=None, null=True, default=list)
+    # _lats = ArrayField(models.FloatField(), size=None, null=True, default=list)
+    # _long = ArrayField(models.FloatField(), size=None, null=True, default=list)
+    # _alts = ArrayField(models.FloatField(), size=None, null=True, default=list)
+    # _lengths = ArrayField(models.FloatField(), size=None, null=True, default=list)
     total_length = models.FloatField(null=True, blank=True)
     closed= models.BooleanField(default=False,verbose_name="Make first and last point coincide")
     n_points = models.IntegerField(blank=False, null=True,default=0)
@@ -62,6 +72,31 @@ class Line(models.Model):
     min_long = models.FloatField(null=True)
     max_long = models.FloatField(null=True)
 
+    def array_property(property_name):
+        """ Create and return a property for the given field. """
+        @property
+        def prop(self):
+            ok_prop = getattr(self, property_name)
+            if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+                ok_prop=json.loads(ok_prop)
+
+            return ok_prop
+
+        @prop.setter
+        def prop(self, value):
+            logger.info("Using %s setter" %property_name)
+            if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+                value=json.dumps(value)
+            setattr(self, property_name, value)
+
+        return prop
+
+    @classmethod
+    def _clsinit(cls):
+        """automatically create getters/setters for all given  fields, with name obtained removing first character (_), hence [1:]"""
+        for field in ["_lats","_long","_alts","_length"]:
+            property = cls.array_property(field)
+            setattr(cls,field[1:],property)
 
     class Meta:
         verbose_name = "Line"

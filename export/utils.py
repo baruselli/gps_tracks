@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import os
-from .models import Track, Photo, TrackDetail, Profile, Log, Blacklist, Waypoint, Line, Group, GeoJsonObject
+from tracks.models import Track
 from pprint import pprint
 from datetime import datetime
 from django.urls import reverse

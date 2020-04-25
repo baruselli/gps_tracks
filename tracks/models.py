@@ -3692,7 +3692,7 @@ class TrackDetail(models.Model):
 
         @prop.setter
         def prop(self, value):
-            logging.info("Using %s setter" %property_name)
+            logger.debug("Using %s setter" %property_name)
             if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
                 value=json.dumps(value,cls=DjangoJSONEncoder)
             setattr(self, property_name, value)

@@ -3675,6 +3675,7 @@ class TrackDetail(models.Model):
             else:
                 every = 1
             ok_prop = getattr(self, property_name)
+            # only if i am using textfields instead of arrays
             if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
                 ok_prop=json.loads(ok_prop)
                 # correct for times, which are stored as strings

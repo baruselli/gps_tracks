@@ -236,11 +236,16 @@ class TrackToLineView(View):
         from .utils import create_line
 
         track_id = kwargs.get("track_id", None)
+
         track = get_object_or_404(Track.all_objects, pk=track_id)
         logger.info("TrackToLineView %s" % track.pk)
 
-        line, created = create_line(track.td.lats_smooth3, track.td.long_smooth3, track.td.alts_smooth3,
-                                    track.name_wo_path_wo_ext)
+        smoothed_arrays=track.get_arrays_smooth3()
+        lats_smooth3=smoothed_arrays["lats_smooth3"]
+        long_smooth3=smoothed_arrays["long_smooth3"]
+        alts_smooth3=smoothed_arrays["alts_smooth3"]
+
+        line, created = create_line(lats_smooth3, long_smooth3, alts_smooth3,track.name_wo_path_wo_ext)
         line.line_type = "path"
         line.track = track
         line.save()

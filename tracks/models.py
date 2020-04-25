@@ -3545,6 +3545,25 @@ class Track(models.Model):
             self.total_frequency=None
         self.save()
 
+    def get_arrays_smooth3(self):
+
+        lats_smooth3=[self.td.lats[i] for i in self.td.smooth3_indices]
+        long_smooth3=[self.td.long[i] for i in self.td.smooth3_indices]
+        if self.td.alts:
+            alts_smooth3=[self.td.alts[i] for i in self.td.smooth3_indices]
+        else:
+            alts_smooth3=[]
+        times=self.td.times
+        if times:
+            times_smooth3=[times[i] for i in self.td.smooth3_indices]
+        else:
+            times=[]
+        return{
+            "lats_smooth3":lats_smooth3,
+            "long_smooth3":long_smooth3,
+            "alts_smooth3":alts_smooth3,
+            "times_smooth3":times_smooth3,
+        }
 
 # def get_splits_pace_(self):
     #     from .utils import get_splits_pace, get_splits_hr

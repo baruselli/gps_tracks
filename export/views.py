@@ -9,7 +9,6 @@ from pprint import pprint
 import logging
 import traceback
 logger = logging.getLogger("gps_tracks")
-
 from tracks.models import Track
 from lines.models import Line
 from import_app.utils import convert_to_gpx
@@ -119,8 +118,13 @@ class SmoothedTrackToGpxView(View):
         logger.info("SmoothedTrackToGpxView %s" %track_id)
         track = get_object_or_404(Track.all_objects, pk=track_id)
 
-        gpx=convert_to_gpx(track.td.lats_smooth3,track.td.long_smooth3,
-                        alts=track.td.alts_smooth3,times=track.td.times_smooth3)
+        smoothed_arrays=track.get_arrays_smooth3()
+        lats_smooth3=smoothed_arrays["lats_smooth3"]
+        long_smooth3=smoothed_arrays["long_smooth3"]
+        alts_smooth3=smoothed_arrays["alts_smooth3"]
+        times_smooth3=smoothed_arrays["times_smooth3"]
+
+        gpx=convert_to_gpx(lats_smooth3,long_smooth3,alts=alts_smooth3,times=times_smooth3)
         out_file = os.path.join(settings.MEDIA_ROOT,track.name_wo_path_wo_ext+"_smoothed.gpx")
         with open(out_file, 'w') as f:
             f.write(gpx.to_xml())
@@ -144,8 +148,13 @@ class SmoothedTrackToKmlView(View):
         logger.info("SmoothedTrackToKmlView %s" %track_id)
         track = get_object_or_404(Track.all_objects, pk=track_id)
 
-        kml=convert_to_kml(track.td.lats_smooth3,track.td.long_smooth3,
-                        alts=track.td.alts_smooth3,times=track.td.times_smooth3)
+        smoothed_arrays=track.get_arrays_smooth3()
+        lats_smooth3=smoothed_arrays["lats_smooth3"]
+        long_smooth3=smoothed_arrays["long_smooth3"]
+        alts_smooth3=smoothed_arrays["alts_smooth3"]
+        times_smooth3=smoothed_arrays["times_smooth3"]
+
+        kml=convert_to_kml(lats_smooth3,long_smooth3,alts=alts_smooth3,times=times_smooth3)
         out_file = os.path.join(settings.MEDIA_ROOT,track.name_wo_path_wo_ext+"_smoothed.kml")
         kml.save(out_file)
 

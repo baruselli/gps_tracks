@@ -114,7 +114,7 @@ WSGI_APPLICATION = "gps_tracks.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-USE_TEXT_INSTEAD_OF_ARRAYS=True
+USE_TEXT_INSTEAD_OF_ARRAYS=False
 
 
 if USE_TEXT_INSTEAD_OF_ARRAYS:

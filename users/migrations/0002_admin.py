@@ -10,12 +10,16 @@ class Migration(migrations.Migration):
     ]
 
     def create_object(apps, schema_editor):
+        #create django admin
         from django.contrib.auth.models import User
         User.objects.create_superuser('admin',  email="",password = 'admin')
-        # this will automatically create a Profile object linked to this user
+        # create profile linked to admin
         Profile = apps.get_model("users", "Profile")
-        profile = Profile.objects.get(name="admin")
-        profile.is_default=True
+        profile = Profile.objects.create(
+            name = "Default User",
+            user_id = 1,
+            is_default = True,
+        )
         profile.save()
 
     operations = [

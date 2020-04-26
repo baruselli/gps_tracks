@@ -114,7 +114,7 @@ WSGI_APPLICATION = "gps_tracks.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-USE_TEXT_INSTEAD_OF_ARRAYS=False
+USE_TEXT_INSTEAD_OF_ARRAYS=True
 
 
 if USE_TEXT_INSTEAD_OF_ARRAYS:
@@ -129,6 +129,7 @@ else:
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": "gps_tracks",
+            #"NAME": "test_gps_tracks",
             #"NAME": "gps_tracks_2",
             "USER": "postgres",
             "PASSWORD": "postgres",

@@ -35,8 +35,6 @@ class MergedTrack(models.Model):
         return self.name
 
     def merge_tracks(self):
-        from django.contrib.postgres.fields import ArrayField
-
         if self.input_tracks(manager="all_objects").all():
             tracks_q=self.input_tracks(manager="all_objects").filter(is_merged=False) #cannot merge tracks already merged
         else:
@@ -120,11 +118,6 @@ class MergedTrack(models.Model):
 
             track.user=t.user
         track.save()
-
-        # all array fields
-        # for f in TrackDetail._meta.get_fields():
-        #     if isinstance(f, ArrayField):
-        #         f_name=f.name
 
         ## check which points to add for each track, to avoid overlaps
         # in case of overlap, I give precedence to the first track

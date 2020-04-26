@@ -114,22 +114,29 @@ WSGI_APPLICATION = "gps_tracks.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "gps_tracks",
-        #"NAME": "gps_tracks_2",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "localhost",
-        "PORT": "",
-    },
-    'default2': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'gps_tracks.sqlite3',
-    }
-}
+USE_TEXT_INSTEAD_OF_ARRAYS=False
 
+
+if USE_TEXT_INSTEAD_OF_ARRAYS:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'gps_tracks.sqlite3',
+        }
+    }   
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "gps_tracks",
+            #"NAME": "gps_tracks_2",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "HOST": "localhost",
+            "PORT": "",
+        }
+    }
+ 
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -284,4 +291,3 @@ LOGGING = {
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS=100000
 
-USE_TEXT_INSTEAD_OF_ARRAYS=False

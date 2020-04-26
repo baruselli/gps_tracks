@@ -16,5 +16,3 @@ class Migration(migrations.Migration):
         migrations.RunPython(create_object),
     ]
 
-
-

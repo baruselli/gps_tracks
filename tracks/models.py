@@ -3596,56 +3596,107 @@ def call_clsinit(cls):
 class TrackDetail(models.Model):
     #qui metto tutti gli arrayfield
     # original data
-    _times = ArrayField(models.DateTimeField(), size=None, null=True, default=list)
-    _delta_times = ArrayField(models.FloatField(), size=None, null=True, default=list)  # in seconds
-    _times_string = ArrayField(models.CharField(max_length=255), size=None, null=True, default=list)
-    _times_string_nodate = ArrayField(models.CharField(max_length=15), size=None, null=True, default=list)
-    _delta_times_string = ArrayField(models.CharField(max_length=255), size=None, null=True, default=list)
-    _lats = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _long = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _alts = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _speed_csv = ArrayField(models.FloatField(), size=None, null=True, default=list)  # read directly from csv
-    _dist_csv = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
-    _dist_tcx = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from tcx
-    _calories = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
-    _frequencies = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
-    _heartbeats = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
-    # computed data
-    _computed_speed = ArrayField(models.FloatField(), size=None, null=True, default=list) #from gpx
-    _computed_dist = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    # rolling
-    _speed_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _frequency_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _step_length_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _heartbeat_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _alt_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _slope_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _vertical_speed_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _computed_speed_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    # smoothed data (with reduced number of points)
-    _computed_speed_smooth = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _computed_dist_smooth = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _smooth_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
-    # smoothed data 2
-    _computed_speed_smooth2 = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _computed_dist_smooth2 = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _smooth2_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
-    # smoothed data 3
-    _computed_speed_smooth3 = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _computed_dist_smooth3 = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _smooth3_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
-    # other data
-    _bearing = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    _accuracy = ArrayField(models.FloatField(), size=None, null=True, default=list)
-    # laps, indices
-    _laps_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
     laps = models.TextField(null=True, blank=True, unique=False, default="[]")
     laps_stats = models.TextField(null=True, blank=True, unique=False, default="{}")
-    _split_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
     splits = models.TextField(null=True, blank=True, unique=False, default="[]")
     splits_stats = models.TextField(null=True, blank=True, unique=False, default="{}")
-    _segment_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
-    _subtrack_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+
+    if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+        _times =models.TextField( null=True, default=("[]"))
+        _delta_times =models.TextField( null=True, default=("[]"))  # in seconds
+        _times_string =models.TextField(  null=True, default=("[]"))
+        _times_string_nodate =models.TextField( null=True, default=("[]"))
+        _delta_times_string =models.TextField(  null=True, default=("[]"))
+        _lats =models.TextField( null=True, default=("[]"))
+        _long =models.TextField( null=True, default=("[]"))
+        _alts =models.TextField( null=True, default=("[]"))
+        _speed_csv =models.TextField( null=True, default=("[]"))  # read directly from csv
+        _dist_csv =models.TextField( null=True, default=("[]"))  # from csv
+        _dist_tcx =models.TextField( null=True, default=("[]"))  # from tcx
+        _calories =models.TextField( null=True, default=("[]"))  # from csv
+        _frequencies =models.TextField( null=True, default=("[]"))  # from csv
+        _heartbeats =models.TextField( null=True, default=("[]"))  # from csv
+        # computed data
+        _computed_speed =models.TextField( null=True, default=("[]")) #from gpx
+        _computed_dist =models.TextField( null=True, default=("[]"))
+        # rolling
+        _speed_rolling =models.TextField( null=True, default=("[]"))
+        _frequency_rolling =models.TextField( null=True, default=("[]"))
+        _step_length_rolling =models.TextField( null=True, default=("[]"))
+        _heartbeat_rolling =models.TextField( null=True, default=("[]"))
+        _alt_rolling =models.TextField( null=True, default=("[]"))
+        _slope_rolling =models.TextField( null=True, default=("[]"))
+        _vertical_speed_rolling =models.TextField( null=True, default=("[]"))
+        _computed_speed_rolling =models.TextField( null=True, default=("[]"))
+        # smoothed data (with reduced number of points)
+        _computed_speed_smooth =models.TextField( null=True, default=("[]"))
+        _computed_dist_smooth =models.TextField( null=True, default=("[]"))
+        _smooth_indices =models.TextField(null=True, default=("[]"))
+        # smoothed data 2
+        _computed_speed_smooth2 =models.TextField( null=True, default=("[]"))
+        _computed_dist_smooth2 =models.TextField( null=True, default=("[]"))
+        _smooth2_indices =models.TextField(null=True, default=("[]"))
+        # smoothed data 3
+        _computed_speed_smooth3 =models.TextField( null=True, default=("[]"))
+        _computed_dist_smooth3 =models.TextField( null=True, default=("[]"))
+        _smooth3_indices =models.TextField(null=True, default=("[]"))
+        # other data
+        _bearing =models.TextField( null=True, default=("[]"))
+        _accuracy =models.TextField( null=True, default=("[]"))
+        # laps, indices
+        _laps_indices =models.TextField(null=True, default=("[]"))
+        _split_indices =models.TextField(null=True, default=("[]"))
+        _segment_indices =models.TextField(null=True, default=("[]"))
+        _subtrack_indices =models.TextField(null=True, default=("[]"))
+    else:
+        _times = ArrayField(models.DateTimeField(), size=None, null=True, default=list)
+        _delta_times = ArrayField(models.FloatField(), size=None, null=True, default=list)  # in seconds
+        _times_string = ArrayField(models.CharField(max_length=255), size=None, null=True, default=list)
+        _times_string_nodate = ArrayField(models.CharField(max_length=15), size=None, null=True, default=list)
+        _delta_times_string = ArrayField(models.CharField(max_length=255), size=None, null=True, default=list)
+        _lats = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _long = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _alts = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _speed_csv = ArrayField(models.FloatField(), size=None, null=True, default=list)  # read directly from csv
+        _dist_csv = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
+        _dist_tcx = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from tcx
+        _calories = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
+        _frequencies = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
+        _heartbeats = ArrayField(models.FloatField(), size=None, null=True, default=list)  # from csv
+        # computed data
+        _computed_speed = ArrayField(models.FloatField(), size=None, null=True, default=list) #from gpx
+        _computed_dist = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        # rolling
+        _speed_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _frequency_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _step_length_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _heartbeat_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _alt_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _slope_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _vertical_speed_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _computed_speed_rolling = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        # smoothed data (with reduced number of points)
+        _computed_speed_smooth = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _computed_dist_smooth = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _smooth_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+        # smoothed data 2
+        _computed_speed_smooth2 = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _computed_dist_smooth2 = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _smooth2_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+        # smoothed data 3
+        _computed_speed_smooth3 = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _computed_dist_smooth3 = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _smooth3_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+        # other data
+        _bearing = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        _accuracy = ArrayField(models.FloatField(), size=None, null=True, default=list)
+        # laps, indices
+        _laps_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+        _split_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+        _segment_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+        _subtrack_indices = ArrayField(models.IntegerField(), size=None, null=True, default=list)
+
+
 
     class Meta:
         verbose_name = "Track Detail"
@@ -3664,7 +3715,10 @@ class TrackDetail(models.Model):
     @property
     def lats_all(self):
         """returns a list of all lats, just to know how many original points there are"""
-        return self._lats
+        if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+            return json.loads(self._lats)
+        else:
+            return self._lats
 
     def array_property(property_name,limit_initial_final=True, use_every=False):
         """ Create and return a property for the given field. """

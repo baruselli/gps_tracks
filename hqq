@@ -1,0 +1,329 @@
+[33mcommit ab408c5267b62d71250a6efe589f12bb5720a683[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sun Apr 26 13:48:52 2020 +0200
+
+    remove array fields usused
+
+[33mcommit 244daa78fbc6b6fc217b6c487e4fa0dd0476043b[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 25 23:17:16 2020 +0200
+
+    fix getter setter ..
+
+[33mcommit 2e1bab718246d518110b1295bb3ccf315ac9c60b[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 25 23:12:53 2020 +0200
+
+    fix getter setter .
+
+[33mcommit 352a141c619cfb2aa80c2878fd3832244b06df10[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 25 23:11:09 2020 +0200
+
+    fix getter setter
+
+[33mcommit e81d12deffdbc1e6ee4f3d1f91806f6b040656ea[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 25 23:06:36 2020 +0200
+
+    change arrayfields to line
+
+[33mcommit 518fc211fdf90a9ade1f986e0cf91949771d19aa[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 25 22:26:32 2020 +0200
+
+    fix exports
+
+[33mcommit d5e11dd1425a255c567fb59a3e57b47f61a64178[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 24 22:50:35 2020 +0200
+
+    fix tzinfo
+
+[33mcommit 1ae3dbdb29306377665cd27ba1d5793490c6356c[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 24 22:35:49 2020 +0200
+
+    fix int(indices)
+
+[33mcommit 5c7d4684d5f64d5dafcd10fe2dd8b44d3f1765b2[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 24 22:12:05 2020 +0200
+
+    fix laps duration string
+
+[33mcommit e75105456d489c9b8054c3543babed82eb848955[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 24 21:36:01 2020 +0200
+
+    USE_TEXT_INSTEAD_OF_ARRAYS
+
+[33mcommit 94d650f39da1df98b1be397d608c30abad84c250[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 24 21:33:24 2020 +0200
+
+    fix splits duration tring
+
+[33mcommit ea313b19e05519691bad5a1eb0fce728feda62ca[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Thu Apr 23 22:55:02 2020 +0200
+
+    splits str to json
+
+[33mcommit 4fc706ed1b7308915a70fa42dc0e01d4c8065025[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Thu Apr 23 22:19:57 2020 +0200
+
+    fix track_smooth
+
+[33mcommit 9082603967da0fb8bee3c12a0e1cc3460912807c[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Thu Apr 23 22:02:11 2020 +0200
+
+    fix track_smooth
+
+[33mcommit ba7793ba253f9482ac8b86d9fcef93645cd846bf[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Wed Apr 22 23:04:12 2020 +0200
+
+    fix getattr from other branch
+
+[33mcommit 237b15339f4b09e669f9aaa8926acacab3b753dc[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Wed Apr 22 23:00:41 2020 +0200
+
+    fix reduction algortihm gpx
+
+[33mcommit a5b1e50910af8b8cc81756905825bc21c2e59fbe[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Wed Apr 22 22:02:40 2020 +0200
+
+    change prop getter slightly
+
+[33mcommit 98440accb72f742cd98af7c94ea22308c9eb2e49[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 22:46:21 2020 +0200
+
+    slight change in delf.td.times 2
+
+[33mcommit 9d6108135e80d3c160ebf4903542456cd07cafe9[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 22:37:24 2020 +0200
+
+    slight change in delf.td.times
+
+[33mcommit 7dfba8e192ec03feb903ba601cc44cf94a6a097f[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 22:25:19 2020 +0200
+
+    add try except
+
+[33mcommit 7a66e2c6f0d7a5adbfbf6669fb9620bbe5ef32bf[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 22:11:39 2020 +0200
+
+    add try except
+
+[33mcommit 7c11155571fa0139a5eeee139213276e7cb32873[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 22:06:24 2020 +0200
+
+    add try except; set_initial_final_coords
+
+[33mcommit eef02b7d061379024d21f3cb86471ac960973f09[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 21:52:21 2020 +0200
+
+    add try except
+
+[33mcommit fe8c2035c58fd6d3e9cb1b2f80495494f2f75829[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 21:39:47 2020 +0200
+
+    small change in splits laps list int
+
+[33mcommit 74120af9a2a01e423277f33aa65ebce2da914b29[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 21:18:21 2020 +0200
+
+    add try except
+
+[33mcommit 736f07a1198a0a007d0a700dbcac8ffbc86f656d[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 21:16:01 2020 +0200
+
+     add try except
+
+[33mcommit 771bb8cdd613d5fd1f522c06d61889b604d20d12[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 21:12:37 2020 +0200
+
+     add try except
+
+[33mcommit 960c948c11f8525107f637fb5e46bfcab352315d[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 21 21:07:49 2020 +0200
+
+     add try except
+
+[33mcommit 91224e2f0c16eb8e705c35bd4d3b00e4432d2178[m
+Author: Pier Paolo Baruselli <pierpaolobaruselli@libero.it>
+Date:   Sun Apr 19 21:00:58 2020 +0200
+
+    Create README.md
+
+[33mcommit 4937d81e04f052719a72f2266638c1b086c15258[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sun Apr 19 15:04:25 2020 +0200
+
+    comment
+
+[33mcommit c07021229620fbbe28b86e13da6e59fa02b1a8c7[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 23:05:09 2020 +0200
+
+    fixes html
+
+[33mcommit ab2101c240795382f4fc58f21595ab487c454ce0[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 22:52:46 2020 +0200
+
+    fix format value
+
+[33mcommit 780f2170d53c57f77bdd52f36c7581abcda5c6b7[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 22:28:43 2020 +0200
+
+    move statistics
+
+[33mcommit b5167633e573843b98c9ddcc6c1974ba5b46f295[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 22:21:32 2020 +0200
+
+    fix order in filter tracks
+
+[33mcommit 1bdaca8b2a8c2fb1264f29373c184e56106d204c[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 22:17:47 2020 +0200
+
+    improve index, move todo to dedicated page
+
+[33mcommit 63b54e710d20d77187651af1d51bc81ea94f7cf2[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 21:42:23 2020 +0200
+
+    fix delta t to str
+
+[33mcommit 7f4995f7859a5f03f62e0d64f97f5480f8809dab[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 21:08:50 2020 +0200
+
+    remove old css
+
+[33mcommit 6f6c6919d095b0901f412e71f5d60001708ad4dc[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 21:03:34 2020 +0200
+
+    remove old js
+
+[33mcommit 5e8e463cd0afe13138d81e8a1e1a3a000ff799bd[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 20:52:44 2020 +0200
+
+    reqs add pillow
+
+[33mcommit 6d42d8e394ed1984b4d21f4f759fa774c105a17d[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 20:47:11 2020 +0200
+
+    reqs add google-oauth
+
+[33mcommit 847efa51e594a92cbaa7c88decafe022bcf2eb09[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 20:45:50 2020 +0200
+
+    reqs add pydrive
+
+[33mcommit 89d8310fb66ae32b7f1e4adf8aa18e6c3fa1859b[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 20:42:27 2020 +0200
+
+    try except _gpx
+
+[33mcommit 3392116818c2d930cc7d64d31617bf3ba4ac8de0[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Sat Apr 18 20:40:05 2020 +0200
+
+    add sklearn
+
+[33mcommit 5b00f4404f3a50113fc6a51086c153148837503e[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 17 22:51:35 2020 +0200
+
+    fixes
+
+[33mcommit 217b15dfd84e9c49c51217836de155f5124f15cb[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 17 22:23:30 2020 +0200
+
+    alignment
+
+[33mcommit 6df4bd008d8cc4301e7fb72650ed75e7512af73d[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Fri Apr 17 22:23:10 2020 +0200
+
+    dev duplicated files
+
+[33mcommit 209540fe19533ced61984e86f66eb8a6325c8804[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Wed Apr 15 22:44:55 2020 +0200
+
+    track.html wps table
+
+[33mcommit ca915ca971164fe7c6878d5c43f83f3fcd56d073[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Wed Apr 15 22:24:48 2020 +0200
+
+    fix text
+
+[33mcommit fb21f8643bc4e3d48515e5296d2489603715f7a6[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Wed Apr 15 22:24:16 2020 +0200
+
+    fix track source
+
+[33mcommit 43478907f3eff73bcf3d9f9f8ecd3bab8befdfe6[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 14 22:49:45 2020 +0200
+
+    fix read time sygic 2
+
+[33mcommit ade2c87e51d07f84c6a18058fe62f6fd990cea17[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 14 22:43:00 2020 +0200
+
+    fix readd reset logs; fix read time sygic
+
+[33mcommit 6a30aedaf73fd48305ed077c05020b7f60d8fe82[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 14 22:32:32 2020 +0200
+
+    rewrite reimport to look for missing files
+
+[33mcommit 0eb4e5253d3fcfcc4c1d97285a8b32aa0afdc811[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Tue Apr 14 21:39:23 2020 +0200
+
+    add requirements for djangoshell
+
+[33mcommit aaf82bae6ff148da955ef5c1d89adec7b0518856[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Mon Apr 13 22:53:32 2020 +0200
+
+     add scipy requireements
+
+[33mcommit 1f78b4ab8ea3908f03cb4e618d59f9fa8c366ad2[m
+Author: Pier Paolo Baruselli <pierpaolo.baruselli@prodigysgroup.it>
+Date:   Mon Apr 13 21:35:15 2020 +0200
+
+    initial commit

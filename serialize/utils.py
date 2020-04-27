@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import os
-from .models import Track, Photo, TrackDetail, Profile, Log, Blacklist, Waypoint, Line, Group, GeoJsonObject
+from tracks.models import Track
 from pprint import pprint
 from datetime import datetime
 from django.urls import reverse
@@ -11,7 +11,7 @@ import numpy as np
 import math
 from pprint import pprint
 import traceback
-
+from django.conf import settings
 
 def serialize(obj_list, label="", alltogether=False):
     from itertools import chain

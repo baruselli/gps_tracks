@@ -1,21 +1,30 @@
 function init_map_base(map,options,mapBounds=null,add_basemaps=true,track_pk=-1){
 
-    map_right_click(map,options,point_link,waypoint_link,track_pk );
+
+  //  map_right_click(map,options,point_link,waypoint_link,track_pk );
 
     map.addControl(new L.Control.Fullscreen());
     if (add_basemaps){
         L.control.layers(baseMaps).addTo(map);
     }
-    //console.log("bbbb", mapBounds)
+    var ok_bounds=false
     if (mapBounds!=null && mapBounds!={}){
     //console.log("mapBounds", mapBounds)
         try{
             map.fitBounds(mapBounds);
+            function locateBounds () {
+                return L.latLngBounds(mapBounds);
+               }
+            (new L.Control.ResetView(locateBounds)).addTo(map);
+            ok_bounds=true
         }catch(error){
             console.log(error)
         }
     }
-
+    if (!ok_bounds){
+        console.log("Map bounds not OK, hiding reset button")
+        $(".leaflet-control-zoom-out.leaflet-bar-part").hide()
+    }
 }
 
 function default_point_properties(type="point",reset="reset"){

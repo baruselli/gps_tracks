@@ -161,7 +161,7 @@ CACHES = {
 
 LEAFLET_CONFIG = {
     'MINIMAP': False,
-    'RESET_VIEW': False,
+    'RESET_VIEW': True,
     'ATTRIBUTION_PREFIX': ''
 }
 

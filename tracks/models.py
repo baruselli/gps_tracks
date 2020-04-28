@@ -238,6 +238,9 @@ class Track(models.Model):
     def n_photos(self):
         return self.photos.count()
 
+    def waypoints_all(self):
+        return self.waypoint_set.all() | self.waypoints2.all()
+
     def set_initial_final_coords(self):
         if self.td.lats and self.td.long:
             self.initial_lat = self.td.lats[0]
@@ -287,7 +290,7 @@ class Track(models.Model):
         if not ".gpx" in self.extension:
             self.info("_%s - Creating gpx object" %step)
             step+=1
-            from import_app.utils import convert_to_gpx
+            from export.utils import convert_to_gpx
             if times:
                 _gpx = convert_to_gpx(self.td.lats, self.td.long, times=times, alts=self.td.alts)
             else:

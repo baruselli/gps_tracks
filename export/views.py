@@ -11,7 +11,7 @@ import traceback
 logger = logging.getLogger("gps_tracks")
 from tracks.models import Track
 from lines.models import Line
-from import_app.utils import convert_to_gpx
+from export.utils import convert_to_gpx
 from django.conf import settings
 
 
@@ -72,7 +72,14 @@ class TrackToGpxView(View):
         logger.info("TrackToGpxView %s" %track_id)
         track = get_object_or_404(Track.all_objects, pk=track_id)
 
-        gpx=convert_to_gpx(track.td.lats,track.td.long,alts=track.td.alts,times=track.td.times)
+        gpx=convert_to_gpx(
+            track.td.lats,
+            track.td.long,
+            alts=track.td.alts,
+            times=track.td.times,
+            waypoints=track.waypoints_all()
+        )
+
         out_file = os.path.join(settings.MEDIA_ROOT,track.name_wo_path_wo_ext+"_exported.gpx")
         with open(out_file, 'w') as f:
             f.write(gpx.to_xml())
@@ -124,7 +131,14 @@ class SmoothedTrackToGpxView(View):
         alts_smooth3=smoothed_arrays["alts_smooth3"]
         times_smooth3=smoothed_arrays["times_smooth3"]
 
-        gpx=convert_to_gpx(lats_smooth3,long_smooth3,alts=alts_smooth3,times=times_smooth3)
+        gpx=convert_to_gpx(
+            lats_smooth3,
+            long_smooth3,
+            alts=alts_smooth3,
+            times=times_smooth3,
+            waypoints=track.waypoints_all()
+            )
+
         out_file = os.path.join(settings.MEDIA_ROOT,track.name_wo_path_wo_ext+"_smoothed.gpx")
         with open(out_file, 'w') as f:
             f.write(gpx.to_xml())

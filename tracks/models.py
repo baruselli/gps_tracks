@@ -20,6 +20,7 @@ from options.models import OptionSet
 import numpy as np
 from .utils import get_colors
 from django.core.serializers.json import DjangoJSONEncoder
+import math
 
 logger = logging.getLogger("gps_tracks")
 
@@ -588,11 +589,13 @@ class Track(models.Model):
             self.has_alts = True
         else:
             self.has_alts = False
-        if self.td.heartbeats and any(self.td.heartbeats):
+        heartbeats=self.td.heartbeats
+        if heartbeats  and any(heartbeats) and any ([not math.isnan(x) for x in heartbeats]):
             self.has_hr = True
         else:
             self.has_hr = False
-        if self.td.frequencies  and any(self.td.frequencies):
+        frequencies=self.td.frequencies
+        if frequencies  and any(frequencies) and any ([not math.isnan(x) for x in frequencies]):
             self.has_freq = True
         else:
             self.has_freq = False
@@ -655,6 +658,18 @@ class Track(models.Model):
                 if not ext in t.extension:
                     return False
             return True            
+
+    def get_segment_number_list(self):
+        """
+        return [1,1,1,1,2,2,2,2,2,3,3,3,3,3] etc.
+        """
+        import bisect
+        split_indices = self.td.segment_indices
+        # minotherwise the last one gets a +1
+        splits = [min(bisect.bisect_right(split_indices, a),len(split_indices)-1) for a in range(self.n_points)]
+
+        return splits
+
 
     def get_json_DL(self, how="every",colorscale=None,steps=256,steps_legend=9):
         """Returns json as a dictionary of lists"""
@@ -2013,7 +2028,11 @@ class Track(models.Model):
             )
             self.total_calories = float(df["calories"].tail(2).head(1))
             self.total_frequency = (float(df["cycles"].sum()) / float(df["time"].tail(1)) * 60)
+            if math.isnan(self.total_frequency):
+                self.total_frequency=None
             self.total_heartbeat = df_orig["heartRate"].mean()
+            if math.isnan(self.total_heartbeat):
+                self.total_heartbeat=None
             self.debug("total_heartbeat %s" %self.total_heartbeat)
             self.total_step_length = (float(df["distance"].tail(1)) / float(df["cycles"].sum()) )  # m
             

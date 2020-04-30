@@ -77,9 +77,9 @@
                         <tr><td> Min altitude  </td> <td><b>{{track.min_alt|floatformat:0}}</b></td> </tr>
                         <tr><td> Max altitude  </td> <td><b>{{track.max_alt|floatformat:0}}</b></td> </tr>
                         {% if track.n_laps > 0 %}<tr><td> Laps  </td> <td>{{track.n_laps}}</td> </tr>{%endif%}
-                        {% if track.total_frequency%}<tr><td> Frequency</td><td>{{track.total_frequency|floatformat:0}}steps/min</td></tr>{%endif%}
+                        {% if track.has_freq%}<tr><td> Frequency</td><td>{{track.total_frequency|floatformat:0}}steps/min</td></tr>{%endif%}
                         {% if track.total_calories%}<tr><td> Calories</td><td>{{track.total_calories|floatformat:0}}</td></tr>{%endif%}
-                        {% if track.total_heartbeat%}<tr><td> Heartrate</td><td>{{track.total_heartbeat|floatformat:0}}bpm</td></tr>{%endif%}
+                        {% if track.has_hr%}<tr><td> Heartrate</td><td>{{track.total_heartbeat|floatformat:0}}bpm</td></tr>{%endif%}
                         <tr><td> Points</td> <td id="n_points">{{track.n_points}}
                         {% if track.n_points != track.n_points_original %}<tr><td> Original Points</td><td>{{track.n_points_original}}</td></tr>{%endif%}
                         {% if track.total_step_length%}<tr><td> Step Length</td><td>{{track.total_step_length|floatformat:-2}}m</td></tr>{%endif%}

@@ -246,11 +246,11 @@
     {% if track.has_times%}
 
         <div id="div_laps">
-        {% if laps or stats%}
             <h2> <a href="{% url 'find_laps' track_id=track.pk  %}?reduce_points={{reduce_points}}">Laps</a>
                 <button onclick="hide_show('laps_block')">Hide/Show</button>
             </h2>
-            <div id="laps_block" >
+            {% if laps or stats%}
+                <div id="laps_block" >
                     <div class="row" id ="table_laps" width=100% style="float: left">
                         <table id="laps_table">
                             <thead>
@@ -280,9 +280,10 @@
                         </table>
                     </div>
                     <div id="c3_laps"  style="float: left"></div>
-            </div>
-            <script>simple_table('#laps_table')</script>
-        {% endif %}
+                </div>
+                <script>simple_table('#laps_table')</script>
+            {% endif %}
+        
         <div style = "clear:both;"></div>
         </div>
 

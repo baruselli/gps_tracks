@@ -37,7 +37,7 @@ class MenuView(View):
 
         from timeline.utils import get_tracks_n_years_ago
         year_track_dates=[]
-        for n_year in range(1,5):
+        for n_year in range(1,10):
             dict_ytd=get_tracks_n_years_ago(n_years=n_year,n_days=3,just_one=True)
             dict_ytd["n_year"]=n_year
             year_track_dates.append(dict_ytd)

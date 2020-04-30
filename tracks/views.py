@@ -37,13 +37,13 @@ class TrackView(View):
         form = TrackGroupForm(instance=track)
 
         try:
-            previous_track=Track.get_previous_by_beginning(track)
+            previous_track=Track.get_previous(track)
         except:
             import traceback
             #traceback.print_exc()
             previous_track = None
         try:
-            next_track = Track.get_next_by_beginning(track)
+            next_track = Track.get_next(track)
         except:
             next_track=None
 

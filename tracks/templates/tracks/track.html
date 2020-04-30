@@ -26,9 +26,6 @@
         
 
         {{track}}
-        {% if next_track %}
-            <a href="{% url 'track_detail' track_id=next_track.pk %}">{{next_track.pk}} - {{next_track.name_wo_path_wo_ext}}</a>
-        {% endif %}
         <button onclick="hide_show('map_block')">Hide/Show Map</button>
     </h1>
     </div>
@@ -47,7 +44,16 @@
     <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button>
     <button onclick="location.href='{% url 'track_set_all_properties' track_id=track.pk  %}'" type="button">Refresh properties</button>
     <!-- <button onclick="test_fct()" type="button">Test</button> -->
-   
+    {% if previous_track or next_track %}
+        <br>
+        {% if previous_track %}
+            <a href="{% url 'track_detail' track_id=previous_track.pk %}"><--- {{previous_track.name_wo_path_wo_ext}}</a>
+        {% endif %}
+        {% if next_track %}
+            <a href="{% url 'track_detail' track_id=next_track.pk %}">---> {{next_track.name_wo_path_wo_ext}}</a>
+        {% endif %}
+    {% endif %}
+
 
     </div>
 {%endblock%}

@@ -250,6 +250,20 @@ class Track(models.Model):
             self.final_lon = self.td.long[-1]
             self.save()
 
+    def get_previous(self,feature="beginning"):
+        filter_dict={feature+"__lte":getattr(self,feature)}
+        previous_track = Track.objects.filter(**filter_dict).\
+            exclude(pk=self.pk).exclude(groups__exclude_from_search=True).\
+            order_by("-"+feature,"-pk").first()
+        return previous_track
+
+    def get_next(self,feature="beginning"):
+        filter_dict={feature+"__gte":getattr(self,feature)}
+        next_track = Track.objects.filter(**filter_dict).\
+            exclude(pk=self.pk).exclude(groups__exclude_from_search=True).\
+            order_by(feature,"pk").first()
+        return next_track
+
     def find_file(self,ext):
         """
         try to find the import files, in case it has been moved

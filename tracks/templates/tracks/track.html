@@ -77,11 +77,9 @@
                     <tbody>
                         <tr><td> Duration  </td> <td><b>{{track.duration_string2}}</b></td> </tr>
                         <tr><td> Length </td> <td><b>{{track.length_3d|div:1000|floatformat:-2}}km</b></td> </tr>
-                        <tr><td> Speed</td><td><b>{% if track.avg_speed %}{{track.avg_speed|mul:3.6|floatformat:-1}}km/h{%endif%}</b></td></tr>
-                        <tr><td> Pace</td><td><b>{% if track.pace_string %}{{track.pace_string}}{%endif%}</b></td></tr>
-                        <tr><td> Date  </td> <td><b>{{track.date}}</b></td> </tr>
-                        <tr><td> Min altitude  </td> <td><b>{{track.min_alt|floatformat:0}}</b></td> </tr>
-                        <tr><td> Max altitude  </td> <td><b>{{track.max_alt|floatformat:0}}</b></td> </tr>
+                        {% if track.has_times %}<tr><td> Speed</td><td><b>{% if track.avg_speed %}{{track.avg_speed|mul:3.6|floatformat:-1}}km/h{%endif%} - {{track.pace_string}}</b></td></tr>{%endif %}
+                        <tr><td> Time  </td> <td><b>{{track.beginning}}</b></td> </tr>
+                        {% if track.has_alts %}<tr><td> Altitude  </td> <td><b>{{track.min_alt|floatformat:0}}m - {{track.max_alt|floatformat:0}}m</b></td> </tr>{%endif%}
                         {% if track.n_laps > 0 %}<tr><td> Laps  </td> <td>{{track.n_laps}}</td> </tr>{%endif%}
                         {% if track.has_freq%}<tr><td> Frequency</td><td>{{track.total_frequency|floatformat:0}}steps/min</td></tr>{%endif%}
                         {% if track.total_calories%}<tr><td> Calories</td><td>{{track.total_calories|floatformat:0}}</td></tr>{%endif%}

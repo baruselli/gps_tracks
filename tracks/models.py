@@ -251,17 +251,33 @@ class Track(models.Model):
             self.save()
 
     def get_previous(self,feature="beginning"):
-        filter_dict={feature+"__lte":getattr(self,feature)}
-        previous_track = Track.objects.filter(**filter_dict).\
-            exclude(pk=self.pk).exclude(groups__exclude_from_search=True).\
-            order_by("-"+feature,"-pk").first()
+        initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
+        previous_track=None
+        # first check for tracks with the same feature
+        filter_dict_0 = {feature:getattr(self,feature)}
+        q0 = initial_q.filter(**filter_dict_0)
+        # if yes, take the previous wrt pk
+        if q0:
+            previous_track = q0.filter(pk__lt=self.pk).order_by("-pk").first()
+        # if not, simply order by feature,pk and take previous
+        if not previous_track:
+            filter_dict={feature+"__lt":getattr(self,feature)}
+            previous_track = initial_q.filter(**filter_dict).order_by("-"+feature,"-pk").first()
         return previous_track
 
     def get_next(self,feature="beginning"):
-        filter_dict={feature+"__gte":getattr(self,feature)}
-        next_track = Track.objects.filter(**filter_dict).\
-            exclude(pk=self.pk).exclude(groups__exclude_from_search=True).\
-            order_by(feature,"pk").first()
+        initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
+        next_track=None
+        # first check for tracks with the same feature
+        filter_dict_0 = {feature:getattr(self,feature)}
+        q0 = initial_q.filter(**filter_dict_0)
+        # if yes, take the next wrt pk
+        if q0:
+            next_track = q0.filter(pk__gt=self.pk).order_by("pk").first()
+        # if not, simply order by feature,pk and take next
+        if not next_track:
+            filter_dict={feature+"__gt":getattr(self,feature)}
+            next_track = initial_q.filter(**filter_dict).order_by(feature,"pk").first()
         return next_track
 
     def find_file(self,ext):

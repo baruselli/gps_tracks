@@ -420,7 +420,7 @@ class Track(models.Model):
                     + "{:02}".format(int(math.modf(self.duration)[0] * 60))
                     + "s"
                 )
-                if self.length_3d:
+                if self.length_3d and self.duration:
                     self.avg_speed = self.length_3d / self.duration / 60  # (m/s)
                     self.pace = 1 / 0.06 / self.avg_speed  # (min/km)
                     self.pace_string = (
@@ -432,8 +432,6 @@ class Track(models.Model):
                 self.save()
                 self.info("OK beginning, end ,length")
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.warning("Error set_all_properties cannot set beginning, end ,length: %s" %e)
 
         self.info("End common infos")
@@ -2462,22 +2460,24 @@ class Track(models.Model):
 
                 # print(alts)
                 counter_none = 0
-                for a in alts:
-                    if a is None:
-                        counter_none += 1
-                if counter_none / len(alts) < 0.9:
-                    self.td.alts = alts
+                if alts:
+                    for a in alts:
+                        if a is None:
+                            counter_none += 1
+                    if counter_none / len(alts) < 0.9:
+                        self.td.alts = alts
                 counter_none = 0
-                for s in speed:
-                    if s is None:
-                        counter_none += 1
-                if counter_none / len(speed) < 0.9:
-                    self.td.speed = speed
+                # if speed:
+                #     for s in speed:
+                #         if s is None:
+                #             counter_none += 1
+                #     if counter_none / len(speed) < 0.9:
+                #         self.td.speed = speed
 
             except Exception as e:
-                self.error(e)
-
-
+                import traceback
+                traceback.print_exc()
+                self.error("Error in reading gpx file: %s" %e)
 
             #read waypoints
             try:
@@ -2513,7 +2513,7 @@ class Track(models.Model):
                     waypoint.save()
 
             except Exception as e:
-                self.error(e)
+                self.error("Error in reading gpx file, waypoints: %s" %e)
 
             self.save()
             self.td.save()
@@ -2530,7 +2530,7 @@ class Track(models.Model):
                     _gpx.get_moving_data()
                 )
             except Exception as e:
-                self.warning("Error in _gpx.get_moving_data(): %s" %e)
+                self.warning("Warning: error in _gpx.get_moving_data(): %s" %e)
 
             # self.avg_speed = self.moving_distance / self.moving_time
             self.uphill, self.downhill = _gpx.get_uphill_downhill()

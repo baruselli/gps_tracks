@@ -502,6 +502,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
         )
     }catch(error){
         console.log("Cannot track_layer_fromjson", error)
+        gj= L.geoJson()
     }
     var t1 = performance.now();
     console.log("track_layer_fromjson", (t1-t0)/1000)

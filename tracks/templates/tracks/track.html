@@ -326,10 +326,19 @@
         {% endif %}
 
             </table>
+        
+        {% if unused_input_files %}
+            Other files:
+            <ul>
+                {% for file in unused_input_files %}
+                    <li>{{file}}</li>
+                {%endfor%}
+            </ul>
+            {% if not track.is_merged%}
+                <button onclick="location.href='{% url 'track_other_extensions' track_id=track.pk  %}'" type="button">Import other extensions</button>
+            {% endif %}
+        {%endif%}
 
-        {% if not track.is_merged%}
-            <button onclick="location.href='{% url 'track_other_extensions' track_id=track.pk  %}'" type="button">Import other extensions</button>
-        {% endif %}
 
         </div>
     {% if track.groups.all%}

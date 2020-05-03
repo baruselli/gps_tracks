@@ -76,6 +76,16 @@ class TrackView(View):
             #print(track.td.laps_stats)
             stats_laps={}
 
+        #input files:
+        from import_app.utils import find_files_in_dir_by_prefix
+        all_input_files = find_files_in_dir_by_prefix(settings.TRACKS_DIR,track.name_wo_path_wo_ext)
+        used_files=[]
+        for ext in ["gpx", "kml", "kmz", "csv", "tcx"]:
+            input_file = getattr(track, ext+"_file")
+            if input_file:
+                used_files.append(input_file)
+        unused_input_files = set(all_input_files) - set(used_files)
+
         # cardio
         from .utils import get_cardio_colors
         cardio_colors=get_cardio_colors()["colors"]
@@ -135,7 +145,8 @@ class TrackView(View):
                 "previous_track":previous_track,
                 "next_track": next_track,
                 "form":form,
-                "merged_tracks": merged_tracks
+                "merged_tracks": merged_tracks,
+                "unused_input_files":unused_input_files
             },
         )
     def post(self, request, *args, **kwargs):

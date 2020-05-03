@@ -30,7 +30,7 @@ def generate_tracks_by_prefix(dir_,prefix, update=False):
 
     logger.info("Generate tracks by prefix")
     files = find_files_in_dir_by_prefix(dir_, prefix)
-    from_files_to_tracks(files, update,ignore_blacklist=True)
+    from_files_to_tracks(files, update,ignore_blacklist=True,import_new_extensions=True)
     logger.info("End generate tracks by prefix")
 
 def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_blacklist=False, manual_upload=False):

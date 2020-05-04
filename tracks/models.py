@@ -378,21 +378,21 @@ class Track(models.Model):
                 self.avg_lat = np.median(lats_ok)
                 if math.isnan(self.avg_lat):
                     # this works for tracks with only waypoints
-                    self.avg_lat = np.median([wp.lat for wp in self.waypoint_set.all() if wp.lat])
+                    self.avg_lat = np.median([wp.lat for wp in self.waypoints_all() if wp.lat])
                     if math.isnan(self.avg_lat):
                         self.avg_lat=None
             if lons_ok:
                 self.avg_long = np.median(lons_ok)
                 if math.isnan(self.avg_long):
-                    self.avg_long = np.median([wp.long for wp in self.waypoint_set.all() if wp.long])
+                    self.avg_long = np.median([wp.long for wp in self.waypoints_all() if wp.long])
                     if math.isnan(self.avg_long):
                         self.avg_long=None
-            if lats_ok or self.waypoint_set.all():
-                self.min_lat = np.min(lats_ok+[wp.lat for wp in self.waypoint_set.all() if wp.lat ])
-                self.max_lat = np.max(lats_ok+[wp.lat for wp in self.waypoint_set.all() if wp.lat])
-            if lons_ok or self.waypoint_set.all():
-                self.min_long = np.min(lons_ok+[wp.long for wp in self.waypoint_set.all() if wp.long])
-                self.max_long = np.max(lons_ok+[wp.long for wp in self.waypoint_set.all() if wp.long])
+            if lats_ok or self.waypoints_all():
+                self.min_lat = np.min(lats_ok+[wp.lat for wp in self.waypoints_all() if wp.lat ])
+                self.max_lat = np.max(lats_ok+[wp.lat for wp in self.waypoints_all() if wp.lat])
+            if lons_ok or self.waypoints_all():
+                self.min_long = np.min(lons_ok+[wp.long for wp in self.waypoints_all() if wp.long])
+                self.max_long = np.max(lons_ok+[wp.long for wp in self.waypoints_all() if wp.long])
             if alts_ok:
                 self.min_alt = np.min(alts_ok)
                 self.max_alt = np.max(alts_ok)
@@ -1201,7 +1201,7 @@ class Track(models.Model):
         from json_views.utils import geojson_json
         ## waypoints
         if do_waypoints:
-            json_tot["Waypoints"]=waypoints_json(wps=self.waypoint_set.all()|self.waypoints2.all())["Waypoints"]
+            json_tot["Waypoints"]=waypoints_json(wps=self.waypoints_all())["Waypoints"]
         else:
             json_tot["Waypoints"]=[]
         ## photos
@@ -1308,7 +1308,7 @@ class Track(models.Model):
                 "distance_string": "{0:.2f}".format(self.distance) + "km"}
 
         # properties which might change easily
-        track_json["n_waypoints"]= self.waypoint_set.count()
+        track_json["n_waypoints"]= self.waypoints_all().count()
         track_json["n_photos"]= self.photos.count()
 
         # choose which geometry
@@ -1407,7 +1407,7 @@ class Track(models.Model):
         from json_views.utils import waypoints_json,photos_json
         ## waypoints
         if waypoints:
-            track_json["Waypoints"]=waypoints_json(wps=self.waypoint_set.all()|self.waypoints2.all())["Waypoints"]
+            track_json["Waypoints"]=waypoints_json(wps=self.waypoints_all())["Waypoints"]
         else:
             track_json["Waypoints"]=[]
         ## photos
@@ -3539,7 +3539,7 @@ class Track(models.Model):
         """assign the same country, region, city of the track to its waypoints, only if
         waypoint does not already them set"""
         self.info("assign_country_to_wps")
-        for wp in self.waypoint_set.all():
+        for wp in self.waypoints_all():
             if not wp.country and not wp.region and not wp.city:
                 if self.end_country:
                     wp.country=self.end_country
@@ -3556,7 +3556,7 @@ class Track(models.Model):
         """assign the same time of the track to its waypoints, only if
         waypoint does not already it set"""
         self.info("assign_time_to_wps")
-        for wp in self.waypoint_set.all():
+        for wp in self.waypoints_all():
             try:
                 if not wp.time:
                     if self.end:

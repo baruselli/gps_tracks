@@ -91,7 +91,7 @@
                         {% if track.end_country%}<tr><td> Country</td><td>{{track.end_country}}</td></tr>{%endif%}
                         {% if track.end_city%}<tr><td> City</td><td>{{track.end_city}}</td></tr>{%endif%}
                         <tr><td> Photos</td><td>{{track.photos.count}}</td></tr>
-                        <tr><td> Waypoints</td><td>{{track.waypoint_set.count}}</td></tr>
+                        <tr><td> Waypoints</td><td>{{track.waypoints_all.count}}</td></tr>
                         {% if track.description%}<tr><td> Notes</td><td>{{track.description|safe}}</td></tr>{%endif%}
                         {% if track.is_merged %}
                             <tr><td> Merged from tracks </td><td>{{merged_tracks.count}}</td></tr>
@@ -370,7 +370,7 @@
     <script>simple_table('.table_track_rank',{"order_opt":[1,"asc"]})</script>
     {%endif%}
 
-    {% if track.waypoint_set.all or  track.waypoints2.all %}
+    {% if track.waypoints_all %}
       <!-- <tr><td>  color  </td> <td>{{track.color}}</td> </tr> -->
     <h2>
         <a href="{% url 'waypoints_map' %}?track_ids={{track.pk}}"> Waypoints  </a>
@@ -385,16 +385,7 @@
                 <th align= "left">Description</th>
                 <th align= "left">Comment</th>
             </tr>
-            {% for wp in track.waypoint_set.all %}
-                <tr>
-                    <td><a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a></td>
-                    <td>{{wp.time}}</td>
-                    <td>{{wp.alt}}</td>
-                    <td>{{wp.description}}</td>
-                    <td>{{wp.comment}}</td>
-                </tr>
-            {% endfor %}
-            {% for wp in track.waypoints2.all %}
+            {% for wp in track.waypoints_all %}
                 <tr>
                     <td><a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a></td>
                     <td>{{wp.time}}</td>

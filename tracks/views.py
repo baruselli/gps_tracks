@@ -478,7 +478,7 @@ class DeleteEmptyTracks(View):
         logger.info("DeleteEmptyTracks")
         deleted_tracks = []
         for track in Track.objects.filter(n_points=0):
-            if track.waypoint_set.count() == 0 and track.waypoints2.count() == 0:
+            if track.waypoints_all().count() == 0:
                 deleted_tracks.append(track.name)
                 track.delete()
 

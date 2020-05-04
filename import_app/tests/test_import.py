@@ -11,6 +11,8 @@ class ImportGpxTestCase(TestCase):
     def setUp(self):
         # deactivate geopy during tests
         OptionSet.set_option("USE_GEOPY",False)
+        OptionSet.set_option("MAX_POINTS_TRACK",100)
+        OptionSet.set_option("MAX_POINTS_TRACK_CALCULATION",300)
 
 
     def test_import(self):
@@ -98,17 +100,17 @@ class ImportGpxTestCase(TestCase):
             ]
         for field in fields_to_check:
             print(field)
-            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_kml_tomtom,field),4 )
-            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_tcx_tomtom,field),4 )
-            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_csv_tomtom,field),4 )
+            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_kml_tomtom,field),3 )
+            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_tcx_tomtom,field),3 )
+            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_csv_tomtom,field),3 )
         # not for kml
         fields_to_check=[
             "avg_alt","min_alt","max_alt",
             ]
         for field in fields_to_check:
             print(field)
-            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_tcx_tomtom,field),4 )
-            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_csv_tomtom,field),4 )
+            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_tcx_tomtom,field),3 )
+            self.assertAlmostEqual(getattr(test_gpx_tomtom,field),getattr(test_csv_tomtom,field),3 )
         ## checks for floats, 0 decimal places (precision up to 10 m)
         fields_to_check=[
             "length_2d",

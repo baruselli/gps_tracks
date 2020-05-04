@@ -46,7 +46,7 @@ def convert_to_kml(lats,long,alts=[],times=[],name="kml_file"):
 
     return kml
 
-def convert_to_gpx(lats,long,alts=[],times=[], waypoints=[]):
+def convert_to_gpx(lats,long,alts=[],times=[], waypoints=[], segment_indices=[],subtrack_indices=[]):
     """
     https://pypi.org/project/gpxpy/
     TODO: reproduce segments and subtracks

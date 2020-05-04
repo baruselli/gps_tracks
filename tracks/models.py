@@ -318,7 +318,7 @@ class Track(models.Model):
         self.save()
         step+=1
         times = self.td.times
-        if not ".gpx" in self.extension:
+        if True: #not ".gpx" in self.extension:
             self.info("_%s - Creating gpx object" %step)
             step+=1
             from export.utils import convert_to_gpx
@@ -326,10 +326,12 @@ class Track(models.Model):
                 _gpx = convert_to_gpx(self.td.lats, self.td.long, times=times, alts=self.td.alts)
             else:
                 _gpx = convert_to_gpx(self.td.lats, self.td.long, alts=self.td.alts)
-            self.read_gpx(_gpx=_gpx)
+            self.read_gpx_for_all(_gpx=_gpx)
+        if not ".gpx" in self.extension:
+            #only if the gpx is created by hand
             self.gpx = _gpx.to_xml()
-            self.save()
-            self.info("End gpx object")
+        self.save()
+        self.info("End gpx object")
 
         # set fields common for all extesnions
         self.info("Common infos")
@@ -2393,38 +2395,29 @@ class Track(models.Model):
             self.error(e)
 
 
-    def read_gpx(self,_gpx=None):
+    def read_gpx(self):
         """Reads gpx files using the gpxpy library"""
         self.info("Read Gpx")
         from django.utils import timezone
 
         #if I don't pass a gpxpy object, I am reading a file
         try:
-            if _gpx is None:
-                reading_file=True
-                try:
-                    #save raw file under self.gpx
-                    import io
-                    try:
-                        gpx = io.open(self.gpx_file, mode="r", encoding="utf-8")
-                        _gpx = gpxpy.parse(open(self.gpx_file, "r", encoding="utf8"))
-                    except Exception as e:
-                        self.warning("Cannot read gpx with utf8, now trying without: %s" %e)
-                        gpx = io.open(self.gpx_file, mode="r")
-                        _gpx = gpxpy.parse(open(self.gpx_file, "r"))
-                    self.gpx = gpx.read()
-                    #read file into a gpxpy object
-                except Exception as e:
-                    self.error(self.gpx_file + " read _gpx " + str(e))
-            #otherwise, I am reading a gpxpy object created form a kml/csv/tcx
-            else:
-                reading_file=False
-
+            import io
+            try:
+                gpx = io.open(self.gpx_file, mode="r", encoding="utf-8")
+                _gpx = gpxpy.parse(open(self.gpx_file, "r", encoding="utf8"))
+            except Exception as e:
+                self.warning("Cannot read gpx with utf8, now trying without: %s" %e)
+                gpx = io.open(self.gpx_file, mode="r")
+                _gpx = gpxpy.parse(open(self.gpx_file, "r"))
+            self.gpx = gpx.read()
+            #read file into a gpxpy object
         except Exception as e:
-            self.error(e)
+            self.error(self.gpx_file + " read _gpx " + str(e))
+            return
 
         #if I am not passing a gpxpy object, read alts, lats, long etc. from file
-        if reading_file:
+        if True: #reading_file:
             self.info("Reading from file!")
             #read lats, long, alts, times, speed
             try:
@@ -2432,7 +2425,7 @@ class Track(models.Model):
                 long = []
                 alts = []
                 times = []
-                speed = []
+                # speed = []
                 n_tracks=0
                 n_segments=0
                 subtrack_indices=[]
@@ -2450,7 +2443,7 @@ class Track(models.Model):
                             long.append(point.longitude)
                             alts.append(point.elevation)
                             times.append(point.time)
-                            speed.append(point.speed)
+                            # speed.append(point.speed)
                 
                 self.td.segment_indices = segment_indices
                 self.td.subtrack_indices = subtrack_indices
@@ -2534,6 +2527,7 @@ class Track(models.Model):
             self.save()
             self.td.save()
 
+    def read_gpx_for_all(self,_gpx):
         #this part I do for both reading file and passing a gpxpy object
         try:
             self.debug("Part for both reading and passing an object")
@@ -2576,7 +2570,7 @@ class Track(models.Model):
             ##fix case gpx read from file ( original length) vs gpx created from existing data(length already reduced)
             # for length of computed_speed
             ## I limit the points when I am importing from file  
-            if reading_file:
+            if False: #reading_file:
                 self.td.computed_speed = computed_speed[::self.index_every][self.starting_index:self.ending_index]
             else:
                 self.td.computed_speed = computed_speed
@@ -2588,7 +2582,7 @@ class Track(models.Model):
             if self.n_points and len(dists) == self.n_points - 1:
                 dists.append(dists[-1])
             ## I limit the points when I am importing from file  
-            if reading_file:
+            if False: #reading_file:
                 self.td.computed_dist = dists[::self.index_every][self.starting_index:self.ending_index]
             else:
                 self.td.computed_dist = dists
@@ -3825,9 +3819,6 @@ class TrackDetail(models.Model):
         ##but already limited by hand
         # for other extensions , they are computed from points in list 1
         #  so they are of the same number as the original
-        "_computed_speed",
-        "_computed_dist",
-
     )
 
     ## these fields are n_points long, and are limited by initial_index and final_index (?)
@@ -3848,6 +3839,8 @@ class TrackDetail(models.Model):
         "_slope_rolling",
         "_vertical_speed_rolling",
         "_computed_speed_rolling",
+        "_computed_speed",
+        "_computed_dist",
     )
 
     ## these are not limited by starting_index e final_index

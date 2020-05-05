@@ -88,6 +88,30 @@
 
         function map_init_basic (map, options) {
 
+        {% if group %}
+            min_lat={{group.min_lat}}
+            max_lat={{group.max_lat}}
+            min_long={{group.min_long}}
+            max_long={{group.max_long}}
+
+            if (!isNaN(min_lat)&&!isNaN(max_lat)&&!isNaN(min_long)&&!isNaN(max_long) &&
+                    min_lat!=undefined && max_lat!=undefined && min_long!=undefined && max_long!=undefined){
+                    if (min_lat===max_lat){
+                        max_lat=max_lat+0.01
+                        min_lat=min_lat-0.01
+                    }
+                    if (min_long===max_long){
+                        max_long=max_long+0.01
+                        min_long=min_long-0.01
+                    }
+                var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+                // bound_fitted=true
+            }else{
+                var mapBounds=null
+                // bound_fitted=false
+            }
+        {% endif %}
+
         if (typeof mapBounds !="undefined"){mapBounds=mapBounds}else{mapBounds=null}
 
         init_map_base(map,options,mapBounds=mapBounds,add_basemaps=false)

@@ -1,5 +1,8 @@
 {% extends "base/base_map.html" %}
 {% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
 
 {% block stylesheet %}
     {{block.super}}
@@ -16,14 +19,6 @@
 {%endblock%}
 
 {% block content %}
-
-<html>
-  <head>
-        {% load leaflet_tags %}
-        {% load static %}
-        {% load mathfilters %}
-
-        <body>
 
     <div class="row">
         <div class="col-xs-12">
@@ -76,8 +71,6 @@
     
 
 
-</body>
-
 
 <script>
 
@@ -92,23 +85,29 @@ function deletewaypoint_fct() {
 
 <script type="text/javascript">
     function map_init_basic (map, options) {
-
-    map_right_click(map,options,point_link,waypoint_link );
-
         var point={"coordinates":[{{waypoint.lat}},{{waypoint.long}}]}
-    console.log(point)
+
+        var mapBounds = L.latLngBounds([
+                            [parseFloat(point.coordinates[0])-0.001, parseFloat(point.coordinates[1])-0.001],
+                            [parseFloat(point.coordinates[0])+0.001, parseFloat(point.coordinates[1])+0.001],
+                        ]);
+
+
+
+        if (typeof mapBounds !="undefined"){mapBounds=mapBounds}else{mapBounds=null}
+
+        init_map_base(map,options,mapBounds=mapBounds,add_basemaps=true)
+
+
         L.marker(point.coordinates).addTo(map);
-
-var mapBounds = L.latLngBounds([
-                    [parseFloat(point.coordinates[0])-0.001, parseFloat(point.coordinates[1])-0.001],
-                    [parseFloat(point.coordinates[0])+0.001, parseFloat(point.coordinates[1])+0.001],
-                ]);
-map.fitBounds(mapBounds);
-console.log(mapBounds);
-baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
-   L.control.layers(baseMaps).addTo(map);
-
     }
+
+
+//     console.log(mapBounds);
+//     baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+//     L.control.layers(baseMaps).addTo(map);
+
+//     }
 </script>
 
 

@@ -137,10 +137,10 @@ class LinesJsonView(View):
         from .utils import lines_json
         json_ = lines_json(is_global=False)
 
-        json_ok = {"Lines": json_, "minmaxlatlong": [min([l["min_lat"] for l in json_]),
-                                                     max([l["max_lat"] for l in json_]),
-                                                     min([l["min_long"] for l in json_]),
-                                                     max([l["max_long"] for l in json_]),
+        json_ok = {"Lines": json_, "minmaxlatlong": [min([l["min_lat"] for l in json_ if l["min_lat"]]),
+                                                     max([l["max_lat"] for l in json_ if l["max_lat"]]),
+                                                     min([l["min_long"] for l in json_ if l["min_long"]]),
+                                                     max([l["max_long"] for l in json_ if l["max_long"]]),
                                                      ]}
 
         return JsonResponse(json_ok, safe=False)

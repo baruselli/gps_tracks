@@ -27,10 +27,10 @@
     {{ form.errors }}
 
 
-    {%if waypoint_id%}
-    <h1>Edit Geojson</h1>
+    {%if obj%}
+        <h1>Edit Geojson {{obj}}</h1>
     {%else%}
-    <h1>New Geojson</h1>
+        <h1>New Geojson</h1>
     {%endif%}
 
     <form action="" method="post">

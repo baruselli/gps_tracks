@@ -1,4 +1,7 @@
 {% extends "base/base_map.html" %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
 
 
 {%block buttons%}
@@ -14,13 +17,6 @@
 
 {% block content %}
 
-<html>
-  <head>
-        {% load leaflet_tags %}
-        {% load static %}
-        {% load mathfilters %}
-
-        <body>
 <h1>Line {{line.pk}}: {{line.name}}</h1>
     <div class="row">
         <div class="col-xs-12">
@@ -59,10 +55,6 @@
     </div>
 
 
-
-</body>
-
-
 <script>
 
 function deleteline_fct() {
@@ -80,17 +72,28 @@ function deleteline_fct() {
     map_right_click(map,options,point_link,waypoint_link);
 
     var overlayMaps = {};
-    map.addControl(new L.Control.Fullscreen());
+    // map.addControl(new L.Control.Fullscreen());
 
     lats={{line.lats}}
     long={{line.long}}
     alts={{line.alts|safe}}
 
+    min_lat= Math.min.apply(Math, lats);
+    min_long= Math.min.apply(Math, long);
+    max_lat= Math.max.apply(Math, lats);
+    max_long= Math.max.apply(Math, long);
+    var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+    map.fitBounds(mapBounds);
+
+    init_map_base(map,options,mapBounds=mapBounds)
+
+
+
     points=[]    
     {%if line.color%}
-    color="{{line.color}}"
+        color="{{line.color}}"
     {%else%}
-    color="gray"
+        color="gray"
     {%endif%}
 
     for (i=0;i<lats.length;i++){
@@ -112,16 +115,8 @@ function deleteline_fct() {
     
 
 
-    min_lat= Math.min.apply(Math, lats);
-    min_long= Math.min.apply(Math, long);
-    max_lat= Math.max.apply(Math, lats);
-    max_long= Math.max.apply(Math, long);
-    var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
-    map.fitBounds(mapBounds);
 
-console.log(mapBounds);
-baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
-   L.control.layers(baseMaps).addTo(map);
+    console.log(mapBounds);
 
     }
 </script>

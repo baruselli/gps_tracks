@@ -318,6 +318,8 @@ class Track(models.Model):
         self.save()
         step+=1
         times = self.td.times
+        self.info("Len(times) %s" %len(times))
+
         if True: #not ".gpx" in self.extension:
             self.info("_%s - Creating gpx object" %step)
             step+=1
@@ -3513,7 +3515,7 @@ class Track(models.Model):
             try:
                 self.info("Fixing times with offset %s" %offset)
                 times_ok=[]
-                times = self.td.times
+                times = self.td.times_all
                 for t in times:
                     times_ok.append(t + offset)
                 self.td.times=times_ok
@@ -3765,6 +3767,15 @@ class TrackDetail(models.Model):
             return json.loads(self._lats)
         else:
             return self._lats
+
+    @property
+    def times_all(self):
+        """returns a list of all lats, just to know how many original points there are"""
+        if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+            import dateutil.parser
+            return [dateutil.parser.parse(x).replace(tzinfo=None) for x in json.loads(self._times)]
+        else:
+            return self._times
 
     def array_property(property_name,limit_initial_final=True, use_every=False):
         """ Create and return a property for the given field. """

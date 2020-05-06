@@ -32,8 +32,8 @@ class OptionSet(models.Model):
     GMAIL_PWD = models.CharField( max_length=200, blank=True, null=True )
     MIN_DATE_GOOGLE_HISTORY = models.DateField(null=True, default=datetime.date(2017, 1, 1))
     # geopy
-    USE_GEOPY = models.BooleanField(blank=True, default=True, verbose_name="<h3>Geopy</h3> Use geopy")
-    LANGUAGE_GEOPY = models.CharField(max_length=15, blank=True, null=True, verbose_name="Language for location names<a href='https://developer.tomtom.com/search-api/search-api/supported-languages'> (see list)</a>")
+    LANGUAGE_GEOPY = models.CharField(max_length=15, blank=True, null=True, verbose_name="<h3>Geopy</h3> Language for location names<a href='https://developer.tomtom.com/search-api/search-api/supported-languages'> (see list)</a>")
+    USE_GEOPY = models.BooleanField(blank=True, default=True, verbose_name="Use geopy")
     #TRACKS
     MAX_POINTS_TRACK = models.IntegerField(blank=False, null=False, default=1000, verbose_name="<h3>Tracks</h3> Maximum number of points shown on maps")
     MAX_POINTS_TRACK_CALCULATION = models.IntegerField(blank=False, null=False, default=10000, verbose_name="Maximum number of track points used for calculations")

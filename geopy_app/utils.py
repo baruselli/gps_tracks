@@ -84,7 +84,6 @@ def track_geopy(tr):
                 tr.end_region = location_dict.get("region")
                 tr.end_city = location_dict.get("city")
                 logger.info(location_dict)
-            if location_dict:
                 tr.info("OK set location")
             else:
                 tr.info("Location not set")

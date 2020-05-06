@@ -83,10 +83,14 @@ def convert_to_gpx(lats,long,alts=[],times=[], waypoints=[], segment_indices=[],
     elif len(alts)==len(lats):
         for lat, lon, alt in zip(lats, long, alts):
             # print (lat,lon,alt)
+            try:
+                alt=float(alt)
+            except:
+                alt=alt
             if lat is not None and lon is not None:
                 gpx_segment.points.append(
                     gpxpy.gpx.GPXTrackPoint(
-                        lat, lon, elevation=float(alt)
+                        lat, lon, elevation=alt
                     )
                 )
     elif len(times)==len(lats):

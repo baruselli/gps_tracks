@@ -202,7 +202,7 @@ class SplitsView(View):
 
             new_splits_km = track.splits_km
 
-            if old_splits_km!=new_splits_km:
+            if True: #old_splits_km!=new_splits_km:
                 track.get_split_indices()
                 track.set_json_LD()
 

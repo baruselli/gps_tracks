@@ -320,6 +320,24 @@ class Track(models.Model):
         times = self.td.times
         self.info("Len(times) %s" %len(times))
 
+        if self.starting_index:
+            if self.td.dist_csv: 
+                try:
+                    initial_dist = self.td.dist_csv[0]
+                    all_dists = self.td.dist_csv_all
+                    self.td.dist_csv = [a - initial_dist for a in all_dists]
+                    self.td.save()
+                except Exception as e:
+                    self.warning("Error in resetting dist_csv")
+            if self.td.dist_tcx: 
+                try:
+                    initial_dist = self.td.dist_tcx[0]
+                    all_dists = self.td.dist_tcx_all
+                    self.td.dist_tcx = [a - initial_dist for a in all_dists]
+                    self.td.save()
+                except Exception as e:
+                    self.warning("Error in resetting dist_tcx")
+
         if True: #not ".gpx" in self.extension:
             self.info("_%s - Creating gpx object" %step)
             step+=1
@@ -3760,22 +3778,22 @@ class TrackDetail(models.Model):
     def __str__(self):
         return str(self.td.name_wo_path_wo_ext)
 
-    @property
-    def lats_all(self):
-        """returns a list of all lats, just to know how many original points there are"""
-        if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
-            return json.loads(self._lats)
-        else:
-            return self._lats
+    # @property
+    # def lats_all(self):
+    #     """returns a list of all lats, just to know how many original points there are"""
+    #     if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+    #         return json.loads(self._lats)
+    #     else:
+    #         return self._lats
 
-    @property
-    def times_all(self):
-        """returns a list of all lats, just to know how many original points there are"""
-        if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
-            import dateutil.parser
-            return [dateutil.parser.parse(x).replace(tzinfo=None) for x in json.loads(self._times)]
-        else:
-            return self._times
+    # @property
+    # def times_all(self):
+    #     """returns a list of all lats, just to know how many original points there are"""
+    #     if settings.USE_TEXT_INSTEAD_OF_ARRAYS:
+    #         import dateutil.parser
+    #         return [dateutil.parser.parse(x).replace(tzinfo=None) for x in json.loads(self._times)]
+    #     else:
+    #         return self._times
 
     def array_property(property_name,limit_initial_final=True, use_every=False):
         """ Create and return a property for the given field. """
@@ -3886,4 +3904,7 @@ class TrackDetail(models.Model):
         for field in cls.array_fields_3:
             property = cls.array_property(field, limit_initial_final=False,use_every=False)
             setattr(cls, field[1:], property)
-
+        # this returns all points
+        for field in cls.array_fields_1:
+            property = cls.array_property(field,limit_initial_final=False,use_every=False)
+            setattr(cls,field[1:]+"_all",property)

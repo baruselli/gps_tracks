@@ -640,12 +640,12 @@ class Track(models.Model):
         else:
             self.has_alts = False
         heartbeats=self.td.heartbeats
-        if heartbeats  and any(heartbeats) and any ([not math.isnan(x) for x in heartbeats]):
+        if heartbeats  and any(heartbeats) and any ([not math.isnan(x) for x in heartbeats if x is not None]):
             self.has_hr = True
         else:
             self.has_hr = False
         frequencies=self.td.frequencies
-        if frequencies  and any(frequencies) and any ([not math.isnan(x) for x in frequencies]):
+        if frequencies  and any(frequencies) and any ([not math.isnan(x) for x in frequencies if x is not None]):
             self.has_freq = True
         else:
             self.has_freq = False
@@ -1774,8 +1774,9 @@ class Track(models.Model):
             xs=[]
             ys = []
             for lat, long in zip(lats, long):
-                xs.append(utm.from_latlon(lat, long)[0])
-                ys.append(utm.from_latlon(lat, long)[1])
+                if lat is not None and long is not None:
+                    xs.append(utm.from_latlon(lat, long)[0])
+                    ys.append(utm.from_latlon(lat, long)[1])
 
             #ADJUST AXIS RATIOS BY HAND'
             if xs and ys:
@@ -1817,8 +1818,8 @@ class Track(models.Model):
         try:
             lats=self.td.lats[::every]
             long=self.td.long[::every]
-            x=[utm.from_latlon(lat, long)[0] for lat,long in zip(lats,long)]
-            y=[utm.from_latlon(lat, long)[1] for lat,long in zip(lats,long)]
+            x=[utm.from_latlon(lat, long)[0] for lat,long in zip(lats,long) if lat is not None and long is not None]
+            y=[utm.from_latlon(lat, long)[1] for lat,long in zip(lats,long) if lat is not None and long is not None]
             plt.gca().set_aspect('equal', adjustable='box')
             plt.axis('off')
             plt.scatter(x,y)
@@ -2056,9 +2057,10 @@ class Track(models.Model):
                 self.save()
             self.info("CSV points %s" %npoints)
             df = df.ffill().bfill()
+            df=df.replace({np.nan: None}) # useless with ffill
             self.td.delta_times = list(df["time"])
             self.td.dist_csv = list(df["distance"])
-            self.td.speed_csv = [s*3.6 for s in df["speed"]]
+            self.td.speed_csv = [s*3.6  if s is not None else None for s in df["speed"] ]
             self.td.calories = list(df["calories"])
             self.td.heartbeats = list(df["heartRate"])
             self.td.lats = list(df["lat"])

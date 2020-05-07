@@ -200,6 +200,8 @@
                 //////Splits
             {% if stats_splits %}
             var None=0
+            var nan=0
+
                 y1_splits={{stats_splits.speeds}}
                 y2_splits={{stats_splits.hrs}}
                 y3_splits={{stats_splits.freqs}}
@@ -290,6 +292,7 @@
         <script>
         //////////laps
             var None=0
+            var nan=0
             {% if stats %}
                 y1_laps={{stats.speeds}}
                 y2_laps={{stats.hrs}}

@@ -1813,6 +1813,8 @@ class Track(models.Model):
     def draw_png(self):
         import utm,os
         import matplotlib.pyplot as plt
+        import matplotlib
+        matplotlib.use('Agg')
         self.info("Draw png")
         every=self.get_every()
         try:

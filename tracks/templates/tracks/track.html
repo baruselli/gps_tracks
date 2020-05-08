@@ -47,10 +47,10 @@
     {% if previous_track or next_track %}
         <br>
         {% if previous_track %}
-            <a href="{% url 'track_detail' track_id=previous_track.pk %}"><--- {{previous_track.date}} - {{previous_track.name_wo_path_wo_ext}}</a>
+            <a href="{% url 'track_detail' track_id=previous_track.pk %}">&larr; {{previous_track.date}} - {{previous_track.name_wo_path_wo_ext}} &larr;</a>
         {% endif %}
         {% if next_track %}
-            <a href="{% url 'track_detail' track_id=next_track.pk %}">---> {{next_track.date}} - {{next_track.name_wo_path_wo_ext}}</a>
+            <a href="{% url 'track_detail' track_id=next_track.pk %}"> &rarr; {{next_track.date}} - {{next_track.name_wo_path_wo_ext}}&rarr;</a>
         {% endif %}
     {% endif %}
 

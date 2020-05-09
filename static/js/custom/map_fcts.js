@@ -1,7 +1,7 @@
 function init_map_base(map,options,mapBounds=null,add_basemaps=true,track_pk=-1){
 
 
-  //  map_right_click(map,options,point_link,waypoint_link,track_pk );
+    map_right_click(map,options,point_link,waypoint_link,track_pk );
 
     map.addControl(new L.Control.Fullscreen());
     if (add_basemaps){

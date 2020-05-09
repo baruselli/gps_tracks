@@ -308,30 +308,33 @@ def deduce_lat_long(photo,track):
     if not times:
         return
 
-    # if time is outside bounds, take first or last point
-    if not photo.deduced_lat:
-        if photo.time<times[0]:
-            photo.deduced_lat = track.td.lats[0]
-            photo.deduced_long = track.td.long[0]
-            photo.save()
-            return
-        if photo.time>times[-1]:
-            photo.deduced_lat = track.td.lats[-1]
-            photo.deduced_long = track.td.long[-1]
-            photo.save()
-            return
+    try:
+        # if time is outside bounds, take first or last point
+        if not photo.deduced_lat:
+            if photo.time<times[0]:
+                photo.deduced_lat = track.td.lats[0]
+                photo.deduced_long = track.td.long[0]
+                photo.save()
+                return
+            if photo.time>times[-1]:
+                photo.deduced_lat = track.td.lats[-1]
+                photo.deduced_long = track.td.long[-1]
+                photo.save()
+                return
 
-    # in general, look for points close in time
-    for i,t in enumerate(times):
-        if photo.time < t:
-            dt1=(photo.time-times[i-1]).total_seconds()
-            dt2 =  (times[i] - photo.time).total_seconds()
-            d1=dt1/(dt1+dt2)
-            d2 = dt2/(dt1 + dt2)
-            photo.deduced_lat=track.td.lats[i]*d1+track.td.lats[i-1]*d2
-            photo.deduced_long = track.td.long[i]*d1 + track.td.long[i - 1]*d2
-            photo.save()
-            return
+        # in general, look for points close in time
+        for i,t in enumerate(times):
+            if photo.time < t:
+                dt1=(photo.time-times[i-1]).total_seconds()
+                dt2 =  (times[i] - photo.time).total_seconds()
+                d1=dt1/(dt1+dt2)
+                d2 = dt2/(dt1 + dt2)
+                photo.deduced_lat=track.td.lats[i]*d1+track.td.lats[i-1]*d2
+                photo.deduced_long = track.td.long[i]*d1 + track.td.long[i - 1]*d2
+                photo.save()
+                return
+    except Exception as e:
+        logger.warning("Error in deduce_lat_long: %s. photo.time %s, time0 %s time1 %s" %(e,photo.time, times[0],times[1]))
 
 def deduce_city(photo,track):
 

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import mimetypes
+from envparse import env
 
 mimetypes.add_type("image/svg+xml", ".svg", True)
 
@@ -114,29 +115,40 @@ WSGI_APPLICATION = "gps_tracks.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-USE_TEXT_INSTEAD_OF_ARRAYS=False
 
+DB_TYPE=env('DB_TYPE',cast=str,default='')
 
-if USE_TEXT_INSTEAD_OF_ARRAYS:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'gps_tracks.sqlite3',
-        }
-    }   
+if DB_TYPE=="sqlite":
+    DB_ENGINE = 'django.db.backends.sqlite3'
+elif DB_TYPE=="postgres":
+    DB_ENGINE = "django.db.backends.postgresql"
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "gps_tracks",
-            #"NAME": "test_gps_tracks",
-            #"NAME": "gps_tracks_2",
-            "USER": "postgres",
-            "PASSWORD": "postgres",
-            "HOST": "localhost",
-            "PORT": "",
-        }
+    DB_ENGINE=env('DB_ENGINE',cast=str,default='django.db.backends.sqlite3')
+
+DB_NAME=env('DB_NAME',cast=str,default='gps_tracks.sqlite3')
+DB_USER=env('DB_USER',cast=str,default='postgres')
+DB_PASSWORD=env('DB_PASSWORD',cast=str,default='postgres')
+DB_HOST=env('DB_HOST',cast=str,default='localhost')
+DB_PORT=env('DB_PORT',cast=str,default='')
+
+# must use text fields with sqlite!
+USE_TEXT_INSTEAD_OF_ARRAYS=env('USE_TEXT_INSTEAD_OF_ARRAYS',cast=bool,default=True)
+USE_TEXT_INSTEAD_OF_ARRAYS=False
+if not USE_TEXT_INSTEAD_OF_ARRAYS and DB_ENGINE=='django.db.backends.sqlite3':
+    print("Forcing postgres without text fields!")
+    DB_ENGINE = "django.db.backends.postgresql"
+    DB_NAME = DB_NAME.replace(".sqlite3","")
+
+DATABASES = {
+    "default": {
+        "ENGINE": DB_ENGINE,
+        "NAME": DB_NAME,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
     }
+}
  
 
 # Password validation

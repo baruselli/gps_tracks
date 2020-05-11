@@ -334,6 +334,8 @@ def deduce_lat_long(photo,track):
                 photo.save()
                 return
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         logger.warning("Error in deduce_lat_long: %s. photo.time %s, time0 %s time1 %s" %(e,photo.time, times[0],times[1]))
 
 def deduce_city(photo,track):

@@ -153,14 +153,14 @@ else:
     DB_HOST=env('DB_HOST',cast=str,default='')
     DB_PORT=env('DB_PORT',cast=str,default='')
 
-print("USE_TEXT_INSTEAD_OF_ARRAYS",USE_TEXT_INSTEAD_OF_ARRAYS)
-print("DB_TYPE",DB_TYPE)
-print("DB_ENGINE",DB_ENGINE)
-print("DB_NAME",DB_NAME)
-print("DB_USER",DB_USER)
-print("DB_PASSWORD",DB_PASSWORD)
-print("DB_HOST",DB_HOST)
-print("DB_PORT",DB_PORT)
+# print("USE_TEXT_INSTEAD_OF_ARRAYS",USE_TEXT_INSTEAD_OF_ARRAYS)
+# print("DB_TYPE",DB_TYPE)
+# print("DB_ENGINE",DB_ENGINE)
+# print("DB_NAME",DB_NAME)
+# print("DB_USER",DB_USER)
+# print("DB_PASSWORD",DB_PASSWORD)
+# print("DB_HOST",DB_HOST)
+# print("DB_PORT",DB_PORT)
 
 DATABASES = {
     "default": {

@@ -1,2 +1,5 @@
 call venv\Scripts\activate.bat
-pyinstaller --name=gps_tracks manage.py
+rm -r dist
+rm -r build
+pyinstaller gps_tracks.spec
+//pyinstaller --name=gps_tracks manage.py

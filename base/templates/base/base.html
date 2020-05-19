@@ -4,105 +4,7 @@
 
     <style>
         {% block stylesheet_base %}
-            header {
-                background-color: #66ff66;
-                position: fixed;
-                top: 0;
-              left: 0;
-              right: 0;
-              down:0;
-              width:100%;
-              z-index:99999;
-              font-size: 140%;
-            }
-
-            footer {
-            background-color: green;
-             position: fixed;
-                /* top: 0;
-              left: 0;
-              right: 0;
-              down:0; */
-              width:100%;
-              z-index:99999;
-            }
-            /* .sticky {
-              position: fixed;
-              top: 0;
-              width: 100%
-            } */
-            .spacer
-            {
-                width: 100%;
-                height: 30px;
-            }
-            .modal {
-                display:    none;
-                position:   absolute;
-                z-index:    1000;
-                top:        0;
-                left:       0;
-                height:     100%;
-                width:      100%;
-                background: rgba( 255, 255, 255, .8 )
-                            url({% static 'gif/FhHRx.gif'%})
-                            50% 50%
-                            no-repeat;
-            }
-
-            /* When the body has the loading class, we turn
-               the scrollbar off with overflow:hidden */
-            body.loading .modal {
-                overflow: hidden;
-            }
-
-            /* Anytime the body has the loading class, our
-               modal element will be visible */
-            body.loading .modal {
-                display: block;
-            }
-
-            /* topbar css*/
-            .ul_topbar {
-              list-style-type: none;
-              margin: 0;
-              padding: 0;
-              overflow: hidden;
-              background-color: #66ff66;
-            }
-
-            .li_topbar {
-              float: left;
-            border-right: 1px solid #bbb;
-            }
-
-            .li_topbar .a_topbar {
-              display: block;
-              text-align: center;
-              padding: 8px;
-              text-decoration: none;
-            }
-            .li_topbar .a_topbar:hover {
-              background-color: 	#008080;
-            }
-
-            main {
-              margin-top: 20px; /* Add a top margin to avoid content overlay */
-            }
-
-            img:click{
-               width: 800px;
-               z-index=100
-            }
-
-            body {
-                background-color: rgba(238, 238, 238, 0.9);
-            }
-
-            .leaflet-popup-content {
-                background-color: rgba(169, 169, 169, .7);
-            }
-
+            /* moved in custom css         */
         {% endblock %}
         {% block stylesheet %}{% endblock %}
     </style>
@@ -117,10 +19,13 @@
         {% load mathfilters %}
         {% load svg %}
 
+        <!-- custom css -->
+        <link rel='stylesheet' href="{% static 'css/custom/custom_style.css' %}" />
+
         <!--plotting libraries-->
         <script src="{% static 'js/external/d3.js' %}"></script>
         <script src="{% static 'js/external/c3.js' %}"></script>
-        <link rel='stylesheet' href="{% static 'css/c3.css' %}" />
+        <link rel='stylesheet' href="{% static 'css/external/c3.css' %}" />
         <!-- exporting plots -->
         <script src="{% static 'js/external/saveSvgAsPng.js' %}"></script>
         <!--leaflet extensions-->
@@ -128,8 +33,8 @@
         <script src="{% static 'js/external/Leaflet.fullscreen.min.js' %}"></script>
         <script src="{% static 'js/external/leaflet.groupedlayercontrol.js' %}"></script>
         <script src="{% static 'js/external/leaflet-heat.js' %}"></script>
-        <link rel="stylesheet" href="{% static 'css/leaflet.fullscreen.css' %}"/>
-        <link rel='stylesheet' href="{% static 'css/leaflet.groupedlayercontrol.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/external/leaflet.fullscreen.css' %}"/>
+        <link rel='stylesheet' href="{% static 'css/external/leaflet.groupedlayercontrol.css' %}" />
         <!-- custom scripts -->
         <script src="{% static 'js/custom/maps.js' %}"></script>
         <script src="{% static 'js/custom/map_fcts.js' %}"></script>
@@ -141,9 +46,9 @@
         <script src="{% static 'js/external/dataTables.buttons.min.js' %}"></script>
         <script src="{% static 'js/external/dataTables.select.min.js' %}"></script>
         <!-- <script src="{% static 'js/dataTables.keyTable.min.js' %}"></script> -->
-        <link rel="stylesheet" href="{% static 'css/jquery.dataTables.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/buttons.dataTables.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/select.dataTables.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/external/jquery.dataTables.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/external/buttons.dataTables.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/external/select.dataTables.min.css' %}">
         <!-- <link rel="stylesheet" href="{% static 'css/keyTable.dataTables.min.css' %}"> -->
         <!-- excel export of tables -->
         <script src="{% static 'js/external/buttons.html5.min.js' %}"></script>
@@ -154,7 +59,7 @@
         
         <!--interactive xml for track sources-->
         <script src="{% static 'js/external/simpleXML.js' %}"></script>
-        <link rel="stylesheet" href="{% static 'css/simpleXML.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/external/simpleXML.css' %}" />
 
 
         <!-- <script src="{% static 'js/chart.js' %}"></script> -->

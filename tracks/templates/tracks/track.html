@@ -342,7 +342,7 @@
 
         </div>
     {% if track.groups.all%}
-    <h2> Group(s)      <button onclick="hide_show('groups_block')">Hide/Show</button></h2>
+    <h2> Groups     <button onclick="hide_show('groups_block')">Hide/Show</button></h2>
     <div id="groups_block" style="display: none;">
       {%for g in  track.groups.all%}
       <a href="{% url 'group_detail' group_id=g.pk %}">{{g.name}}</a><br>
@@ -729,7 +729,7 @@
 
 
         // add photos
-        add_photos_ajax(data_tot)
+        add_photos_ajax(data_tot,links=true)
 
         var t1 = performance.now();
         console.log("AJAX call took " + (t1 - t0) + " milliseconds.")

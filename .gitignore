@@ -14,8 +14,7 @@ requirements_old.txt
 *pyc
 static/js/external/old/*
 static/css/old/*
-dist/
-build/
+
 
 !media/Camera/.gitkeep
 !media/export/.gitkeep

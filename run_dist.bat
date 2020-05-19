@@ -1,1 +1,0 @@
-dist\gps_tracks\gps_tracks.exe runserver localhost:8000

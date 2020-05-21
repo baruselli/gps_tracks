@@ -117,7 +117,11 @@ WSGI_APPLICATION = "gps_tracks.wsgi.application"
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 # quick choice sqlite/postgres
-DB_TYPE=env('DB_TYPE',cast=str,default='postgres')
+DB_TYPE=env('DB_TYPE',cast=str,default='postgres').strip()
+DB_NAME=env('DB_NAME',cast=str,default='').strip()
+
+if ".sqlite3" in DB_NAME:
+    DB_TYPE="sqlite"
 
 if DB_TYPE=="sqlite":
     DB_ENGINE = 'django.db.backends.sqlite3'
@@ -136,32 +140,36 @@ else:
 
 # read db name
 if DB_ENGINE == "django.db.backends.postgresql":
-    DB_NAME=env('DB_NAME',cast=str,default='gps_tracks')
-    DB_USER=env('DB_USER',cast=str,default='postgres')
-    DB_PASSWORD=env('DB_PASSWORD',cast=str,default='postgres')
-    DB_HOST=env('DB_HOST',cast=str,default='localhost')
-    DB_PORT=env('DB_PORT',cast=str,default='')
+    DB_NAME=env('DB_NAME',cast=str,default='gps_tracks').strip()
+    DB_USER=env('DB_USER',cast=str,default='postgres').strip()
+    DB_PASSWORD=env('DB_PASSWORD',cast=str,default='postgres').strip()
+    DB_HOST=env('DB_HOST',cast=str,default='localhost').strip()
+    DB_PORT=env('DB_PORT',cast=str,default='').strip()
+    DB_NAME_TEST=env('DB_NAME_TEST',cast=str,default='gps_tracks_test').strip()
 elif DB_ENGINE == 'django.db.backends.sqlite3':
-    DB_NAME=env('DB_NAME',cast=str,default='gps_tracks.sqlite3')
-    DB_USER=env('DB_USER',cast=str,default='')
-    DB_PASSWORD=env('DB_PASSWORD',cast=str,default='')
-    DB_HOST=env('DB_HOST',cast=str,default='')
-    DB_PORT=env('DB_PORT',cast=str,default='')
+    DB_NAME=env('DB_NAME',cast=str,default='gps_tracks.sqlite3').strip()
+    DB_USER=env('DB_USER',cast=str,default='').strip()
+    DB_PASSWORD=env('DB_PASSWORD',cast=str,default='').strip()
+    DB_HOST=env('DB_HOST',cast=str,default='').strip()
+    DB_PORT=env('DB_PORT',cast=str,default='').strip()
+    DB_NAME_TEST=env('DB_NAME_TEST',cast=str,default='gps_tracks_test.sqlite3').strip()
 else:
-    DB_NAME=env('DB_NAME',cast=str)
-    DB_USER=env('DB_USER',cast=str,default='')
-    DB_PASSWORD=env('DB_PASSWORD',cast=str,default='')
-    DB_HOST=env('DB_HOST',cast=str,default='')
-    DB_PORT=env('DB_PORT',cast=str,default='')
+    DB_NAME=env('DB_NAME',cast=str).strip()
+    DB_USER=env('DB_USER',cast=str,default='').strip()
+    DB_PASSWORD=env('DB_PASSWORD',cast=str,default='').strip()
+    DB_HOST=env('DB_HOST',cast=str,default='').strip()
+    DB_PORT=env('DB_PORT',cast=str,default='').strip()
+    DB_NAME_TEST=env('DB_NAME_TEST',cast=str,default='gps_tracks_test').strip()
 
-# print("USE_TEXT_INSTEAD_OF_ARRAYS",USE_TEXT_INSTEAD_OF_ARRAYS)
-# print("DB_TYPE",DB_TYPE)
-# print("DB_ENGINE",DB_ENGINE)
-# print("DB_NAME",DB_NAME)
-# print("DB_USER",DB_USER)
-# print("DB_PASSWORD",DB_PASSWORD)
-# print("DB_HOST",DB_HOST)
-# print("DB_PORT",DB_PORT)
+print("USE_TEXT_INSTEAD_OF_ARRAYS",USE_TEXT_INSTEAD_OF_ARRAYS)
+print("DB_TYPE",DB_TYPE)
+print("DB_ENGINE",DB_ENGINE)
+print("DB_NAME",DB_NAME)
+print("DB_USER",DB_USER)
+print("DB_PASSWORD",DB_PASSWORD)
+print("DB_HOST",DB_HOST)
+print("DB_PORT",DB_PORT)
+print("DB_NAME_TEST",DB_NAME_TEST)
 
 DATABASES = {
     "default": {
@@ -171,6 +179,9 @@ DATABASES = {
         "PASSWORD": DB_PASSWORD,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
+        'TEST': {
+            'NAME': DB_NAME_TEST,
+        },
     }
 }
  

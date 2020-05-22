@@ -250,6 +250,15 @@ class Track(models.Model):
             self.final_lon = self.td.long[-1]
             self.save()
 
+    def get_groups(self):
+        return self.groups.filter(is_path_group=False)
+
+    def get_groups_names_links(self):
+        l=[]
+        for g in self.get_groups():
+            l.append([g.name, reverse("group_detail", kwargs={"group_id": g.pk})])
+        return l
+
     def get_previous(self,feature="beginning"):
         initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
         previous_track=None
@@ -1437,7 +1446,8 @@ class Track(models.Model):
             track_json["Photos"] = photos_json(photos=self.photos.all())["Photos"]
         else:
             track_json["Photos"] = []
-
+        ## add group links
+        track_json["Groups"] = self.get_groups_names_links()
 
         return track_json
 

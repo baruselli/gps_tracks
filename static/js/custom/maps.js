@@ -1,9 +1,10 @@
 //add google and mapbox variants to all providers
-function enrich_basemaps(mapbox_token="",basemaps_mapbox=[]){
+function enrich_basemaps(mapbox_token="",basemaps_mapbox=[],show_google_maps=False){
     //take all
     basemaps=L.TileLayer.Provider.providers
      //add google to providers from leaflet-providers.js
-    basemaps["Google"] = {
+    if (show_google_maps){
+        basemaps["Google"] = {
             url: 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
             options: {
                 maxZoom: 20,
@@ -23,7 +24,7 @@ function enrich_basemaps(mapbox_token="",basemaps_mapbox=[]){
                 },
             }
         }
-
+    }
     // add to MapBox some variants
     basemaps["MapBox"]["accessToken"]=mapbox_token
     basemaps["MapBox"]["url"]=basemaps["MapBox"]["url"].replace("{accessToken}",mapbox_token)
@@ -42,9 +43,9 @@ function enrich_basemaps(mapbox_token="",basemaps_mapbox=[]){
 
 
 //get all basemaps names map.variant after enriching them
-function get_basemaps_names(mapbox_token="",basemaps_mapbox=[]){
+function get_basemaps_names(mapbox_token="",basemaps_mapbox=[],show_google_maps=False){
 
-    providers=enrich_basemaps(mapbox_token=mapbox_token,basemaps_mapbox=basemaps_mapbox)
+    providers=enrich_basemaps(mapbox_token=mapbox_token,basemaps_mapbox=basemaps_mapbox,show_google_maps=show_google_maps)
     list=[]
     for (name in providers){
         p=providers[name]
@@ -63,10 +64,11 @@ function get_basemaps_names(mapbox_token="",basemaps_mapbox=[]){
 
 
 //get objects from names as a dict map_name:object(map_name)
-function get_basemaps(basemaps_names,mapbox_token,basemaps_mapbox){
+function get_basemaps(basemaps_names,mapbox_token,basemaps_mapbox,show_google_maps){
 
     //add google and mapbox variants
-    enrich_basemaps(mapbox_token=mapbox_token,basemaps_mapbox=basemaps_mapbox)
+
+    enrich_basemaps(mapbox_token=mapbox_token,basemaps_mapbox=basemaps_mapbox,show_google_maps)
     // build all objects
     a={}
     for (i in basemaps_names){

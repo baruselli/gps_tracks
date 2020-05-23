@@ -24,6 +24,7 @@ class EditOptionsView(View):
 
         logger.debug("EditOptionsView")
 
+        show_google_maps=settings.SHOW_GOOGLE_MAPS
 
         if id:
             object = Model.objects.get(pk=id)
@@ -32,7 +33,7 @@ class EditOptionsView(View):
             return render(
                 request,
                 self.template_name,
-                {"object": object, "id": id, "form": form, "basemaps":basemaps},
+                {"object": object, "id": id, "form": form, "basemaps":basemaps,"show_google_maps":show_google_maps},
             )
         else:
             form = ModelForm()

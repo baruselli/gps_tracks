@@ -248,12 +248,15 @@ def context_base_settings(request):
         logger.error("Cannot get basemaps_mapbox from options: %s" %e)
         basemaps_mapbox = []
 
+    show_todo=settings.SHOW_TODO
+
     additions = {
         'mapbox_token': mapbox_token,
         "options_pk": options_pk,
         "default_radius": default_radius,
         "basemaps": basemaps,
-        "basemaps_mapbox":basemaps_mapbox
+        "basemaps_mapbox":basemaps_mapbox,
+        "show_todo":show_todo
     }
     return additions
 

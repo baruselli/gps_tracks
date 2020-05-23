@@ -124,7 +124,7 @@
                 <li class="li_topbar"><a class="a_topbar" href="{% url 'logs' %}">Logs</a></li>
                 {% if options_pk > 0 %} <li  class="li_topbar"><a  class="a_topbar" href="{% url 'edit_options' id=options_pk%}">Options</a></li> {%endif%}
                 <li class="li_topbar"><a class="a_topbar" href="/admin">Admin</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'todo' %}">TODO</a></li>
+                {% if show_todo %}<li class="li_topbar"><a class="a_topbar" href="{% url 'todo' %}">TODO</a></li>{% endif %}
             </ul>
         </header>
 

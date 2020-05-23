@@ -1,5 +1,5 @@
 //add google and mapbox variants to all providers
-function enrich_basemaps(mapbox_token="",basemaps_mapbox=[],show_google_maps=False){
+function enrich_basemaps(mapbox_token="",basemaps_mapbox=[],show_google_maps=false){
     //take all
     basemaps=L.TileLayer.Provider.providers
      //add google to providers from leaflet-providers.js
@@ -43,7 +43,7 @@ function enrich_basemaps(mapbox_token="",basemaps_mapbox=[],show_google_maps=Fal
 
 
 //get all basemaps names map.variant after enriching them
-function get_basemaps_names(mapbox_token="",basemaps_mapbox=[],show_google_maps=False){
+function get_basemaps_names(mapbox_token="",basemaps_mapbox=[],show_google_maps=false){
 
     providers=enrich_basemaps(mapbox_token=mapbox_token,basemaps_mapbox=basemaps_mapbox,show_google_maps=show_google_maps)
     list=[]

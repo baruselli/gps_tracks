@@ -67,7 +67,7 @@ Enter coordinates by hand, or right click on the map
     lats={{line.lats}}
     long={{line.long}}
     alts={{line.alts|safe}}
-baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+    baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}},show_google_maps={{show_google_maps}})
     L.control.layers(baseMaps).addTo(map);
 
     points=[]    

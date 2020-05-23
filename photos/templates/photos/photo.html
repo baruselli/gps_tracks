@@ -113,7 +113,7 @@ var mapBounds = L.latLngBounds([
                 ]);
 map.fitBounds(mapBounds);
 console.log(mapBounds);
-baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}},show_google_maps={{show_google_maps}})
        L.control.layers(baseMaps).addTo(map);
   
 

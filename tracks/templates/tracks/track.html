@@ -465,7 +465,7 @@
 
 {% block cardio %}
     <div id ="div_cardio">
-        {% if not track.cardio_0 == None %}
+        {% if track.has_hr %}
             <h2>Cardio
              <button onclick="hide_show('cardio_block')">Hide/Show</button>
             </h2>

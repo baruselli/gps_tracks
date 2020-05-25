@@ -15,7 +15,7 @@ import numpy as np
 def track_slices(track,indices,every=None, name="Lap", add_before_after=True):
     """given a list of indices, returns details of each slice"""
 
-    logger.debug("track_slices")
+    logger.info("track_slices, indices: %s" %indices)
 
     if indices is None or not indices:
         return []
@@ -39,8 +39,9 @@ def track_slices(track,indices,every=None, name="Lap", add_before_after=True):
     for ind,(i,j) in enumerate(zip(indices_ok,indices_ok[1:])):
         logger.debug("i, j %s %s" %(i,j))
         #if j == 0: j = 1
-        if j >= len(times): j = len(times) - 1
-        if i >= len(times): i = len(times) - 1
+        if times:
+            if j >= len(times): j = len(times) - 1
+            if i >= len(times): i = len(times) - 1
 
         if track.td.alts:
             alts_i=track.td.alts[i]

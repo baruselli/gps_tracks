@@ -25,7 +25,7 @@ class TrackView(View):
 
     def get(self, request, *args, **kwargs):
 
-        logger.debug("TrackView")
+        logger.info("TrackView")
         import time
         start = time.time()
 
@@ -36,15 +36,20 @@ class TrackView(View):
         from .forms import TrackGroupForm
         form = TrackGroupForm(instance=track)
 
-        try:
-            previous_track=Track.get_previous(track)
-        except:
-            import traceback
-            #traceback.print_exc()
-            previous_track = None
-        try:
-            next_track = Track.get_next(track)
-        except:
+        # tracks with no date can be ordered by pk, but it is slow
+        if track.beginning:
+            try:
+                previous_track=Track.get_previous(track)
+            except:
+                import traceback
+                #traceback.print_exc()
+                previous_track = None
+            try:
+                next_track = Track.get_next(track)
+            except:
+                next_track=None
+        else:
+            previous_track=None
             next_track=None
 
         import datetime #used in the saved json
@@ -91,7 +96,11 @@ class TrackView(View):
         cardio_colors=get_cardio_colors()["colors"]
 
         ## tracks same day
-        tracks_same_day=Track.all_objects.filter(date=track.date).exclude(pk=track.pk).exclude(date__isnull=True)
+        if track.date:
+            tracks_same_day=Track.all_objects.filter(date=track.date).exclude(pk=track.pk).exclude(date__isnull=True)
+        else:
+            tracks_same_day=[]
+
 
         # find rank in groups -> this could be improved
         groups_dict = {}

@@ -195,18 +195,14 @@ class SplitsView(View):
 
         form = TrackSplitsForm(request.POST or None, instance=track)
 
-        old_splits_km = track.splits_km
-
         if form.is_valid():
             track = form.save()
 
-            new_splits_km = track.splits_km
-
-            if True: #old_splits_km!=new_splits_km:
+            track.info("Set splits_km by form at %s" %track.splits_km)
+            if True:
                 track.get_split_indices()
                 track.set_json_LD()
 
-            track.info("Track modified by form")
             request_get= request.GET.urlencode()
 
             return HttpResponseRedirect(

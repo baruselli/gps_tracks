@@ -151,7 +151,7 @@
 {% endblock %}
 
 {% block splits %}
-    {% if track.has_times%}
+    {% if 1 %}
         <div id ="div_splits">
             <h2> <a href="{% url 'splits' track_id=track.pk  %}?{{request}}">Splits</a>
                 <button onclick="hide_show('splits_block')">Hide/Show</button>
@@ -165,9 +165,9 @@
                                     <tr>
                                         <th>Split</th>
                                         <th>Length</th>
-                                        <th>Duration</th>
-                                        <th>Speed</th>
-                                        <th>Pace</th>
+                                        {% if track.has_times %}<th>Duration</th>{%endif%}
+                                        {% if track.has_times %}<th>Speed</th>{%endif%}
+                                        {% if track.has_times %}<th>Pace</th>{%endif%}
                                         {% if track.has_freq %}<th>Frequency</th>{%endif%}
                                         {% if track.has_hr %}<th>Heartrate</th>{%endif%}
                                     </tr>
@@ -177,9 +177,9 @@
                                     <tr>
                                         <td  data-sort={{l.number}}><font color="{{l.color}}">{{l.name}}</font></td>
                                         <td data-sort={{l.computed_length}}>{{l.computed_length|floatformat:-2}}km</td>
-                                        <td>{{l.duration_string}}</td>
-                                        <td data-sort={{l.avg_speed}}>{{l.avg_speed|floatformat:-2}}km/h</td>
-                                        <td data-sort=-{{l.avg_speed}}>{{l.avg_pace}}</td>
+                                        {% if track.has_times %}<td>{{l.duration_string}}</td>{%endif%}
+                                        {% if track.has_times %}<td data-sort={{l.avg_speed}}>{{l.avg_speed|floatformat:-2}}km/h</td>{%endif%}
+                                        {% if track.has_times %}<td data-sort=-{{l.avg_speed}}>{{l.avg_pace}}</td>{%endif%}
                                         {% if track.has_freq %}<td>{{l.avg_frequency|floatformat:0}}</td>{%endif%}
                                         {% if track.has_hr %}<td>{{l.avg_heartbeat|floatformat:0}}</td>{%endif%}
                                     </tr>
@@ -199,6 +199,7 @@
         <script>
                 //////Splits
             {% if stats_splits %}
+            {% if track.has_times or track.has_hr or track.has_freq %}
             var None=0
             var nan=0
 
@@ -240,12 +241,13 @@
                 show_y2=true,
                 axes=axes_splits,y2_label="Frequency, Heartrate").resize({height:height, width:width})
             {%endif%}
+            {%endif%}
         </script>
     {% endif %}
 {% endblock %}
 
 {% block laps %}
-    {% if track.has_times%}
+    {% if 1%}
 
         <div id="div_laps">
             <h2> <a href="{% url 'find_laps' track_id=track.pk  %}?reduce_points={{reduce_points}}">Laps</a>
@@ -258,9 +260,9 @@
                             <thead>
                                 <th>Lap</th>
                                 <th>Length</th>
-                                <th>Duration</th>
-                                <th>Speed</th>
-                                <th>Pace</th>
+                                {% if track.has_times %}<th>Duration</th>{%endif%}
+                                {% if track.has_times %}<th>Speed</th>{%endif%}
+                                {% if track.has_times %}<th>Pace</th>{%endif%}
                                 {% if track.has_freq %}<th>Frequency</th>{%endif%}
                                 {% if track.has_hr %}<th>Heartrate</th>{%endif%}
                             </thead>
@@ -270,9 +272,9 @@
                                     <tr>
                                         <td data-sort={{l.number}}><font color="{{l.color}}">{{l.name}}</font></td>
                                         <td>{{l.computed_length|floatformat:-2}}km  </td>
-                                        <td>{{l.duration_string}}</td>
-                                        <td data-sort={{l.avg_speed}}>{{l.avg_speed|floatformat:-2}}km/h</td>
-                                        <td data-sort=-{{l.avg_speed}}>{{l.avg_pace}}</td>
+                                        {% if track.has_times %}<td>{{l.duration_string}}</td>{%endif%}
+                                        {% if track.has_times %}<td data-sort={{l.avg_speed}}>{{l.avg_speed|floatformat:-2}}km/h</td>{%endif%}
+                                        {% if track.has_times %}<td data-sort=-{{l.avg_speed}}>{{l.avg_pace}}</td>{%endif%}
                                         {% if track.has_freq %}<td>{{l.avg_frequency|floatformat:0}}</td>{%endif%}
                                         {% if track.has_hr %}<td>{{l.avg_heartbeat|floatformat:0}}</td>{%endif%}
                                     </tr>
@@ -294,6 +296,7 @@
             var None=0
             var nan=0
             {% if stats %}
+            {% if track.has_times or track.has_freq or track.has_hr %}
                 y1_laps={{stats.speeds}}
                 y2_laps={{stats.hrs}}
                 y3_laps={{stats.freqs}}
@@ -314,7 +317,7 @@
                 columns_laps=[x1_laps,y1_laps]
                 axes_laps={Speed:"y",Heartrate:"y2", Frequency:"y2"}
 
-                {% if track.td.frequencies %}
+                {% if track.has_freq %}
                     xs1["Frequency"]="x_frequency";
                     y3_laps.unshift("Frequency");
                     x3_laps.unshift("x_frequency");
@@ -323,7 +326,7 @@
                     console.log(x3_laps,y3_laps)
                 {%endif%}
 
-                {% if track.td.heartbeats %}
+                {% if track.has_hr %}
                     y2_laps.unshift("Heartrate");
                     xs1["Heartrate"]="x_heartrate";
                     x2_laps.unshift("x_heartrate");
@@ -335,6 +338,7 @@
                 var height=200
                 var chart15=c3plot(xs1,columns_laps,[],"Laps","Speed(km/h)",'#c3_laps',type="line",mean_line=false,show_points=true,show_y2=true,
                 axes=axes_laps,y2_label="Frequency, Heartrate").resize({height:height, width:width})
+            {%endif%}
             {%endif%}
         </script>
     {% endif %}

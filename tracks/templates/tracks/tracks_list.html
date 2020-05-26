@@ -30,12 +30,16 @@
         lat="{{initial_lat}}"
         long="{{initial_long}}"
         if (lat && long){
-            lat=parseFloat(lat)
-            long=parseFloat(long)
-            var mapBounds = L.latLngBounds([
-                [lat-0.1, long-0.1],
-                [lat+0.1, long+0.1],
-            ]);
+            try{
+                lat=parseFloat(lat)
+                long=parseFloat(long)
+                var mapBounds = L.latLngBounds([
+                    [lat-0.1, long-0.1],
+                    [lat+0.1, long+0.1],
+                ]);
+            }catch(error){
+                var mapBounds=null 
+            }
         }
 
         function data_url(){return '{% url 'tracks_as_lines_json' %}?{{request}}&use_color=1' }

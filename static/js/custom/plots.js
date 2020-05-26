@@ -588,7 +588,11 @@ function c3plotjsondata (data,x,y,options={}){
         }
 
     console.log(conf)
-    var chart = c3.generate(conf);
+    try{
+        var chart = c3.generate(conf);
+    }catch(error){
+        console.log("error in c3.generate", error)
+    }
 
 
 
@@ -647,6 +651,70 @@ function hide_absent_data(data,document){
         //slope
         document.getElementById('c3_13').style.display = 'none';
         document.getElementById('c3_23').style.display = 'none';
+    }
+}
+
+function hide_absent_data_laps(data,document){
+    has_times=data["features"]["has_times"]
+    has_alts=data["features"]["has_alts"]
+    has_freq=data["features"]["has_freq"]
+    has_hr=data["features"]["has_hr"]
+
+    //slope
+    document.getElementById('c3_13').style.display = 'none';
+    document.getElementById('c3_23').style.display = 'none';
+
+    if (!has_times){
+        //speed
+        document.getElementById('c3_11').style.display = 'none';
+        document.getElementById('c3_21').style.display = 'none';
+    }
+    if (!has_freq){
+        document.getElementById('c3_12').style.display = 'none';
+        document.getElementById('c3_22').style.display = 'none';
+    }
+    if (!has_hr){
+        document.getElementById('c3_16').style.display = 'none';
+        document.getElementById('c3_26').style.display = 'none';
+    }
+    if (!has_alts){
+        //alt
+        document.getElementById('c3_14').style.display = 'none';
+        document.getElementById('c3_24').style.display = 'none';
+    }
+}
+
+function hide_absent_data_splits(data,document){
+    has_times=data["features"]["has_times"]
+    has_alts=data["features"]["has_alts"]
+    has_freq=data["features"]["has_freq"]
+    has_hr=data["features"]["has_hr"]
+
+    //slope
+    document.getElementById('c3_13').style.display = 'none';
+    document.getElementById('c3_23').style.display = 'none';
+
+    if (!has_times){
+        //speed
+        document.getElementById('c3_11').style.display = 'none';
+        document.getElementById('c3_21').style.display = 'none';
+        // all with times on x axis
+        document.getElementById('c3_24').style.display = 'none';
+        document.getElementById('c3_26').style.display = 'none';
+        document.getElementById('c3_22').style.display = 'none';
+    }
+    if (!has_freq){
+        document.getElementById('c3_12').style.display = 'none';
+        document.getElementById('c3_22').style.display = 'none';
+    }
+    if (!has_hr){
+        document.getElementById('c3_16').style.display = 'none';
+        document.getElementById('c3_26').style.display = 'none';
+    }
+    if (!has_alts){
+        //alt
+        document.getElementById('c3_14').style.display = 'none';
+        document.getElementById('c3_24').style.display = 'none';
     }
 }
 

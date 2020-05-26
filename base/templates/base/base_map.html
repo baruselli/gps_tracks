@@ -17,7 +17,7 @@
 {% block base_js %}
     <script>
         //global variables, needed by all maps
-        baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}})
+        baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}},show_google_maps={{show_google_maps}})
         point_link="{% url 'track_index' %}"
         waypoint_link="{% url 'create_waypoint'  %}"
 

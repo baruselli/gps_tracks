@@ -263,6 +263,13 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     default_properties = default_point_properties(type="path",reset="reset")
 
                     var name="<a href='"+feature.link+"'><b>"+feature.name+"</b></a>";
+                    // add groups if present
+                    if (feature.Groups){
+                        for (var i in  feature.Groups){
+                            g=feature.Groups[i]
+                            name+="<br><a href='"+g[1]+"'>"+g[0]+"</a>"
+                        }
+                    }
                     layer.setStyle({
                         'color': feature.color,
                         "weight" : default_properties["weight"],

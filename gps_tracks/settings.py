@@ -261,9 +261,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 import datetime
 
-SHOW_GOOGLE_TIMELINE=True
-
-
+SHOW_GOOGLE_TIMELINE=env('SHOW_GOOGLE_TIMELINE',cast=bool,default=False)
+SHOW_GOOGLE_MAPS=env('SHOW_GOOGLE_MAPS',cast=bool,default=False)
+SHOW_TODO=env('SHOW_TODO',cast=bool,default=False)
+print("SHOW_TODO",SHOW_TODO)
 
 import sys
 today=datetime.datetime.now().strftime("%Y%m%d")

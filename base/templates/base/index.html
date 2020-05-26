@@ -79,9 +79,9 @@
                         <a href="{% url 'track_detail' track_id=track.pk %}"> {{track.name_wo_path_wo_ext|truncatechars:30}}</a>
                     </td>
 
-                    <td>{{track.date|date:"Y/m/d"}}</td>
-                    <td>{{track.end_country}}</td>
-                    <td>{{track.end_city}}</td>
+                    <td>{% if track.date%}{{track.date|date:"Y/m/d"}}{% endif %}</td>
+                    <td>{% if track.end_country%}{{track.end_country}}{% endif %}</td>
+                    <td>{% if track.end_city%}{{track.end_city}}{% endif %}</td>
                     
                     <td>{% if track.duration_string%}{{track.duration_string}}{%endif%}</td>
                     <!--<td data-sort={{track.total_frequency|stringformat:"05.3f"}}>{% if track.total_frequency%}{{track.total_frequency|floatformat:-1}}steps/min{%endif%}</td>-->

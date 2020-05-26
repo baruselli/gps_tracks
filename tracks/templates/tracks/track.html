@@ -416,7 +416,9 @@
         </div>
     {%endif%}
 
-    <h2><a href="{% url 'photos_show' %}?min_date={{track.date|date:'Y-m-d'}}&max_date={{track.date|date:'Y-m-d'}}">Photos same day</a></h2>
+    {% if track.date %}
+        <h2><a href="{% url 'photos_show' %}?min_date={{track.date|date:'Y-m-d'}}&max_date={{track.date|date:'Y-m-d'}}">Photos same day</a></h2>
+    {% endif %}
 
     {% if tracks_same_day %}
     <h2><a href="" onclick="plot_all_same_day(); return false;">Tracks same day</a>
@@ -465,7 +467,7 @@
 
 {% block cardio %}
     <div id ="div_cardio">
-        {% if not track.cardio_0 == None %}
+        {% if track.has_hr %}
             <h2>Cardio
              <button onclick="hide_show('cardio_block')">Hide/Show</button>
             </h2>

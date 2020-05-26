@@ -55,7 +55,7 @@
     }
 
     $( document ).ready(function() {
-        providers=get_basemaps_names(mapbox_token="{{mapbox_token}}",basemaps_mapbox={{basemaps_mapbox|safe}})
+        providers=get_basemaps_names(mapbox_token="{{mapbox_token}}",basemaps_mapbox={{basemaps_mapbox|safe}},show_google_maps={{show_google_maps}})
         checked_options={{basemaps|safe}}
         for (i in providers){
             name=providers[i]

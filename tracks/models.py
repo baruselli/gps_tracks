@@ -160,7 +160,7 @@ class Track(models.Model):
     uphill = models.FloatField(null=True)
     downhill = models.FloatField(null=True)
     avg_distance_points = models.FloatField(null=True)
-    splits_km = models.FloatField(null=False,blank=False, default=1)
+    splits_km = models.FloatField(null=False,blank=False, default=0)
     # splits = models.TextField(null=True, blank=True, unique=False, default="")
     svg_file = models.TextField(null=True, blank=True, unique=False, default="")
     png_file = models.TextField(null=True, blank=True, unique=False, default="")
@@ -249,6 +249,15 @@ class Track(models.Model):
             self.final_lat = self.td.lats[-1]
             self.final_lon = self.td.long[-1]
             self.save()
+
+    def get_groups(self):
+        return self.groups.filter(is_path_group=False)
+
+    def get_groups_names_links(self):
+        l=[]
+        for g in self.get_groups():
+            l.append([g.name, reverse("group_detail", kwargs={"group_id": g.pk})])
+        return l
 
     def get_previous(self,feature="beginning"):
         initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
@@ -567,16 +576,32 @@ class Track(models.Model):
         self.td.save()
         self.info("OK set_all_properties")
 
-    def set_splits(self):#TODO: move to app?
+
+    def set_default_splits_km(self):
+        if self.length_3d:
+            length=self.length_3d
+        else:
+            length=self.length_2d
+        length_km=max(int(length/1000),1)
+        splits_km=length_km//10+1
+        self.splits_km=splits_km
+        self.save()
+        self.info("Set splits_km at %s" %self.splits_km)
+
+    def set_splits(self):
         from splits_laps.utils import get_split_indices,stats_from_slices, track_slices, get_reduced_slices
+        self.info("set_splits")
         try:
             if self.n_points>0:
+                if not self.splits_km:
+                    self.info("Using set_default_splits_km")
+                    self.set_default_splits_km()
                 if self.td.dist_csv and not self.is_merged: 
-                    indices = get_split_indices(self.td.dist_csv)
+                    indices = get_split_indices(self.td.dist_csv,self.splits_km)
                 elif self.td.dist_tcx and not self.is_merged:
-                    indices = get_split_indices(self.td.dist_tcx)
+                    indices = get_split_indices(self.td.dist_tcx,self.splits_km)
                 else:
-                    indices = get_split_indices(self.td.computed_dist)
+                    indices = get_split_indices(self.td.computed_dist,self.splits_km)
                 self.debug("split indices: %s" % indices)
                 self.td.split_indices = [int(i) for i in indices]
                 self.save()
@@ -1437,7 +1462,8 @@ class Track(models.Model):
             track_json["Photos"] = photos_json(photos=self.photos.all())["Photos"]
         else:
             track_json["Photos"] = []
-
+        ## add group links
+        track_json["Groups"] = self.get_groups_names_links()
 
         return track_json
 
@@ -2290,15 +2316,18 @@ class Track(models.Model):
         return self.index_every
 
 
-    def get_split_indices(self):#TODO: move to app?
-        n_km = self.splits_km
+    def get_split_indices(self):
+        self.info("get_split_indices")
+        if not self.splits_km:
+            self.info("Using set_default_splits_km")
+            self.set_default_splits_km()
         from splits_laps.utils import get_split_indices
-        if self.td.dist_csv:
-            indices = get_split_indices(self.td.dist_csv, n_km)
-        elif self.td.dist_tcx:
-            indices = get_split_indices(self.td.dist_tcx, n_km)
+        if self.td.dist_csv  and not self.is_merged:
+            indices = get_split_indices(self.td.dist_csv, self.splits_km)
+        elif self.td.dist_tcx  and not self.is_merged:
+            indices = get_split_indices(self.td.dist_tcx, self.splits_km)
         else:
-            indices = get_split_indices(self.td.computed_dist, n_km)
+            indices = get_split_indices(self.td.computed_dist, self.splits_km)
         #self.info("split indices: %s" % indices)
         self.td.split_indices = [int(i) for i in indices]
         self.td.save()

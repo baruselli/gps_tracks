@@ -201,6 +201,7 @@ class SplitsView(View):
             track.info("Set splits_km by form at %s" %track.splits_km)
             if True:
                 track.get_split_indices()
+                track.set_splits()
                 track.set_json_LD()
 
             request_get= request.GET.urlencode()

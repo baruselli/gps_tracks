@@ -144,7 +144,7 @@ if DB_ENGINE == "django.db.backends.postgresql":
     DB_USER=env('DB_USER',cast=str,default='postgres').strip()
     DB_PASSWORD=env('DB_PASSWORD',cast=str,default='postgres').strip()
     DB_HOST=env('DB_HOST',cast=str,default='localhost').strip()
-    DB_PORT=env('DB_PORT',cast=str,default='').strip()
+    DB_PORT=env('DB_PORT',cast=str,default='5432').strip()
     DB_NAME_TEST=env('DB_NAME_TEST',cast=str,default='gps_tracks_test').strip()
 elif DB_ENGINE == 'django.db.backends.sqlite3':
     DB_NAME=env('DB_NAME',cast=str,default='gps_tracks.sqlite3').strip()

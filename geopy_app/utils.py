@@ -33,15 +33,20 @@ def get_geopy(lat, long):
         # componenets
         out_dict = location.raw.get("address", {})
 
+        logger.info(out_dict)
+
         return {
             "address": address,
             "country": out_dict.get("country"),
             "country_code": out_dict.get("country_code"),
             "region": out_dict.get("county")
-            or out_dict.get("state_district")
-            or out_dict.get("suburb")
-            or out_dict.get("state"),
-            "city": out_dict.get("village") or out_dict.get("town") or out_dict.get("city"),
+                or out_dict.get("state_district")
+                or out_dict.get("suburb")
+                or out_dict.get("state"),
+            "city": out_dict.get("village") 
+                or out_dict.get("town") 
+                or out_dict.get("city")
+                or out_dict.get("municipality")
         }
     else:
         return {}

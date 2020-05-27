@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/github/baruselli/gps_tracks.svg?style=svg&circle-token=212f3855c5f6b83a1e26a8aa77b1b7efe5f6f999)](https://app.circleci.com/pipelines/github/baruselli/gps_tracks?branch=master)
+
 # gps_tracks
 
 GPS Tracks is a Django application aimed at storing and visualizing GPS data files (gpx, kml, kmz, tcx, and some csv).

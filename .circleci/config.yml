@@ -19,3 +19,10 @@ workflows:
   main:
     jobs:
       - build-and-test
+
+docker:
+  - image: circleci/python:3.6.1
+  - image: circleci/postgres:10.3
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: gps_tracks_test 

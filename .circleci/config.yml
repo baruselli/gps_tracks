@@ -5,9 +5,9 @@ orbs:
 
 jobs:
   build-and-test:
-    # docker:
-    #   - image: circleci/python:3.6.1
-    #   - image: circleci/postgres:10.3
+    docker:
+      - image: circleci/python:3.6.1
+      - image: circleci/postgres:10.3
     executor: python/default
     steps:
       - checkout
@@ -18,10 +18,9 @@ jobs:
           command: python manage.py test
           name: Test
           environment:
-            POSTGRES_USER: ubuntu
-            POSTGRES_DB: gps_tracks_test 
             DB_HOST: localhost
-            DB_USER: ubuntu
+            DB_USER: postgres
+            DB_PASSWORD: postgres
             DB_NAME: gps_tracks_test
 
 workflows:

@@ -30,3 +30,6 @@ docker:
     environment:
       POSTGRES_USER: ubuntu
       POSTGRES_DB: gps_tracks_test 
+      DB_HOST: localhost
+      DB_USER: ubuntu
+      DB_NAME: gps_tracks_test

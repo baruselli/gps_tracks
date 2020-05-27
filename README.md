@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/github/baruselli/gps_tracks.svg?style=svg&circle-token=212f3855c5f6b83a1e26a8aa77b1b7efe5f6f999)](https://app.circleci.com/pipelines/github/baruselli/gps_tracks?branch=master)
+[![baruselli](https://circleci.com/github/baruselli/gps_tracks.svg?style=svg&circle-token=212f3855c5f6b83a1e26a8aa77b1b7efe5f6f999)](https://app.circleci.com/pipelines/github/baruselli/gps_tracks?branch=master)
 
 # gps_tracks
 

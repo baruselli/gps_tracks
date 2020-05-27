@@ -5,9 +5,9 @@ orbs:
 
 jobs:
   build-and-test:
-    docker:
-      - image: circleci/python:3.6.1
-      - image: circleci/postgres:10.3
+    # docker:
+    #   - image: circleci/python:3.6.1
+    #   - image: circleci/postgres:10.3
     executor: python/default
     steps:
       - checkout

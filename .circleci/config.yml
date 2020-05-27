@@ -23,8 +23,9 @@ workflows:
 docker:
   - image: circleci/python:3.6.1
     environment:
-      PG_HOST: localhost
-      PG_USER: ubuntu
+      DB_HOST: localhost
+      DB_USER: ubuntu
+      DB_NAME: gps_tracks_test
   - image: circleci/postgres:10.3
     environment:
       POSTGRES_USER: ubuntu

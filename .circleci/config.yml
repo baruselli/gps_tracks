@@ -7,13 +7,13 @@ jobs:
   build-and-test-psql:
     docker:
       - image: circleci/postgres:10.3
-      - image: circleci/python:3.6.1
+      #- image: circleci/python:3.6.1
     executor: python/default
     steps:
       - checkout
       - python/load-cache
       - python/install-deps
-      #- python/save-cache
+      - python/save-cache
       - run:
           command: python manage.py test
           name: Test
@@ -43,6 +43,7 @@ workflows:
   main:
     jobs:
       - build-and-test-sqlite
-#      - build-and-test-psql #Skipping cache - error checking storage: RequestError: send request failed and pip: command not found
+      #this fails: Skipping cache - error checking storage: RequestError: send request failed and pip: command not found
+#      - build-and-test-psql 
 
 

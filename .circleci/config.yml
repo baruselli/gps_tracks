@@ -14,14 +14,21 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run:
+      # - run-psql:
+      #     command: python manage.py test
+      #     name: Test
+      #     environment:
+      #       DB_HOST: localhost
+      #       DB_USER: postgres
+      #       DB_PASSWORD: postgres
+      #       DB_NAME: gps_tracks_test
+      #       DB_TYPE: postgres
+      - run-sqlite:
           command: python manage.py test
           name: Test
           environment:
-            DB_HOST: localhost
-            DB_USER: postgres
-            DB_PASSWORD: postgres
-            DB_NAME: gps_tracks_test
+            DB_TYPE: sqlite
+            DB_NAME: gps_tracks_test.sqlite3
 
 workflows:
   main:

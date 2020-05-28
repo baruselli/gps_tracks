@@ -14,7 +14,7 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run-psql:
+      - run:
           command: python manage.py test
           name: Test
           environment:
@@ -33,7 +33,7 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run-sqlite:
+      - run:
           command: python manage.py test
           name: Test
           environment:

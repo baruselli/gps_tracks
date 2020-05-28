@@ -5,6 +5,8 @@ orbs:
 
 jobs:
   build-and-test-psql:
+    docker:
+      - image: circleci/postgres:10.3
     executor: python/default
     steps:
       - checkout

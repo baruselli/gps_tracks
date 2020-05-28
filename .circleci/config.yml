@@ -4,7 +4,7 @@ orbs:
   python: circleci/python@0.2.1
 
 jobs:
-  build-and-test:
+  build-and-test-psql:
     docker:
       - image: circleci/python:3.6.1
       - image: circleci/postgres:10.3
@@ -14,15 +14,25 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      # - run-psql:
-      #     command: python manage.py test
-      #     name: Test
-      #     environment:
-      #       DB_HOST: localhost
-      #       DB_USER: postgres
-      #       DB_PASSWORD: postgres
-      #       DB_NAME: gps_tracks_test
-      #       DB_TYPE: postgres
+      - run-psql:
+          command: python manage.py test
+          name: Test
+          environment:
+            DB_HOST: localhost
+            DB_USER: postgres
+            DB_PASSWORD: postgres
+            DB_NAME: gps_tracks_test
+            DB_TYPE: postgres
+
+  build-and-test-sqlite:
+    docker:
+      - image: circleci/python:3.6.1
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
       - run-sqlite:
           command: python manage.py test
           name: Test
@@ -30,8 +40,10 @@ jobs:
             DB_TYPE: sqlite
             DB_NAME: gps_tracks_test.sqlite3
 
+
 workflows:
   main:
     jobs:
-      - build-and-test
+      #- build-and-test-psql
+      - build-and-test-sqlite
 

@@ -5,9 +5,6 @@ orbs:
 
 jobs:
   build-and-test-psql:
-    docker:
-      - image: circleci/python:3.6.1
-      - image: circleci/postgres:10.3
     executor: python/default
     steps:
       - checkout
@@ -25,8 +22,6 @@ jobs:
             DB_TYPE: postgres
 
   build-and-test-sqlite:
-    docker:
-      - image: circleci/python:3.6.1
     executor: python/default
     steps:
       - checkout

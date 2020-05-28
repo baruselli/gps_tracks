@@ -11,9 +11,9 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
+      #- python/load-cache
       - python/install-deps
-      - python/save-cache
+      #- python/save-cache
       - run:
           command: python manage.py test
           name: Test
@@ -42,6 +42,6 @@ jobs:
 workflows:
   main:
     jobs:
-#      - build-and-test-sqlite
+      - build-and-test-sqlite
       - build-and-test-psql
 

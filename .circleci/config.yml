@@ -41,6 +41,6 @@ jobs:
 workflows:
   main:
     jobs:
-      - build-and-test-psql
       - build-and-test-sqlite
+      - build-and-test-psql
 

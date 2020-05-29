@@ -687,3 +687,104 @@ function create_table_logs(table_id){
 
     return table
 }
+
+
+function seconds_to_string(seconds){
+    var date = new Date(0);
+    date.setSeconds(Math.round(seconds)); // specify value for SECONDS here
+    var timeString = date.toISOString().substr(11, 8);
+    return timeString
+}
+
+
+function add_info_from_selected_data(selected_data){
+    count=0
+    total_duration=0
+    total_length=0
+    total_speed=0
+    total_duration_frequency=0
+    total_frequency=0
+    total_duration_hr=0
+    total_hr=0
+    for (i=0;i<selected_data.length;i++){
+        count+=1
+        //duration
+        duration=selected_data[i]["duration"]["duration"]
+        if (duration != undefined && duration !=null){
+            total_duration+=duration
+        }
+        //length
+        length=selected_data[i]["length"]["length"]
+        if (length != undefined && length !=null){
+            total_length+=length
+        }
+        //frequency
+        frequency=selected_data[i]["frequency"]["frequency"]
+        if (frequency && duration){
+            total_duration_frequency+=duration
+            total_frequency+=frequency*duration
+        }
+        //hr
+        hr=selected_data[i]["total_heartrate"]
+        if (hr && duration){
+            total_duration_hr+=duration
+            total_hr+=hr*duration
+        }
+
+
+    }
+    
+    if (count==0){
+        var html=""
+    }else{
+        var html="<br>"
+        if (total_duration){
+            html += "Total duration: <b>"+
+                    seconds_to_string(total_duration*60)+"</b>, "+
+                    "Average duration: <b>" + 
+                    seconds_to_string(total_duration/count*60)+"</b><br>"
+        }
+        if (total_length){
+            html +="Total length: <b>" + 
+                (total_length/1000).toFixed(2)+"km</b>, "+
+                "Average length: <b>" + 
+                (total_length/1000/count).toFixed(2)+"km</b><br>"
+        }
+        if (total_length && total_duration){
+            html +="Average speed: <b>" + 
+                (total_length/total_duration*60/1000).toFixed(1)+"km/h</b>, "+
+                "Average pace: <b>" + 
+                pace_from_speed(total_length/total_duration*60/1000)+"</b><br>"
+        }
+        if (total_duration_frequency && total_frequency){
+            html +="Average frequency: <b>" + 
+                (total_frequency/total_duration_frequency).toFixed(1)+"</b><br>"
+        }
+        if (total_duration_hr && total_hr){
+            html +="Average heartrate: <b>" + 
+                (total_hr/total_duration_hr).toFixed(1)+"</b><br>"
+        }
+
+    }
+
+    $("#id_span_infos").html(html)
+}
+
+
+function pace_from_speed(speed){
+
+    if (speed){
+        if (speed>=1){
+            pace = 60 / speed
+            var date = new Date(0);
+            date.setSeconds(Math.round(pace*60)); 
+            var pace_string = date.toISOString().substr(14, 5)+"min/km"
+        }else{
+            var pace_string = ">1h/km"
+        }
+    }else{
+        var pace_string=""
+    }
+
+    return pace_string
+}

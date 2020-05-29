@@ -129,10 +129,13 @@
 
         $.getJSON(url,function(data){
         console.log("data", data)
-        console.log("hhhhhhhhhhhhhhhhhh")
         //first, create table
         options=data["features"] //contains has_hr and has_freq
         var table=create_table('#import_table',data["Tracks"],url_many_tracks,url_many_tracks_group,url_many_tracks_delete, url_many_tracks_merge,url_many_tracks_plot,options)
+
+        $("#import_table_info").append("<span id='id_span_infos'></span>")
+
+
         //highlight point on map when clicking on row: I cannot assign ids to leaflet markers, so I use the ordinal "number" property
         table.on( 'select', function ( e, dt, type, indexes ) {
             console.log("--------select row---------")
@@ -142,7 +145,10 @@
             // and highlight correponding points (=tracks) on the map
             highlight_leaflet_points(number=null,class_name="leaflet_track_marker", track_pks=pks)
             highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
-            }
+
+            selected_data=table.rows( '.selected' ).data()
+            add_info_from_selected_data(selected_data)
+        }
         } );
         //same as above on deselect
         table.on( 'deselect', function ( e, dt, type, indexes ) {
@@ -151,6 +157,9 @@
             var pks = table.rows( '.selected' ).data().pluck( 'pk' );
             highlight_leaflet_points(number=null,class_name="leaflet_track_marker", track_pks=pks)
             highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
+
+            selected_data=table.rows( '.selected' ).data()
+            add_info_from_selected_data(selected_data)
             }
         } );
 

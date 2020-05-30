@@ -311,12 +311,12 @@ def deduce_lat_long(photo,track):
     try:
         # if time is outside bounds, take first or last point
         if not photo.deduced_lat:
-            if photo.time<times[0]:
+            if photo.time.replace(tzinfo=None)<times[0].replace(tzinfo=None):
                 photo.deduced_lat = track.td.lats[0]
                 photo.deduced_long = track.td.long[0]
                 photo.save()
                 return
-            if photo.time>times[-1]:
+            if photo.time.replace(tzinfo=None)>times[-1].replace(tzinfo=None):
                 photo.deduced_lat = track.td.lats[-1]
                 photo.deduced_long = track.td.long[-1]
                 photo.save()
@@ -324,7 +324,7 @@ def deduce_lat_long(photo,track):
 
         # in general, look for points close in time
         for i,t in enumerate(times):
-            if photo.time < t:
+            if photo.time.replace(tzinfo=None) < t.replace(tzinfo=None):
                 dt1=(photo.time-times[i-1]).total_seconds()
                 dt2 =  (times[i] - photo.time).total_seconds()
                 d1=dt1/(dt1+dt2)

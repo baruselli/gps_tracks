@@ -20,7 +20,7 @@
 
 <form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">
     {% csrf_token %}
-    <input type="file" name="file" multiple />
+    <input type="file" name="file" multiple title="Upload GPS tracks"/>
     <input type="submit" value="Upload File" />
   </form>
 </div>

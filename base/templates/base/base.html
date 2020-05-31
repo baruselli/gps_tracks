@@ -109,21 +109,21 @@
     <body>
         <header id="header" class="header">
             <ul class="ul_topbar">
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'index'  %}">Index</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'emptymap'  %}">Map</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'track_index' %}?how_many=5">Tracks</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'waypoints_map'  %}?no_search=1">Waypoints</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'group_index'  %}">Groups</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'photos_show'  %}?no_search=1">Photos</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'line_index' %}">Lines</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'geojson_index' %}">Geojson</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'user_index' %}">Users</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'index'  %}" title="Homepage">Index</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'emptymap'  %}" title="Empty map">Map</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'track_index' %}?how_many=5" title="List of tracks">Tracks</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'waypoints_map'  %}?no_search=1" title="List of waypoints">Waypoints</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'group_index'  %}" title="List of groups of tracks">Groups</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'photos_show'  %}?no_search=1" title="List of photos">Photos</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'line_index' %}" title="List of lines">Lines</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'geojson_index' %}" title="List of GeoJSON objects">Geojson</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'user_index' %}" title="List of users">Users</a></li>
                 <!-- <li class="li_topbar"><a class="a_topbar" href="{% url 'statistics' %}">Statistics</a></li> -->
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'import' %}">Import</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'help' %}">Help</a></li>
-                <li class="li_topbar"><a class="a_topbar" href="{% url 'logs' %}">Logs</a></li>
-                {% if options_pk > 0 %} <li  class="li_topbar"><a  class="a_topbar" href="{% url 'edit_options' id=options_pk%}">Options</a></li> {%endif%}
-                <li class="li_topbar"><a class="a_topbar" href="/admin">Admin</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'import' %}" title="Import page for tracks and photos">Import</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'help' %}" title="Help">Help</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'logs' %}" title="Logs for everything done by the program">Logs</a></li>
+                {% if options_pk > 0 %} <li  class="li_topbar"><a  class="a_topbar" href="{% url 'edit_options' id=options_pk%}" title="Edit Options">Options</a></li> {%endif%}
+                <li class="li_topbar"><a class="a_topbar" href="/admin" title="Allows to edit at objects at low level. At your own risk! Default username: admin; defualt password: admin ">Admin</a></li>
                 {% if show_todo %}<li class="li_topbar"><a class="a_topbar" href="{% url 'todo' %}">TODO</a></li>{% endif %}
             </ul>
         </header>

@@ -403,7 +403,10 @@ class Track(models.Model):
             step += 1
             lats_ok=[l for l in self.td.lats if l is not None]
             lons_ok = [l for l in self.td.long if l is not None]
-            alts_ok = [l for l in self.td.alts if l is not None]
+            #alts_ok = [l for l in self.td.alts if l is not None]
+            # warning: this removes zero even if it might be a real measurement!
+            # but it cleans cases where 0 is absence of alt (more frequent)
+            alts_ok = [l for l in self.td.alts if l]
             import math
             if lats_ok:
                 self.avg_lat = np.median(lats_ok)

@@ -325,8 +325,8 @@ def deduce_lat_long(photo,track):
         # in general, look for points close in time
         for i,t in enumerate(times):
             if photo.time.replace(tzinfo=None) < t.replace(tzinfo=None):
-                dt1=(photo.time-times[i-1]).total_seconds()
-                dt2 =  (times[i] - photo.time).total_seconds()
+                dt1=(photo.time.replace(tzinfo=None)-times[i-1].replace(tzinfo=None)).total_seconds()
+                dt2 =  (times[i].replace(tzinfo=None) - photo.time.replace(tzinfo=None)).total_seconds()
                 d1=dt1/(dt1+dt2)
                 d2 = dt2/(dt1 + dt2)
                 photo.deduced_lat=track.td.lats[i]*d1+track.td.lats[i-1]*d2

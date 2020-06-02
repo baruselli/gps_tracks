@@ -5,30 +5,77 @@
 
 {% block content %}
 
+<h1>Help</h1>
 
 
-<h3>Supported file formats</h3>
+<h2>Map</h2>
+
+<h2>Tracks</h2>
+
+    <h3>Supported file formats</h3>
 
 
-<ul>
+    <ul>
 
-    <li><a href="https://en.wikipedia.org/wiki/GPS_Exchange_Format">gpx</a>: this is the standard </li>
-    <li><a href="https://developers.google.com/kml/">kml</a>: this it the standard developed by Google</li>
-    <li>kmz: a kmz file is simply a compressed kml file, hence it shares all its features</li>
-    <li><a href="https://en.wikipedia.org/wiki/Training_Center_XML">tcx</a>: this is the standard introduced by Garmin; it supports</li>
-    <li>csv: this is a general data format; the program parses csv files from TomTom and Polar</li>
+        <li><a href="https://en.wikipedia.org/wiki/GPS_Exchange_Format">gpx</a>: this is the standard </li>
+        <li><a href="https://developers.google.com/kml/">kml</a>: this it the standard developed by Google</li>
+        <li>kmz: a kmz file is simply a compressed kml file, hence it shares all its features</li>
+        <li><a href="https://en.wikipedia.org/wiki/Training_Center_XML">tcx</a>: this is the standard introduced by Garmin; it supports</li>
+        <li>csv: this is a general data format; the program parses csv files from TomTom and Polar</li>
 
-</ul>
+    </ul>
+
+<h2>Waypoints</h2>
+Waypoints are automatically imported with tracks, or can be created by hand
+
+<h2>Groups</h2>
+Tracks can be manually assigned to groups of tracks.
+Some groups are also created automatically.
+
+
+<h2>Photos</h2>
+
+
+<h2>Lines</h2>
+
+
+<h2>GeoJSON objects</h2>
+
+<h2>Users</h2>
+
+<h2>Import</h2>
+
+<h2>Logs</h2>
+
+<h2>Options</h2>
+
+<h2>Admin</h2>
+
 
 Note that the format by TomTom, fit, is a binary file which cannot be freely read.
 
-
 <h3>Main libraries used</h3>
+<h4>Backend</h4>
 <ul>
-<li>gpxpy: to read and export gpx files (<a href="https://github.com/tkrajina/gpxpy">https://github.com/tkrajina/gpxpy</a>)</li>
-<li>tcx: to read tcx files (<a href="https://pypi.org/project/python-tcxparser/">https://pypi.org/project/python-tcxparser/</a>) </li>
-<li>geopy: for geocoding (<a href="https://github.com/geopy/geopy">https://github.com/geopy/geopy</a>)</li>
-<li>fastkml: to write KML files (<a href="https://github.com/cleder/fastkml">https://github.com/cleder/fastkml)</a></li>
+    <li><a href="https://www.djangoproject.com/">Django</a> 2.2  for the web application</li>
+    <li><a href="https://github.com/tkrajina/gpxpy">gpxpy</a> to read and export gpx files</li>
+    <li><a href="https://pypi.org/project/python-tcxparser/">tcx</a> to read tcx files</li>
+    <li><a href="https://github.com/cleder/fastkml">fastkml</a> and <a href="https://pypi.org/project/simplekml/0.7.0/">simplekml</a> to read and export KML files</a></li>
+    <li><a href="https://pandas.pydata.org/">pandas</a> to read csv files</li>
+    <li><a href="https://github.com/geopy/geopy">geopy</a> for geocoding</li>
 </ul>
 
+<h4>Frontend</h4>
+<ul>
+    <li> <a href="https://github.com/makinacorpus/django-leaflet"> Django Leaflet</a> for maps</li>
+    <li> <a href="https://github.com/c3js/c3"> c3</a> for plots</li>
+    <li> <a href="https://github.com/DataTables/DataTables"> DataTables</a> for tables</li>
+    <li> <a href="https://github.com/leaflet-extras/leaflet-providers"> leaflet-providers</a> for the list of basemaps</li>
+    <li> <a href="https://github.com/d3/d3/"> d3</a> </li>
+    <li> <a href="https://github.com/bjpop/saveSvgAsPng"> saveSvgAsPng</a> </li>
+    <li> <a href="https://github.com/Leaflet/Leaflet.fullscreen"> Leaflet.fullscreen</a> </li>
+    <li> <a href="https://github.com/ismyrnow/leaflet-groupedlayercontrol"> leaflet-groupedlayercontrol</a> </li>
+    <li> <a href="https://github.com/jquery/jquery/"> jquery</a> </li>
+    <li> <a href="https://stuk.github.io/jszip/"> jszip</a> </li>
+</ul>
 {%endblock%}

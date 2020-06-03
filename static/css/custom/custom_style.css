@@ -63,6 +63,7 @@ body.loading .modal {
   padding: 0;
   overflow: hidden;
   background-color: #66ff66;
+  display:inline-block;
 }
 
 .li_topbar {

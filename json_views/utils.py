@@ -536,8 +536,7 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
         # this is slightly faster than loading the json for each track, since I need few properties
         elif points_line=="Point":
             from django.db.models import Count
-            values = tracks.annotate(n_photos=Count('photos')).\
-                                      values("pk", "name_wo_path_wo_ext","png_file","date","end_country","end_city","duration",
+            fields=["pk", "name_wo_path_wo_ext","png_file","date","end_country","end_city","duration",
                                    "duration_string2","pace","pace_string","total_frequency","total_heartbeat",
                                    #"min_lat","max_lat",
                                    "avg_lat",
@@ -545,8 +544,17 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
                                    "avg_long",
                                    "duration_string", "duration_string2","length_3d","avg_speed","n_photos",
                                    "activity_type","total_calories", "total_step_length","total_steps",
-                                   "uphill","downhill","min_alt","max_alt","user__max_heartrate"
-                                   )
+                                   "uphill","downhill","min_alt","max_alt","user__max_heartrate",]
+
+            try:
+                # check if value distance exists (added ony if filtering by distance)
+                tracks.values("distance")
+                fields.append("distance")
+            except:
+                pass
+
+            values = tracks.annotate(n_photos=Count('photos')).\
+                                      values(*fields)
             for i,v in enumerate(values):
                 v["avg_speed"]=v["avg_speed"] or 0
                 v["avg_long"]=to_float_or_zero(v["avg_long"])
@@ -620,6 +628,12 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
                 # does this make everythong slow?
                 if tracks[i].duplicated_group!=-1:
                     v["duplicated_group"]=tracks[i].duplicated_group
+
+                if "distance" in v:
+                    v["distance"] = {
+                        "distance": v["distance"],
+                        "distance_string": "{0:.2f}".format(v["distance"]) + "km"
+                    }
 
                 # def clean_nan(x):
                 #     from numpy import isnan

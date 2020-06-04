@@ -690,9 +690,13 @@ function create_table_logs(table_id){
 
 
 function seconds_to_string(seconds){
-    var date = new Date(0);
-    date.setSeconds(Math.round(seconds)); // specify value for SECONDS here
-    var timeString = date.toISOString().substr(11, 8);
+    if (seconds<86400){
+        var date = new Date(0);
+        date.setSeconds(Math.round(seconds)); // specify value for SECONDS here
+        var timeString = date.toISOString().substr(11, 8);
+    }else{
+        return (seconds/86400).toFixed(0)+"days"+((seconds%86400)/3600).toFixed(0)+"h"
+    }
     return timeString
 }
 

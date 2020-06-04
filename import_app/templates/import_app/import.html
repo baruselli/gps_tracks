@@ -55,6 +55,9 @@
     <input type="submit" value="Submit" id ="submit_button_tracks">
 </form>
 
+<button onclick="location.href='{% url 'tracks_set_all_properties'  %}'" type="button">Refresh properties all tracks</button>
+
+
 
 <h3>Upload file(s) and import</h3>
 <form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">
@@ -66,6 +69,7 @@
   </form>
 
   <h3> <a href="{% url 'duplicated_files' %}">Duplicated files </a></h3>
+
 
 
   {%comment %}

@@ -12,6 +12,8 @@ urlpatterns = [
     url(r"^main$", views.TrackListGeneralView.as_view(), name="track_gen_index"),
     url(r"^tracks_list$", views.TracksListView.as_view(), name="track_index"),
     url(r"^tracks_map$", views.TracksMapView.as_view(), name="tracks_map"),
+    url(r"^tracks_set_all_properties/$",views.TracksSetAllPropertiesView.as_view(),name="tracks_set_all_properties",),
+
 
     # single track
     url(r"^track/(?P<track_id>[0-9]+)/$", views.TrackView.as_view(), name="track_detail"),

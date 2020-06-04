@@ -971,3 +971,19 @@ class TrackSetAllPropertiesView(View):
             reverse("track_detail", kwargs={"track_id": track_id})
         )
 
+class TracksSetAllPropertiesView(View):
+    def get(self, request, *args, **kwargs):
+        from .models import Track
+        import threading
+        from .utils import refresh_properties
+
+        logger.info("TracksSetAllPropertiesView")
+        t = threading.Thread(target=refresh_properties, kwargs={"tracks":Track.objects.all()})
+        t.start()
+
+        message = "Started import in a parallel thread, check logs for details"
+        messages.success(request, message)
+
+        return HttpResponseRedirect(
+            reverse("import")
+        )

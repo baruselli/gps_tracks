@@ -133,9 +133,6 @@
         options=data["features"] //contains has_hr and has_freq
         var table=create_table('#import_table',data["Tracks"],url_many_tracks,url_many_tracks_group,url_many_tracks_delete, url_many_tracks_merge,url_many_tracks_plot,options)
 
-        $("#import_table_info").append("<span id='id_span_infos'></span>")
-
-
         //highlight point on map when clicking on row: I cannot assign ids to leaflet markers, so I use the ordinal "number" property
         table.on( 'select', function ( e, dt, type, indexes ) {
             console.log("--------select row---------")
@@ -147,6 +144,10 @@
             highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
 
             selected_data=table.rows( '.selected' ).data()
+
+            if ($("#id_span_infos").length==0){
+                $("#import_table_info").append("<span id='id_span_infos'></span>")
+            }
             add_info_from_selected_data(selected_data)
         }
         } );
@@ -159,6 +160,10 @@
             highlight_leaflet_points(number=null,class_name="leaflet_track_point", track_pks=pks)
 
             selected_data=table.rows( '.selected' ).data()
+
+            if ($("#id_span_infos").length==0){
+                $("#import_table_info").append("<span id='id_span_infos'></span>")
+            }
             add_info_from_selected_data(selected_data)
             }
         } );

@@ -458,18 +458,22 @@ class Track(models.Model):
                 self.date = self.beginning.date()
                 self.year = self.date.year
                 self.debug(self.date)
-                self.duration_string = (
-                str(int(self.duration // 60)) + "h:" + "{:02}".format(int(self.duration % 60)) + "m")
-
-                import math
-                self.duration_string2 = (
-                    str(int(self.duration // 60))
-                    + "h:"
-                    + "{:02}".format(int(self.duration % 60))
-                    + "m:"
-                    + "{:02}".format(int(math.modf(self.duration)[0] * 60))
-                    + "s"
-                )
+                if self.duration>24*60:
+                    # more than one day
+                    self.duration_string = ">1g"    
+                    self.duration_string2 = ">1g"
+                else:
+                    self.duration_string = (
+                    str(int(self.duration // 60)) + "h:" + "{:02}".format(int(self.duration % 60)) + "m")
+                    import math
+                    self.duration_string2 = (
+                        str(int(self.duration // 60))
+                        + "h:"
+                        + "{:02}".format(int(self.duration % 60))
+                        + "m:"
+                        + "{:02}".format(int(math.modf(self.duration)[0] * 60))
+                        + "s"
+                    )
                 if self.length_3d and self.duration:
                     self.avg_speed = self.length_3d / self.duration / 60  # (m/s)
                     self.pace = 1 / 0.06 / self.avg_speed  # (min/km)

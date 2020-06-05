@@ -219,10 +219,11 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
     split=options.split,
     lap=options.lap,
     do_popup=options.do_popup!==false //default true
+    var debug = options.debug===true;
 
-    console.log("track_layer_fromjson options", options, geojsonMarkerOptions)
+    if(debug) console.log("track_layer_fromjson options", options, geojsonMarkerOptions)
 
-    console.log("track_layer_fromjson data", data)
+    if(debug) console.log("track_layer_fromjson data", data)
 
     try{
         gj= L.geoJson(data,
@@ -320,7 +321,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                                 }
                             })
 
-                            console.log("was_already_selected",was_already_selected)
+                            //console.log("was_already_selected",was_already_selected)
 
                             // if i ctrl-click, dont reset selected rows
                             if (e.originalEvent.ctrlKey){
@@ -512,7 +513,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
         gj= L.geoJson()
     }
     var t1 = performance.now();
-    console.log("track_layer_fromjson", (t1-t0)/1000)
+    console.log("----track_layer_fromjson took", (t1-t0)/1000, "seconds")
     return gj;
 }
 
@@ -536,7 +537,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
 
 
     for (element in data){
-        //console.log("Element", element)
+        console.log("Element", element)
         switch(element) {
             case "features":
 //                has_alts=data[element]["has_alts"]
@@ -606,7 +607,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     }
                     for (i in legend_names){
                         legend_name=legend_names[i]
-                        console.log(legend_name)
+                        console.log("legend_name", legend_name)
                         track_group["Color by "+legend_name]=track_layer_fromjson(data_track,geojsonMarkerOptions,{"color_feature":"Color"+legend_name})
                     }
                 }

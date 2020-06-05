@@ -216,7 +216,9 @@ function c3plot (xs0,columns,colors_,x_label,y_label,bind_to,type="line",
 
 function c3plotjsondata (data,x,y,options={}){
     //parameters
-    console.log("options",options)
+    var t0 = performance.now();
+
+    if (debug) console.log("options",options)
     var colors_ = options.colors_;
     var x_label = options.x_label;
     var y_label = options.y_label;
@@ -254,8 +256,6 @@ function c3plotjsondata (data,x,y,options={}){
         x_decimals=2
     }
 
-    console.log("x_decimals",x_decimals)
-
     if( options.x_tick_count=="auto"){
         var x_tick_count=undefined 
     }else{
@@ -268,9 +268,6 @@ function c3plotjsondata (data,x,y,options={}){
     if (debug) console.log("options c3plotjsondata ", options)
     if (debug) console.log("x ", x)
     if (debug) console.log("y ", y)
-    console.log("x_decimals",x_decimals)
-
-    console.log("x",x)
 
     //needed because othewise c3 screws up the order of points
     if (filter_and_sort){
@@ -294,7 +291,7 @@ function c3plotjsondata (data,x,y,options={}){
     x_min=undefined
     x_format=undefined
 
-    console.log("x_type",x_type,x_type=="time_min")
+    //console.log("x_type",x_type,x_type=="time_min")
 
     if (x_label==="Pace") {
         add_km=true
@@ -348,8 +345,6 @@ function c3plotjsondata (data,x,y,options={}){
             }
         }
     }
-
-    console.log("x_format",x_format)
 
     // y axis parameters
     if (y_label==="Pace") {
@@ -473,7 +468,7 @@ function c3plotjsondata (data,x,y,options={}){
         radius_ok=10
     }
 
-    console.log("data_x_y",data.map(a=>[a[x],a[y]]))
+    //console.log("data_x_y",data.map(a=>[a[x],a[y]]))
     if(debug){
         console.log("data_x_y",data.map(a=>[a[x],a[y]]))
         console.log(url)
@@ -587,7 +582,7 @@ function c3plotjsondata (data,x,y,options={}){
         // }
         }
 
-    console.log(conf)
+    //console.log(conf)
     try{
         var chart = c3.generate(conf);
     }catch(error){
@@ -595,6 +590,8 @@ function c3plotjsondata (data,x,y,options={}){
     }
 
 
+    var t1 = performance.now();
+    console.log("-----c3plotjsondata call took " + (t1 - t0) + " milliseconds, x: "+x+", y: "+y)
 
     return chart
 }

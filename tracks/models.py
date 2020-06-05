@@ -2003,7 +2003,7 @@ class Track(models.Model):
                                     delta = timedelta(seconds=0)
 
                         if not self.end: self.end=self.beginning+delta
-                        if not self.duration: self.duration = delta.total_seconds()
+                        if not self.duration: self.duration = delta.total_seconds()/60 # in minutes
                         self.save()
 
                         group_name = "Sygic"

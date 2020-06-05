@@ -2505,12 +2505,22 @@ class Track(models.Model):
                             times.append(point.time)
                             # speed.append(point.speed)
                 
-                self.td.segment_indices = segment_indices
-                self.td.subtrack_indices = subtrack_indices
+                if len(segment_indices)<len(lats):
+                    self.td.segment_indices = segment_indices
+                    self.n_segments=n_segments    
+                else:
+                    self.td.segment_indices = [0,]
+                    self.n_segments=1
+                if len(subtrack_indices)<len(lats):                    
+                    self.td.subtrack_indices = subtrack_indices
+                    self.n_tracks=n_tracks
+                else:
+                    self.td.subtrack_indices = [0,]
+                    self.n_tracks=1
 
                 self.info("gpx: n_tracks %s n_segments %s n_times %s" %(n_tracks,n_segments,len(times)))
-                self.n_tracks=n_tracks
-                self.n_segments=n_segments
+                
+                
 
                 self.td.lats = lats
                 self.td.long = long
@@ -3043,8 +3053,16 @@ class Track(models.Model):
             if not None in alts: self.td.alts=alts
             #self.td.times=times
             if not "gpx" in self.extension:
-                self.td.segment_indices=segment_indices
-                self.td.subtrack_indices=subtrack_indices
+                if len(segment_indices)<len(lats):
+                    self.td.segment_indices=segment_indices
+                else:
+                    self.td.segment_indices=[0,]
+                    self.n_segments_kml=1
+                if len(subtrack_indices)<len(lats):
+                    self.td.subtrack_indices=subtrack_indices
+                else:
+                    self.td.subtrack_indices=[0,]
+                    self.n_tracks_kml=1
             self.save()
 
 

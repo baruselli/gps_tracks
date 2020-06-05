@@ -675,38 +675,46 @@
                     "width":width,
                 }
         //speed
-        options1["y_label"]="Speed(km/h)"
-        options1["bind_to"]="#c3_11"
-        var chart1=c3plotjsondata(data,"DeltaTimeString",["Speed"],options1)
-        options2["y_label"]="Speed(km/h)"
-        options2["bind_to"]="#c3_21"
-        var chart5=c3plotjsondata(data,"Distance", ["Speed"],options2)
+        {% if track.has_times %}
+            options1["y_label"]="Speed(km/h)"
+            options1["bind_to"]="#c3_11"
+            var chart1=c3plotjsondata(data,"DeltaTimeString",["Speed"],options1)
+            options2["y_label"]="Speed(km/h)"
+            options2["bind_to"]="#c3_21"
+            var chart5=c3plotjsondata(data,"Distance", ["Speed"],options2)
+        {% endif %}
 
       //alt //vertical speed
             console.log("data", data_tot)
         hide_absent_data(data_tot,document)
 
         {% if track.has_alts %}
-            options1["y_label"]="Altitude(m)"
-            options1["bind_to"]="#c3_14"
-            var chart4=c3plotjsondata(data,"DeltaTimeString", ["Altitude"],options1)
+            {% if track.has_times %}
+                options1["y_label"]="Altitude(m)"
+                options1["bind_to"]="#c3_14"
+                var chart4=c3plotjsondata(data,"DeltaTimeString", ["Altitude"],options1)
+            {% endif %}
             options2["y_label"]="Altitude(m)"
             options2["bind_to"]="#c3_24"
             var chart8=c3plotjsondata(data,"Distance", ["Altitude"],options2)
-            options1["y_label"]="Slope(%)"
-            options1["bind_to"]="#c3_13"
-            var chart3=c3plotjsondata(data,"DeltaTimeString",["Slope"],options1)
+            {% if track.has_times %}
+                options1["y_label"]="Slope(%)"
+                options1["bind_to"]="#c3_13"
+                var chart3=c3plotjsondata(data,"DeltaTimeString",["Slope"],options1)
+            {% endif %}
             options2["y_label"]="Slope(%)"
             options2["bind_to"]="#c3_23"
             var chart7=c3plotjsondata(data,"Distance",["Slope"],options2)
         {% endif %}
         //heartrate
         {% if track.has_hr %}
-            options1["y_label"]="Heartbeat(bpm)"
-            options1["bind_to"]="#c3_16"
-            options1["colors_"]="ColorHeartrate Group"
-            options1["pointcolor"]=true
-            var chart11=c3plotjsondata(data,"DeltaTimeString",["Heartrate"],options1)
+            {% if track.has_times %}
+                options1["y_label"]="Heartbeat(bpm)"
+                options1["bind_to"]="#c3_16"
+                options1["colors_"]="ColorHeartrate Group"
+                options1["pointcolor"]=true
+                var chart11=c3plotjsondata(data,"DeltaTimeString",["Heartrate"],options1)
+            {% endif %}
             options1["colors_"]=undefined //reset
             options1["pointcolor"]=false //reset
             options2["y_label"]="Heartbeat(bpm)"
@@ -715,15 +723,19 @@
         {% endif %}
         //frequency //step length
         {% if track.has_freq %}
-            options1["y_label"]="Frequency"
-            options1["bind_to"]="#c3_12"
-            var chart2=c3plotjsondata(data,"DeltaTimeString",["Frequency"],options1)
+            {% if track.has_times %}
+                options1["y_label"]="Frequency"
+                options1["bind_to"]="#c3_12"
+                var chart2=c3plotjsondata(data,"DeltaTimeString",["Frequency"],options1)
+            {% endif %}
             options2["y_label"]="Frequency"
             options2["bind_to"]="#c3_22"
             var chart6=c3plotjsondata(data,"Distance",["Frequency"],options2)
-            options1["y_label"]="Step Length(m)"
-            options1["bind_to"]="#c3_15"
-            var chart9= c3plotjsondata(data,"DeltaTimeString",["StepLength"],options1)
+            {% if track.has_times %}
+                options1["y_label"]="Step Length(m)"
+                options1["bind_to"]="#c3_15"
+                var chart9= c3plotjsondata(data,"DeltaTimeString",["StepLength"],options1)
+            {% endif %}
             options2["y_label"]="Step Length(m)"
             options2["bind_to"]="#c3_25"
             var chart10=c3plotjsondata(data,"Distance",["StepLength"],options2)

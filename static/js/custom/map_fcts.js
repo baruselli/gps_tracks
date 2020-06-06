@@ -803,16 +803,18 @@ function legend_fct(map,colors,grades, id, name="Legend", decimals=1, father_id=
    div.innerHTML +="<div style = 'clear:both;'></div><div style='float:right'>"
    if (grades){
        for (var i = 0; i < grades.length; i++) {
-            if (decimals>-1){
-            div.innerHTML +=
-                '<div style="float:right;width:50px;background:' + colors[grades.length-i-1] + '">' + grades[grades.length-i-1].toFixed(decimals)+' </div>';
-                }else{
-            div.innerHTML +=
-                '<div style="float:right;width:50px;background:' + colors[grades.length-i-1] + '">' + grades[grades.length-i-1]+' </div>';
-                }
+            if(i<100 | i>grades.length-101){ //avoid legends if too large!
+                if (decimals>-1){
+                div.innerHTML +=
+                    '<div style="float:right;width:50px;background:' + colors[grades.length-i-1] + '">' + grades[grades.length-i-1].toFixed(decimals)+' </div>';
+                    }else{
+                div.innerHTML +=
+                    '<div style="float:right;width:50px;background:' + colors[grades.length-i-1] + '">' + grades[grades.length-i-1]+' </div>';
+                    }
             }
-       div.innerHTML +="</div></div>"
-       }
+        }
+        div.innerHTML +="</div></div>"
+        }
    try{
     document.getElementById(father_id).appendChild(div);
     }catch(error){

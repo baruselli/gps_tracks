@@ -708,8 +708,10 @@ function add_info_from_selected_data(selected_data){
     total_speed=0
     total_duration_frequency=0
     total_frequency=0
+    n_freq=0
     total_duration_hr=0
     total_hr=0
+    n_hr=0
     for (i=0;i<selected_data.length;i++){
         count+=1
         //duration
@@ -727,12 +729,14 @@ function add_info_from_selected_data(selected_data){
         if (frequency && duration){
             total_duration_frequency+=duration
             total_frequency+=frequency*duration
+            n_freq+=1
         }
         //hr
         hr=selected_data[i]["total_heartrate"]
         if (hr && duration){
             total_duration_hr+=duration
             total_hr+=hr*duration
+            n_hr+=1
         }
 
 
@@ -762,11 +766,11 @@ function add_info_from_selected_data(selected_data){
         }
         if (total_duration_frequency && total_frequency){
             html +="Average frequency: <b>" + 
-                (total_frequency/total_duration_frequency).toFixed(1)+"</b><br>"
+                (total_frequency/total_duration_frequency).toFixed(1)+"</b> ("+parseInt(n_freq)+" tracks)<br>"
         }
         if (total_duration_hr && total_hr){
             html +="Average heartrate: <b>" + 
-                (total_hr/total_duration_hr).toFixed(1)+"</b><br>"
+                (total_hr/total_duration_hr).toFixed(1)+"</b> ("+parseInt(n_hr)+" tracks)<br>"
         }
 
     }

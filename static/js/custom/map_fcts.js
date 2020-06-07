@@ -520,6 +520,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
 function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
 
   //  console.log("read_data_leaflet_generic")
+    var t0 = performance.now();
 
     tracks={}      //tracks
     track_group={} //for single track
@@ -736,7 +737,9 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
     var layerControl = L.control.groupedLayers(baseMaps, groupedOverlays, options2);
     map.addControl(layerControl);
 
-    //console.log("end read_data_leaflet_generic")
+    var t1 = performance.now();
+    console.log("--read_data_leaflet_generic took", (t1-t0)/1000, "seconds")
+
 }
 
 function track_popup(feature, properties){

@@ -568,6 +568,10 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
             except:
                 pass
 
+            # t2=time.time()
+            # logger.info("before query for values in tracks_json: %s" % (t2 - start))
+
+
             values = tracks.annotate(n_photos=Count('photos')).\
                                       values(*fields)
 
@@ -711,22 +715,17 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
         if ranks:
             json_ok, grades, colors_legend, details_legend = add_ranks(json_ok)
 
-        if group_pk:
-            group=Group.objects.get(pk=group_pk)
-            import numpy as np
-            min_lats = [x for x in group.tracks.all().values_list("min_lat", flat=True) if x is not None]
-            min_lat = np.nanmin(min_lats)
-            min_lons = [x for x in group.tracks.all().values_list("min_long", flat=True) if x is not None]
-            min_lon = np.nanmin(min_lons)
-            max_lats = [x for x in group.tracks.all().values_list("max_lat", flat=True) if x is not None]
-            max_lat = np.nanmax(max_lats)
-            max_lons = [x for x in group.tracks.all().values_list("max_long", flat=True) if x is not None]
-            max_lon = np.nanmax(max_lons)
-        else:
-            min_lat = min([g.min_lat if g.min_lat else 1000 for g in tracks])
-            max_lat = max([g.max_lat if g.max_lat else -1000 for g in tracks])
-            min_lon = min([g.min_long if g.min_long else 1000 for g in tracks])
-            max_lon = max([g.max_long if g.max_long else -1000 for g in tracks])
+        # if group_pk:
+        #     group=Group.objects.get(pk=group_pk)
+        import numpy as np
+        min_lats = [x for x in tracks.values_list("min_lat", flat=True) if x is not None]
+        min_lat = np.nanmin(min_lats)
+        min_lons = [x for x in tracks.values_list("min_long", flat=True) if x is not None]
+        min_lon = np.nanmin(min_lons)
+        max_lats = [x for x in tracks.values_list("max_lat", flat=True) if x is not None]
+        max_lat = np.nanmax(max_lats)
+        max_lons = [x for x in tracks.values_list("max_long", flat=True) if x is not None]
+        max_lon = np.nanmax(max_lons)
 
         final_json={
                     "Tracks":json_ok,

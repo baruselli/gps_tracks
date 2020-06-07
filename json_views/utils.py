@@ -476,7 +476,12 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
     import time
     start=time.time()
 
-    if not tracks and not keep_empty_set:
+    if tracks is None:
+        n_tracks=0
+    else:
+        n_tracks=tracks.count()
+
+    if (tracks is None or n_tracks==0) and not keep_empty_set:
         tracks = Track.objects.all()
     # try:
     #     tracks=list(tracks)
@@ -491,14 +496,18 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
     if group_pk:
         tracks=Track.objects.filter(groups__id=group_pk).order_by("beginning")
 
-    if tracks:
+    #t1=time.time()
+    #logger.info("before if tracks in tracks_json: %s" % (t1 - start))
+    if tracks is not None and n_tracks>0:
+        #t1=time.time()
+        #logger.info("after if tracks in tracks_json: %s" % (t1 - start))
         # progressive color, just to distinguish the different tracks
         if with_color:
-            colors = get_colors(len(tracks))
+            colors = get_colors(n_tracks)
         else:
-            colors =[None for t in tracks]
+            colors =[None for t in enumerate(n_tracks)]
         if how=="auto":
-            if len(tracks)<=max_n_tracks:
+            if n_tracks<=max_n_tracks:
                 points_line="MultiLineString"
                 reduce_points="smooth2"
             else:
@@ -506,7 +515,7 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
                 reduce_points="single"
 
         start1=time.time()
-        logger.info("before get_track_single_geojson in tracks_json: %s" % (start1 - start))
+        # logger.info("before get_track_single_geojson in tracks_json: %s" % (start1 - start))
 
         #logger.info("%s %s" %(points_line, reduce_points))
 
@@ -552,9 +561,20 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
                 fields.append("distance")
             except:
                 pass
+            try:
+                # check if value distance exists (added ony if filtering by distance)
+                tracks.values("duplicated_group")
+                fields.append("duplicated_group")
+            except:
+                pass
 
             values = tracks.annotate(n_photos=Count('photos')).\
                                       values(*fields)
+
+            # t2=time.time()
+            # logger.info("after query for values in tracks_json: %s" % (t2 - start))
+
+            
             for i,v in enumerate(values):
                 v["avg_speed"]=v["avg_speed"] or 0
                 v["avg_long"]=to_float_or_zero(v["avg_long"])
@@ -625,9 +645,10 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
                 v["total_heartrate_group"] = get_cardio_zone(v["total_heartrate"], v["user__max_heartrate"])[1]
                 v["total_heartrate_color_group"] = get_cardio_zone(v["total_heartrate"], v["user__max_heartrate"])[0]
 
-                # does this make everythong slow?
-                if tracks[i].duplicated_group!=-1:
-                    v["duplicated_group"]=tracks[i].duplicated_group
+                # # does this make everythong slow?
+                # I do this above, should be OK
+                # if tracks[i].duplicated_group!=-1:
+                #     v["duplicated_group"]=tracks[i].duplicated_group
 
                 if "distance" in v:
                     v["distance"] = {
@@ -730,9 +751,9 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
 
     end=time.time()
 
-    if tracks:
-        logger.info("after track_single_geojson in tracks_json: %s" % (end - end1))
-    logger.info("tracks_json: %s" %(end-start))
+    # if n_tracks>0:
+    #     logger.info("after track_single_geojson in tracks_json: %s" % (end - end1))
+    logger.info("tracks_json duration: %s" %(end-start))
     return final_json
 
 

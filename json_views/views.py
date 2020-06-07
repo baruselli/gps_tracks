@@ -178,6 +178,7 @@ class TracksAsLinesJsonView(View):
         logger.info("TracksAsLinesJsonView")
         import time
         start = time.time()
+        
         from .utils import tracks_json,waypoints_json,photos_json
         from tracks.utils import filter_tracks
         from waypoints.utils import filter_waypoints
@@ -215,6 +216,8 @@ class TracksAsLinesJsonView(View):
         ranks = int(request.GET.get('ranks', 0))
         date_order = int(request.GET.get('date_order', 0))
 
+        n_tracks=tracks.count()
+
         if date_order:
             tracks=tracks.order_by("beginning")
 
@@ -225,7 +228,7 @@ class TracksAsLinesJsonView(View):
 
         if not points_line:
             max_n_tracks = OptionSet.get_option("MAX_N_TRACKS_AS_LINES")
-            if len(tracks)<=max_n_tracks:
+            if n_tracks<=max_n_tracks:
                 points_line="MultiLineString"
                 if not reduce_points:
                     reduce_points="smooth2"
@@ -265,6 +268,10 @@ class TracksAsLinesJsonView(View):
                 if group.always_use_lines:
                     points_line="MultiLineString"
                     reduce_points="smooth2"
+
+            t1=time.time()
+            #logger.info("--before tracks_json in TracksAsLinesJsonView: %s" %(t1-start))
+                
             json_tracks=tracks_json(
                 tracks, 
                 with_color=use_color, 
@@ -281,6 +288,11 @@ class TracksAsLinesJsonView(View):
                 ranks=ranks
             )
             
+            # t2=time.time()
+            # logger.info("--after tracks_json in TracksAsLinesJsonView: %s" %(t2-start))
+            # logger.info("--tracks_json duration in TracksAsLinesJsonView: %s" %(t2-t1))
+
+
             #print(json_tracks.keys())
 
         ## add photos

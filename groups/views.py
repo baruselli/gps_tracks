@@ -38,14 +38,14 @@ class GroupView(View):
         from django.db.models import Q
 
         group_id = kwargs.get("group_id", None)
-        logger.debug("GroupView %s" %group_id)
+        logger.info("GroupView %s" %group_id)
         group = get_object_or_404(Group, pk=group_id)
         #tracks = Track.objects.filter((Q(group__id=group_id) | Q(group_activity__id=group_id)) )
         tracks = Track.objects.filter(group__id=group_id)
         waypoints = Waypoint.objects.filter(track__group__id=group_id)
-        colors = get_colors(len(tracks))
-        for t,c in zip(tracks,colors):
-            t.color_temp=c
+        # colors = get_colors(len(tracks))
+        # for t,c in zip(tracks,colors):
+        #     t.color_temp=c
   
 
         with_waypoints = request.GET.get('with_waypoints', False)
@@ -62,7 +62,7 @@ class GroupView(View):
                 "group": group,
                 "tracks": tracks,
                 "waypoints": waypoints,
-                "colors": colors,
+                #"colors": colors,
                 "form":form,
                 "with_waypoints":with_waypoints,
                 "with_photos":with_photos,

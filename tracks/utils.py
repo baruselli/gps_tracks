@@ -654,8 +654,25 @@ def filter_tracks(request,silent=True):
         #    ids.extend(new_ids)
 
         tracks=tracks.filter(pk__in=all_dupl_tracks)
-        for t in tracks:
-            t.duplicated_group=groups[t.pk]
+        # for t in tracks:
+        #     t.duplicated_group=groups[t.pk]
+        # I need to add the duplicated_group field while retaining a queryset
+        #https://stackoverflow.com/questions/36137528/django-conditional-expression
+
+        from django.db.models import When, F, Q, Value, Case
+        whens = [
+            When(pk=k, then=v) for k, v in groups.items()
+        ]
+
+        from django.db import models
+        tracks = tracks.annotate(
+            duplicated_group=Case(
+                *whens,
+                default=-1,
+                output_field=models.IntegerField()
+            )
+        )
+
         #tracks=tracks.filter(pk__in=ids)
     elif special_search=="close_to_group":
         if not special_search_pk:

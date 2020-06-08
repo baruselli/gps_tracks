@@ -11,4 +11,5 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
         url(r"^main/$", views.HelpView.as_view(), name="help", ),
+        url(r"^about/$", views.AboutView.as_view(), name="about", ),
 ]

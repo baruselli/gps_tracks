@@ -17,3 +17,9 @@ class HelpView(View):
     def get(self, request, *args, **kwargs):
         logger.debug("HelpView")
         return render(request, self.template_name,)
+
+class AboutView(View):
+    template_name = "help_app/about.html"
+    def get(self, request, *args, **kwargs):
+        logger.debug("AboutView")
+        return render(request, self.template_name,)

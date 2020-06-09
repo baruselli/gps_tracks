@@ -249,9 +249,12 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
             },
             // this is only set for lines
             style:function(feature, layer){
-                if (feature.point_type==="global_line")
-                return {"color":feature.properties.color,
-                weight: 3,   opacity: 0.5,   smoothFactor: 1}
+                if (feature.point_type==="global_line"){
+                    color=feature.properties.color
+                    if (!color) color="black"
+                    return {"color":color,
+                        weight: 3,   opacity: 0.5,   smoothFactor: 1}
+                }
             },
             onEachFeature: function (feature, layer){
                 //console.log(feature.type,feature.point_type)

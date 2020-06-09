@@ -131,6 +131,7 @@ class PhotosJsonView(View):
         return JsonResponse(json_, safe=False)
 
 ###Lines
+##many
 class LinesJsonView(View):
     def get(self, request, *args, **kwargs):
         logger.info("LinesJsonView")
@@ -142,6 +143,29 @@ class LinesJsonView(View):
                                                      min([l["min_long"] for l in json_ if l["min_long"]]),
                                                      max([l["max_long"] for l in json_ if l["max_long"]]),
                                                      ]}
+
+        return JsonResponse(json_ok, safe=False)
+
+##one
+class LineJsonView(View):
+    def get(self, request, *args, **kwargs):
+        logger.info("LineJsonView")
+        from .utils import lines_json
+        line_id = kwargs.get("line_id", None)
+        json_ = lines_json(lines=Line.objects.filter(pk=line_id)) # requires a queryset
+
+        try:
+            min_lat=min([l["min_lat"] for l in json_ if l["min_lat"]])
+            max_lat=max([l["max_lat"] for l in json_ if l["max_lat"]])
+            min_long=min([l["min_long"] for l in json_ if l["min_long"]])
+            max_long=max([l["max_long"] for l in json_ if l["max_long"]])
+        except:
+            min_lat=-1000
+            max_lat=1000
+            min_long=-1000
+            max_long=1000
+
+        json_ok = {"Lines": json_, "minmaxlatlong": [min_lat, max_lat,min_long,max_long,]}
 
         return JsonResponse(json_ok, safe=False)
 

@@ -5,22 +5,23 @@
 
 
 {%block buttons%}
-<button onclick=
-    "location.href='{% url 'create_line' line_id=line.pk %}'" type="button">
-    Edit line</button>
-<button onclick="deleteline_fct()" type="button">Delete line</button>
-<button onclick="location.href='{% url 'geopy_line' line_id=line.pk  %}'" type="button">Get infos on endpoints</button>
-<button onclick="location.href='{% url 'gpx_line' line_id=line.pk  %}'" type="button">Export as GPX</button>
-<button onclick="location.href='{% url 'kml_line' line_id=line.pk  %}'" type="button">Export as KML</button>
-<button onclick="location.href='{% url 'alts_line' line_id=line.pk  %}'" type="button">Get Altitudes</button>
+    <button onclick=
+        "location.href='{% url 'create_line' line_id=line.pk %}'" type="button">
+        Edit line</button>
+    <button onclick="deleteline_fct()" type="button">Delete line</button>
+    <button onclick="location.href='{% url 'geopy_line' line_id=line.pk  %}'" type="button">Get infos on endpoints</button>
+    <button onclick="location.href='{% url 'gpx_line' line_id=line.pk  %}'" type="button">Export as GPX</button>
+    <button onclick="location.href='{% url 'kml_line' line_id=line.pk  %}'" type="button">Export as KML</button>
+    <button onclick="location.href='{% url 'alts_line' line_id=line.pk  %}'" type="button">Get Altitudes</button>
 {%endblock%}
 
-{% block content %}
 
-<h1>Line {{line.pk}}: {{line.name}}</h1>
-    <div class="row">
-        <div class="col-xs-12">
-            <table class="table table-bordered table-hover" id="import_table">
+{% block title %}
+    <h1>Line {{line.pk}}: {{line.name}}</h1>
+{%endblock%}
+
+{% block table %}
+    <table class="table table-bordered table-hover" id="import_table">
     
                 <thead>
                 </thead>
@@ -32,7 +33,7 @@
                     <tr><td>Id</td> <td>{{line.pk}}</td> </tr>
                     <tr><td>Name</td> <td>{{line.name}}</td> </tr>
                     <tr><td>Type</td> <td>{{line.line_type}}</td> </tr>
-                    <!-- <tr><td>Color</td> <td>{{line.color}}</td> </tr> -->
+                    <tr><td>Color</td> <td>{{line.color}}</td> </tr>
                     <tr><td>Latitudes</td> <td>{{line.lats}}</td> </tr>
                     <tr><td>Longitudes</td> <td>{{line.long}}</td> </tr>
                     <tr><td>Altitudes</td> <td>{{line.alts}}</td> </tr>
@@ -51,79 +52,45 @@
                 </tbody>
     
             </table>
-        </div>
-    </div>
 
+    {%endblock%}
 
-<script>
+{%block js %}
+    <script>
 
-function deleteline_fct() {
-    var r=confirm("Really delete line?");
-    if (r == true) {
-        location.href='{% url 'delete_line' line_id=line.pk  %}'
-}
-} 
-</script>
-
-
-<script type="text/javascript">
-    function map_init_basic (map, options) {
-
-    map_right_click(map,options,point_link,waypoint_link);
-
-    var overlayMaps = {};
-    // map.addControl(new L.Control.Fullscreen());
-
-    lats={{line.lats}}
-    long={{line.long}}
-    alts={{line.alts|safe}}
-
-    min_lat= Math.min.apply(Math, lats);
-    min_long= Math.min.apply(Math, long);
-    max_lat= Math.max.apply(Math, lats);
-    max_long= Math.max.apply(Math, long);
-    var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
-    map.fitBounds(mapBounds);
-
-    init_map_base(map,options,mapBounds=mapBounds)
-
-
-
-    points=[]    
-    {%if line.color%}
-        color="{{line.color}}"
-    {%else%}
-        color="gray"
-    {%endif%}
-
-    for (i=0;i<lats.length;i++){
-        point=[lats[i],long[i]];
-        points.push(point);
-    };
-
-    var polyline = new L.Polyline(points, {
-        color: color,
-        weight: 3,
-        opacity: 0.5,
-        smoothFactor: 1
-    });
-
-    polyline.addTo(map);
-
-    text_s="<font color='"+color+"'>smoothed track</font>"
-    overlayMaps[text_s]=polyline
-    
-
-
-
-    console.log(mapBounds);
-
+    function deleteline_fct() {
+        var r=confirm("Really delete line?");
+        if (r == true) {
+            location.href='{% url 'delete_line' line_id=line.pk  %}'
     }
-</script>
+    } 
+    </script>
 
 
+    <script type="text/javascript">
+        function map_init_basic (map, options) {
 
-</body>
-</html>
+        map_right_click(map,options,point_link,waypoint_link);
+
+            min_lat=parseFloat({{line.min_lat}})
+            max_lat=parseFloat({{line.max_lat}})
+            min_long=parseFloat({{line.min_long}})
+            max_long=parseFloat({{line.max_long}})
+
+            var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+            if (typeof mapBounds !="undefined"){mapBounds=mapBounds}else{mapBounds=null}
+
+            init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false)
+
+            url='{% url 'line_json' line_id=line.pk %}'
+            console.log(url)
+
+            $.getJSON(url,function(data){
+                console.log(data)
+                read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+            })
+
+        }
+    </script>
 
 {%endblock%}

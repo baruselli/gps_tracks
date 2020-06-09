@@ -10,8 +10,9 @@ urlpatterns = [
     url(r"^all_waypoints/$", views.WaypointsJsonView.as_view(), name="allwps_json"),
     ### photos
     url(r"^all_photos/$", views.PhotosJsonView.as_view(), name="allphotos_json"),
-    ### lines
+    ### line(s)
     url(r"^all_lines/$", views.LinesJsonView.as_view(), name="alllines_json"),
+    url(r"^line/(?P<line_id>[0-9]+)/$", views.LineJsonView.as_view(), name="line_json"),
     ### geojson
     url(r"^geojson/(?P<geojsonobj_id>[0-9]+)/", views.GeoJsonObjectJsonView.as_view(), name="geojsonobj_json", ),
     ### tracks

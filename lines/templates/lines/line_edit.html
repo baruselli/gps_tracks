@@ -1,37 +1,35 @@
 {% extends "base/base_map.html" %}
 {% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block stylesheet %}
+     #map {
+        height: 85%;
+        width: 100%;
+    }
+{% endblock %}
 
 
-{% block content %}
+{%block title %}
+    {% if line %}
+        <h1><a href='{% url "line_detail" line_id=line.pk %}'>Line {{line.pk}}: {{line.name}}</a></h1>
+    {% else %}
+        <h1>New line</h1>
+    {% endif %}
+{%endblock%}
 
-
-
-<html>
-  <head>
-        {% load leaflet_tags %}
-        {% load static %}
-        {% load mathfilters %}
-
-        <style>
-
-             #map {
-                height: 85%;
-                width: 100%;
-            }
-            </style>
-    
-</head>
-
-<body>
+{% block form %}
 
         <form action="" method="get">
-                Search Location:
-                <input type="text" name="search">
-        <input type="submit" value="Submit">
-            </form>
-<div>
-Enter coordinates by hand, or right click on the map
-</div>      
+            Search Location:
+            <input type="text" name="search">
+            <input type="submit" value="Submit">
+        </form>
+
+    <span>Enter coordinates by hand, or right click on the map</span>
+
     {{ form.media }}
 
     {{ form.non_field_errors }}
@@ -48,93 +46,69 @@ Enter coordinates by hand, or right click on the map
 
     <button onclick="remove_last_point()" type="button">Remove last point</button>
 
-</body>
+{% endblock %}
 
+{% block js %}
+    <script type="text/javascript">
 
-<script type="text/javascript">
+        function map_init_basic (map, options) {
 
-    function map_init_basic (map, options) {
+            map_right_click_line(map,options,point_link,waypoint_link );
 
-    map_right_click_line(map,options,point_link,waypoint_link );
+            {% if line%}
 
+                min_lat=parseFloat({{line.min_lat}})
+                max_lat=parseFloat({{line.max_lat}})
+                min_long=parseFloat({{line.min_long}})
+                max_long=parseFloat({{line.max_long}})
+                var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
 
-    var overlayMaps = {};
-    map.addControl(new L.Control.Fullscreen());
-
-
-
-    {% if line%}
-    lats={{line.lats}}
-    long={{line.long}}
-    alts={{line.alts|safe}}
-    baseMaps=get_basemaps({{basemaps|safe}},"{{mapbox_token}}",{{basemaps_mapbox|safe}},show_google_maps={{show_google_maps}})
-    L.control.layers(baseMaps).addTo(map);
-
-    points=[]    
-    color="red"
-    for (i=0;i<lats.length;i++){
-        point=[lats[i],long[i]];
-        points.push(point);
-    };
-
-    var polyline = new L.Polyline(points, {
-        color: color,
-        weight: 3,
-        opacity: 0.5,
-        smoothFactor: 1
-    });
-
-    polyline.addTo(map);
-
-    text_s="<font color='"+color+"'>smoothed track</font>"
-    overlayMaps[text_s]=polyline
-    
-
-
-    min_lat= Math.min.apply(Math, lats);
-    min_long= Math.min.apply(Math, long);
-    max_lat= Math.max.apply(Math, lats);
-    max_long= Math.max.apply(Math, long);
-    var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
-    map.fitBounds(mapBounds);
- 
-{% elif min_lat %}
-var mapBounds = L.latLngBounds([
-                    [{{min_lat}}, {{min_long}}],
-                    [{{max_lat}}, {{max_long}}],
+            {% elif min_lat %}
+                var mapBounds = L.latLngBounds([
+                                [{{min_lat}}, {{min_long}}],
+                                [{{max_lat}}, {{max_long}}],
                 ]);
-{%else%}
+            {%else%}
+                var mapBounds = L.latLngBounds([
+                                    [{{lat}}-0.1, {{long}}-0.1],
+                                    [{{lat}}+0.1, {{long}}+0.1],
+                                ]);
+            {%endif%}
 
-var mapBounds = L.latLngBounds([
-                    [{{lat}}-0.1, {{long}}-0.1],
-                    [{{lat}}+0.1, {{long}}+0.1],
-                ]);
-{%endif%}
-map.fitBounds(mapBounds);
+            if (typeof mapBounds !="undefined"){mapBounds=mapBounds}else{mapBounds=null}
 
-}
-    </script>
+            init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false)
 
-</html>
+            {% if line %}
+                url='{% url 'line_json' line_id=line.pk %}'
+                    console.log(url)
+
+                    $.getJSON(url,function(data){
+                        console.log(data)
+                        read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+                    })
+            {%endif%}
+                    
+        }
 
 
-<script>
 
-function remove_last_point () {
+    function remove_last_point () {
 
-document.getElementById("id_lats_text").value =remove_last_number(document.getElementById("id_lats_text").value);
-document.getElementById("id_long_text").value =remove_last_number(document.getElementById("id_long_text").value);
-document.getElementById("id_alts_text").value =remove_last_number(document.getElementById("id_alts_text").value);
-}
+    document.getElementById("id_lats_text").value =remove_last_number(document.getElementById("id_lats_text").value);
+    document.getElementById("id_long_text").value =remove_last_number(document.getElementById("id_long_text").value);
+    document.getElementById("id_alts_text").value =remove_last_number(document.getElementById("id_alts_text").value);
+    }
 
-function remove_last_number (text) {
+    function remove_last_number (text) {
 
-parts = text.split(',');
-parts.pop();parts.pop();
-new_text = parts.join(',')
-if(new_text.length>0){new_text+=","}
-return new_text;
-}
+    if (!text.endsWith(",")) text+=","
+    parts = text.split(',');
+    parts.pop();parts.pop();
+    new_text = parts.join(',')
+    if(new_text.length>0){new_text+=","}
+    return new_text;
+    }
 
     </script>
 {%endblock%}

@@ -38,11 +38,9 @@
 
         var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
         
-        
         if (typeof mapBounds !="undefined"){mapBounds=mapBounds}else{mapBounds=null}
 
-        init_map_base(map,options, mapBounds=mapBounds,add_basemaps=true)
-
+        init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false)
 
 
         url='{% url 'geojsonobj_json' geojsonobj_id=obj.pk %}'

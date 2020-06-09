@@ -124,6 +124,7 @@
                 <li class="li_topbar"><a class="a_topbar" href="{% url 'logs' %}" title="Logs for everything done by the program">Logs</a></li>
                 {% if options_pk > 0 %} <li  class="li_topbar"><a  class="a_topbar" href="{% url 'edit_options' id=options_pk%}" title="Edit Options">Options</a></li> {%endif%}
                 <li class="li_topbar"><a class="a_topbar" href="/admin" title="Allows to edit at objects at low level. At your own risk! Default username: admin; defualt password: admin ">Admin</a></li>
+                <li class="li_topbar"><a class="a_topbar" href="{% url 'about' %}" title="About">About</a></li>
                 {% if show_todo %}<li class="li_topbar"><a class="a_topbar" href="{% url 'todo' %}">TODO</a></li>{% endif %}
             </ul>
             <button style="float:right;height:10px;" onclick='$(".ul_topbar").toggle()'></button>

@@ -92,6 +92,20 @@
         }
 
 
+    // allow change of every only when every is chosen in reduce_points
+    $( "#id_line_type" ).change(function () {
+        console.log(  $("#id_line_type option:selected").attr('value'));
+        if ( $("#id_line_type option:selected").attr('value')=="other"){
+            $("#id_color").prop('disabled',false);
+        }
+        else{
+            $("#id_color").prop('disabled', "disabled");
+        }
+
+    })
+    .change();
+
+
 
     function remove_last_point () {
 

@@ -291,9 +291,16 @@ class LapToLineView(View):
         long = track.td.long[index_start:index_end:every]
         alts = track.td.alts[index_start:index_end:every]
 
+        #readd initial point to make circuit close
+        if lats:
+            lats.append(lats[0])
+            long.append(long[0])
+            alts.append(alts[0])
+
         line, created = create_line(lats, long, alts,
                                     track.name_wo_path_wo_ext+"_lap"+str(lap))
         line.line_type = "path"
+        line.color = "brown"
         line.track = track
         line.closed=True
         line.save()

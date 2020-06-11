@@ -100,11 +100,12 @@ class CreateLineView(View):
                       "canal": "blue",
                       "border": "yellow",
                       "river": "blue",
-                      "other": "grey"}
+                      "other": "black"}
             try:
-                line.color = colors[line.line_type]
+                if not line.color or line.line_type!="other":
+                    line.color = colors[line.line_type]
             except:
-                line.color = "grey"
+                line.color = "black"
 
             logger.info("Line color %s" % line.color)
 
@@ -247,6 +248,7 @@ class TrackToLineView(View):
 
         line, created = create_line(lats_smooth3, long_smooth3, alts_smooth3,track.name_wo_path_wo_ext)
         line.line_type = "path"
+        line.color = "brown"
         line.track = track
         line.save()
 

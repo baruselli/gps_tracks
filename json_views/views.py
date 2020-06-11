@@ -152,7 +152,7 @@ class LineJsonView(View):
         logger.info("LineJsonView")
         from .utils import lines_json
         line_id = kwargs.get("line_id", None)
-        json_ = lines_json(lines=Line.objects.filter(pk=line_id)) # requires a queryset
+        json_ = lines_json(lines=Line.objects.filter(pk=line_id),is_global=False) # requires a queryset
 
         try:
             min_lat=min([l["min_lat"] for l in json_ if l["min_lat"]])

@@ -673,10 +673,14 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
             case "Global Lines":
             case "Global Waypoints":
             case "Global Photos":
-                global_features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options).addTo(map)
+                if (data[element].length>0){
+                    global_features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options).addTo(map)
+                }
                 break;
             case "Global GeoJSON":
-                global_features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
+                if (data[element].length>0){
+                    global_features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
+                }
                 break;
             case "minmaxlatlong": //used to give map bounds
                 latslong = data[element]

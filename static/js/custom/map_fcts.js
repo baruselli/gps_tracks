@@ -662,13 +662,15 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
             case "Photos":
             case "Lines":
             case "GeoJSON":
-                try{
-                    features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
-                }catch(error){
-                console.log("Cannot do "+ element +": "+error)
-                console.log("data[element]", data[element])
+                if (data[element].length>0 && show_features){
+                    try{
+                        features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
+                        features[element].addTo(map)
+                    }catch(error){
+                        console.log("Cannot do "+ element +": "+error)
+                        console.log("data[element]", data[element])
+                    }
                 }
-                if (show_features) features[element].addTo(map)
                 break;
             case "Global Lines":
             case "Global Waypoints":

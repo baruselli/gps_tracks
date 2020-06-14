@@ -176,9 +176,9 @@
 
 
         {% if use_points %}
-            use_points=true
+            var use_points=true
         {% else %}
-            use_points=false
+            var use_points=false
         {% endif %}
         do_plots={{do_plots}}
 
@@ -242,7 +242,7 @@
             options["table"]=table
 
             if(!use_points){
-                read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+               read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
             }
 
         })
@@ -255,7 +255,7 @@
                 //console.log(data)
 
                 if(use_points){
-                read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+                    read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
                 }
 
 

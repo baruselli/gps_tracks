@@ -50,63 +50,73 @@
 
 
 
-    <div style="height:10%" id="c3_1">
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+    <div id="plots_block">
+
+        <div style = "clear:both;"></div>
+
+        <div>
+
+        <div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_14"    style="width:90%; "></div>
+            </div>
+            <div style="float:left; margin-left: 2%">
+                <div id="c3_24"    style="width:90%; "></div>
+            </div>
+        </div>
+            <div style = "clear:both;"></div>
+
+
+        <div style="float:left; margin-left: 2%">
             <div id="c3_11"      style="width:90%; "></div>
         </div>
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+        <div style="float:left; margin-left: 2%">
             <div id="c3_21"      style="width:90%; "></div>
         </div>
-    </div>
+        </div>
+        <div style = "clear:both;"></div>
 
-    <div style="height:10%" id="c3_2">
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+    <div>
+        <div style="float:left; margin-left: 2%">
             <div id="c3_12"    style="width:90%; "></div>
         </div>
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+        <div style="float:left; margin-left: 2%">
             <div id="c3_22"    style="width:90%; "></div>
         </div>
     </div>
-    <div style="height:10%" id="c3_3">
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+        <div style = "clear:both;"></div>
+
+    <div>
+        <div style="float:left; margin-left: 2%">
             <div id="c3_13"      style="width:90%; "></div>
         </div>
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+        <div style="float:left; margin-left: 2%">
             <div id="c3_23"      style="width:90%; "></div>
         </div>
     </div>
+        <div style = "clear:both;"></div>
 
-    <div style="height:10%" id="c3_4">
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
-            <div id="c3_14"    style="width:90%; "></div>
-        </div>
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
-            <div id="c3_24"    style="width:90%; "></div>
-        </div>
-    </div>
-
-    <div style="height:10%" id="c3_5">
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+    <div>
+        <div style="float:left; margin-left: 2%">
             <div id="c3_15"    style="width:90%; "></div>
         </div>
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+        <div style="float:left; margin-left: 2%">
             <div id="c3_25"    style="width:90%; "></div>
         </div>
     </div>
+        <div style = "clear:both;"></div>
 
-    <div style="height:10%" id="c3_6">
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+       <div style = "clear:both;"></div>
+
+    <div>
+        <div style="float:left; margin-left: 2%">
             <div id="c3_16"    style="width:90%; "></div>
         </div>
-        <div style="float:left; margin-left: 2%;margin-top: 2%">
+        <div style="float:left; margin-left: 2%">
             <div id="c3_26"    style="width:90%; "></div>
         </div>
     </div>
-
-
-    <div style="width:98%;float:left; margin-left: 2%;margin-top: 2%">
-        <div id="c3_5"    style="width:90%; "></div>
-    </div>
+            </div>
 {%endblock%}
 
 
@@ -301,14 +311,25 @@
                     has_alts=data["features"]["has_alts"]
                     has_freq=data["features"]["has_freq"]
                     has_hr=data["features"]["has_hr"]
+
                     if (!has_freq){
-                        document.getElementById('c3_2').style.display = 'none';
+                        document.getElementById('c3_12').style.display = 'none';
+                        document.getElementById('c3_22').style.display = 'none';
                     }
                     if (!has_hr){
-                        document.getElementById('c3_6').style.display = 'none';
+                        document.getElementById('c3_16').style.display = 'none';
+                        document.getElementById('c3_26').style.display = 'none';
                     }
                     if (!has_alts){
-                        document.getElementById('c3_4').style.display = 'none';
+                        document.getElementById('c3_14').style.display = 'none';
+                        document.getElementById('c3_24').style.display = 'none';
+                    }
+                    if (!has_times){
+                        document.getElementById('c3_11').style.display = 'none';
+                        document.getElementById('c3_21').style.display = 'none';
+                        document.getElementById('c3_12').style.display = 'none';
+                        document.getElementById('c3_16').style.display = 'none';
+                        document.getElementById('c3_14').style.display = 'none';
                     }
 
                 }
@@ -320,12 +341,18 @@
         }
 
         if(!do_plots){
-                    document.getElementById('c3_1').style.display = 'none'
-                    document.getElementById('c3_2').style.display = 'none'
-                    document.getElementById('c3_3').style.display = 'none'
-                    document.getElementById('c3_4').style.display = 'none'
-                    document.getElementById('c3_5').style.display = 'none'
-                    document.getElementById('c3_6').style.display = 'none'
+                    document.getElementById('c3_11').style.display = 'none'
+                    document.getElementById('c3_12').style.display = 'none'
+                    document.getElementById('c3_13').style.display = 'none'
+                    document.getElementById('c3_14').style.display = 'none'
+                    document.getElementById('c3_15').style.display = 'none'
+                    document.getElementById('c3_16').style.display = 'none'
+                    document.getElementById('c3_21').style.display = 'none'
+                    document.getElementById('c3_22').style.display = 'none'
+                    document.getElementById('c3_23').style.display = 'none'
+                    document.getElementById('c3_24').style.display = 'none'
+                    document.getElementById('c3_25').style.display = 'none'
+                    document.getElementById('c3_26').style.display = 'none'
                 }
 
 

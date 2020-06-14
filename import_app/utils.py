@@ -287,14 +287,15 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
 
             track.info("End reading files")
 
+            track.info("%s - Fix times" %step)
+            step += 1
+            track.fix_times(fake=False)
+
             track.info("%s - Set all properties" %step)
             step += 1
             track.set_all_properties()
             #track.set_splits()
             #track.set_laps()
-            track.info("%s - Fix times" %step)
-            step += 1
-            track.fix_times(fake=False)
             # moved inside set_all_properties
             # track.info("%s - Set single geojson" %step)
             # step += 1

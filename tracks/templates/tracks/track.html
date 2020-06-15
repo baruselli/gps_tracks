@@ -355,7 +355,7 @@
                     <thead><th>Feature</th><th>Rank</th></thead>
                     {% for k2,v2 in v.items %}
                         <tr>
-                            <td>{{k2}}</td>
+                            <td><font color="{{v2.2}}">{{k2}}</font></td>
                                 <!--<a target="_blank" href="{% url 'group_plots' group_id=v2.1 %}?color=Speed&r=Uniform&h={{track.name_wo_path_wo_ext}}&x={{k2}}&y={{k2}}&by_rank=on">-->
                             <td>
                                 <a target="_blank" href="{% url 'group_plots' group_id=v2.1 %}?color=Speed&r=Uniform&h={{track.name_wo_path_wo_ext}}&x=Ordinal+number&y={{k2}}">

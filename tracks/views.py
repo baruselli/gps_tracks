@@ -115,6 +115,7 @@ class TrackView(View):
                 g_json=json.loads(g.properties_json)
             group_dict={}
             try:
+                n_tracks_group=g.tracks.count()
                 for a in g_json["Tracks"]:
                     if a["name"]==track.name_wo_path_wo_ext:
                         for k,v in a.items():
@@ -122,8 +123,14 @@ class TrackView(View):
                                 for ok,ov in options.items():
                                     if "feature_rank" in ov.keys() and ov["feature_rank"]==k:
                                         name=ok
+                                        if v<n_tracks_group/3:
+                                            color="green"
+                                        elif v>2*n_tracks_group/3:
+                                            color="red"
+                                        else:
+                                            color="black"
                                         break
-                                group_dict[name]=[v,g.pk]
+                                group_dict[name]=[v,g.pk,color]
                         groups_dict[g]=group_dict
                         break
             except Exception as e:

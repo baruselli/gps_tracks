@@ -25,6 +25,7 @@ function init_map_base(map,options,mapBounds=null,add_basemaps=true,track_pk=-1)
         console.log("Map bounds not OK, hiding reset button")
         $(".leaflet-control-zoom-out.leaflet-bar-part").hide()
     }
+
 }
 
 function default_point_properties(type="point",reset="reset"){
@@ -754,6 +755,8 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
     if (groupCheckboxes){
         $(".leaflet-control-layers-group-selector").prop("checked",true)
     }
+    //put the first map as selected, otherwise the radio button is empty for all
+    $("input:radio[name=leaflet-base-layers]:first").prop('checked', true);
 
     var t1 = performance.now();
     console.log("--read_data_leaflet_generic took", (t1-t0)/1000, "seconds")

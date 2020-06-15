@@ -530,7 +530,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
     features={}  //geojson, wps, photos, lines, (groups?)
     global_features={}  //global geojson, wps, photos, lines
     groups={} // groups
-    groupCheckboxes=false
+    var groupCheckboxes=false
     colors_tracks=null
     plot_track=true
     show_features=true
@@ -649,6 +649,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     //console.log("data_track", data_track)
                     tracks[text]=track_layer_fromjson(data_track,geojsonMarkerOptions,options).addTo(map)
                 }
+                groupCheckboxes = true
                 break;
             case "Groups":
                 data_groups=data[element]
@@ -657,6 +658,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     //TODO: add color in text
                     //todo: limit to a certain number of tracks?
                 }
+                groupCheckboxes = true
                 break;
             case "Waypoints":
             case "Photos":
@@ -738,6 +740,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
     if (global_features!={}){
         groupedOverlays["Global Features"]=global_features
     }
+
     var options2 = {
       exclusiveGroups: exclusiveGroups,
       groupCheckboxes: groupCheckboxes
@@ -745,6 +748,12 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
 
     var layerControl = L.control.groupedLayers(baseMaps, groupedOverlays, options2);
     map.addControl(layerControl);
+
+    // groups are btw all shown by default, but the checkbox remains unselected,
+    // so i select it by hand
+    if (groupCheckboxes){
+        $(".leaflet-control-layers-group-selector").prop("checked",true)
+    }
 
     var t1 = performance.now();
     console.log("--read_data_leaflet_generic took", (t1-t0)/1000, "seconds")

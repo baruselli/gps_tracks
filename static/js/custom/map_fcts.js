@@ -670,7 +670,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
             case "Photos":
             case "Lines":
             case "GeoJSON":
-                if (data[element].length>0 && show_features){
+                if (show_features){
                     try{
                         features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
                         features[element].addTo(map)

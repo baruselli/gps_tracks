@@ -6,6 +6,8 @@ function init_map_base(map,options,mapBounds=null,add_basemaps=true,track_pk=-1)
     map.addControl(new L.Control.Fullscreen());
     if (add_basemaps){
         L.control.layers(baseMaps).addTo(map);
+        //put the first map as selected, otherwise the radio button is empty for all
+        $("input:radio[name=leaflet-base-layers]:first").prop('checked', true);
     }
     var ok_bounds=false
     if (mapBounds!=null && mapBounds!={}){

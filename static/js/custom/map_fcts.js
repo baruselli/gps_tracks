@@ -506,7 +506,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                 // group as a single point
                 }else if (feature.type==="Feature" & feature.point_type==="group"){
                 //console.log("a", feature)
-                    var name="<a href='"+feature.link+"'><b>"+feature.name+"</b></a>"+"<br>"+ "<br>"+feature.size+"<br>";
+                    var name="<a href='"+feature.link+"'><b>"+feature.name+"</b></a>"+ "<br>"+feature.size+" tracks";
                     geojsonMarkerOptions.color=feature.color
                     var marker =L.circleMarker(latlng, geojsonMarkerOptions).bindPopup(name)
                     return marker
@@ -657,7 +657,10 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
             case "Groups":
                 data_groups=data[element]
                 for (group_name in data_groups){
-                    groups[group_name]=track_layer_fromjson(data[element][group_name],geojsonMarkerOptions,options).addTo(map)
+                    color=data[element][group_name]["color"]
+                    if(!color)color="black"
+                    text="<font color='"+color+"'>"+group_name+"</font>"
+                    groups[text]=track_layer_fromjson(data[element][group_name],geojsonMarkerOptions,options).addTo(map)
                     //TODO: add color in text
                     //todo: limit to a certain number of tracks?
                 }

@@ -209,7 +209,7 @@ CACHES = {
 LEAFLET_CONFIG = {
     'MINIMAP': False,
     'RESET_VIEW': True,
-    'ATTRIBUTION_PREFIX': ''
+    #'ATTRIBUTION_PREFIX': ''
 }
 
 # Internationalization

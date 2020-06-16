@@ -331,7 +331,7 @@
             Other files:
             <ul>
                 {% for file in unused_input_files %}
-                    <li>{{file}}</li>
+                    <li><a href="{% url 'track_source' track_id=track.pk ext='other' %}?file_path={{file}}">{{file}}</a></td><td></li>
                 {%endfor%}
             </ul>
             {% if not track.is_merged%}

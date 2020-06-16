@@ -4,7 +4,9 @@
 {%endblock%}
 
 {%block buttons%}
-<a href="{% url 'track_source' ext=extension track_id=track.pk %}">Interactive version</a>
+    {% if extension != "other" %}
+        <a href="{% url 'track_source' ext=extension track_id=track.pk %}">Interactive version</a>
+    {%endif%}
 {%endblock%}
 
 
@@ -19,7 +21,7 @@
 </head>
 
 <body>
-<h2>Source {{extension}} for track  <a href="{% url 'track_detail' track_id=track.pk %}">{{track.name_wo_path_wo_ext}}</a></h2>
+<h2>{{extension}} source for track  <a href="{% url 'track_detail' track_id=track.pk %}">{{track.name_wo_path_wo_ext}}</a></h2>
 
 {{text|linebreaksbr}}
 

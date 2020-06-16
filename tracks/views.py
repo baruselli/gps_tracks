@@ -721,10 +721,23 @@ class TrackSourceView(View):
 
         extension = kwargs.get("ext", None) #gpx, kml,kmz,csv, tcx
         raw_view = request.GET.get('raw_view', 0)
+        file_path = request.GET.get('file_path', "")
 
-        if raw_view:
+        if raw_view or file_path:
             template_name = "tracks/track_source.html"
-            text=getattr(track,extension) #track.gpx, track.kml etc.
+            if not file_path:
+                text=getattr(track,extension) #track.gpx, track.kml etc.
+            else:
+                try:
+                    with open(file_path , 'r',encoding="utf-8") as f:
+                        text=f.read()
+                except:
+                    try:
+                        with open(file_path , 'r') as f:
+                            text=f.read()
+                    except:
+                        with open(file_path , 'r',encoding="latin-1") as f:
+                            text=f.read()
 
             return render(request, template_name, {"track": track,"extension":extension,"text":text})
         else:

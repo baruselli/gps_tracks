@@ -2560,9 +2560,12 @@ class Track(models.Model):
 
             #read waypoints
             try:
+                self.info("Waypoints gpx")
                 self.n_waypoints = 0
                 for wp in _gpx.waypoints:
                     self.n_waypoints += 1
+
+                    wp.name=wp.name or "No name"
 
                     self.debug(wp.name)
                     query = Waypoint.objects.filter(
@@ -2588,8 +2591,11 @@ class Track(models.Model):
                     waypoint.track_name = self.name_wo_path_wo_ext
                     # waypoint.geom = {'type': 'Point', 'coordinates': [waypoint.lat, waypoint.long]}
                     # waypoint.geom=Point(lat, long)
+                    waypoint.save()
                     waypoint.set_timezone()
                     waypoint.save()
+
+                self.info("OK Waypoints gpx: %s" %self.n_waypoints)
 
             except Exception as e:
                 self.error("Error in reading gpx file, waypoints: %s" %e)

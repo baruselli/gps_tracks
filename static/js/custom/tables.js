@@ -305,7 +305,7 @@ function get_object_ids(e, dt, node, config,how) {
     var ids="";
     for (var id in id_list){
         console.log(id_list[id]);
-    ids+=String(id_list[id])+","  ;
+    ids+=String(id_list[id])+"_"  ;
     }
     ids=ids.slice(0,-1)  //toglie l'ultimo ,
     console.log(ids);
@@ -414,7 +414,8 @@ function create_table_waypoints(table_id,data,url_many_wps){
          console.log(node)
          console.log(config)
             ids=get_object_ids(e, dt, node, config,"filtered")
-            if(ids){window.location=url_many_wps+"?track_ids="+ids}
+
+            if(ids){window.location=url_many_wps+"?wps_ids="+ids}
          }},
         {
          text: 'Show selected',
@@ -424,7 +425,7 @@ function create_table_waypoints(table_id,data,url_many_wps){
          console.log(node)
          console.log(config)
             ids=get_object_ids(e, dt, node, config,"selected")
-            if(ids){window.location=url_many_wps+"?track_ids="+ids}
+            if(ids){window.location=url_many_wps+"?wps_ids="+ids}
          }},
          ]
 
@@ -511,7 +512,7 @@ function create_table_photos(table_id,data,url_many_photos){
          console.log(node)
          console.log(config)
             ids=get_object_ids(e, dt, node, config,"filtered")
-            if(ids){window.location=url_many_photos+"?track_ids="+ids}
+            if(ids){window.location=url_many_photos+"?photo_ids="+ids}
          }},
         {
          text: 'Show selected',
@@ -521,7 +522,7 @@ function create_table_photos(table_id,data,url_many_photos){
          console.log(node)
          console.log(config)
             ids=get_object_ids(e, dt, node, config,"selected")
-            if(ids){window.location=url_many_photos+"?track_ids="+ids}
+            if(ids){window.location=url_many_photos+"?photo_ids="+ids}
          }},
          ]
 

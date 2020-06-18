@@ -175,22 +175,6 @@ class AllWaypointsView(View):
         )
 
 
-class WaypointListView(View):
-
-    template_name = "waypoints/waypoint_index.html"
-
-    def get(self, request, *args, **kwargs):
-
-        logger.debug("WaypointListView")
-
-        return render(
-            request,
-            self.template_name,
-            {
-            # "all_wps": Waypoint.objects.filter(inizio=False),
-             "request": request.GET.urlencode()},
-        )
-
 class DeleteWaypoints(View):
     def get(self, request, *args, **kwargs):
         from django.contrib import messages

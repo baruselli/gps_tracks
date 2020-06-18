@@ -5,8 +5,11 @@
 {% load mathfilters %}
 
 {%block buttons%}
-    <a href="{% url 'waypoint_index' %}?{{request}}">Waypoints List</a>
     <button onclick="location.href='{% url 'create_waypoint' %}'" type="button">New waypoint</button>
+{%endblock%}
+
+{%block head_title %}
+    <title>Waypoints</title>
 {%endblock%}
 
 {%block form0%}
@@ -87,8 +90,20 @@
     console.log(url)
 
     $.getJSON(url,function(data){
-    read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
-  //read_data_leaflet_allwps(data,geojsonMarkerOptions,map,options)
+        read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+        //if it comes out clustered, redo the call without clustering
+        if (data ["Waypoints"][0] && data["Waypoints"][0]["elements"]){
+            url='{% url 'allwps_json'%}?{{request}}&do_cluster=0'
+            $.getJSON(url,function(data){
+                console.log("data is clustered, calling", url)
+                var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
+            })
+        //otherwise, use same data
+        }else{
+            console.log("data is not clustered, go on")
+            var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
+        }
+
     })
 
 
@@ -137,3 +152,36 @@
 </html>
 
 {% endblock %}
+
+{% block table %}
+    <div id="block_table">
+        <table id="import_table">
+            <thead>
+                <tr>
+                    <td>Id</td>
+                    <td>Name</td>
+                    <td>Time</td>
+                    <td>Altitude</td>
+                    <td>Track</td>
+                    <td>Country</td>
+                    <td>Region</td>
+                    <td>City</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+{%endblock%}

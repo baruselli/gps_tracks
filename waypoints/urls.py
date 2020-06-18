@@ -11,7 +11,7 @@ urlpatterns = [
     #main
     # url(r"^main", views.WaypointListView.as_view(), name="waypoint_index"),
     url(r"^main$", views.WaypointListGeneralView.as_view(), name="waypoint_gen_index"),
-    url(r"^waypoints_list", views.WaypointListView.as_view(), name="waypoint_index"),
+    #url(r"^waypoints_list", views.WaypointListView.as_view(), name="waypoint_index"),
     #single
     url(r"^waypoint/(?P<waypoint_id>[0-9]+)/$", views.WaypointView.as_view(), name="waypoint_detail", ),
     url(r"^waypoint/create/$", views.CreateWaypointView.as_view(), name="create_waypoint", ),

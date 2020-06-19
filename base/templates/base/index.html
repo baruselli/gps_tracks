@@ -177,8 +177,8 @@
 
         </table>
         <br>
-                <!-- <div style="float:left"><a href="{% url 'waypoint_index' %}?n_days= 30 ">Last 30 days</a></div> -->
-        <form method="GET" action="{% url 'waypoint_index' %}" id="searchform_w">
+                <!-- <div style="float:left"><a href="{% url 'waypoints_map' %}?n_days= 30 ">Last 30 days</a></div> -->
+        <form method="GET" action="{% url 'waypoints_map' %}" id="searchform_w">
             <input class="searchfield" id="searchbox1_w" name="name" type="text" value="" placeholder="Name"/>
         <input type="submit" value="Search">
             </form>

@@ -188,7 +188,7 @@ class DeleteWaypoints(View):
 
         messages.success(request, message)
 
-        return redirect(reverse("waypoint_index"))
+        return redirect(reverse("index"))
 
 class CreateWaypointView(View):
 
@@ -313,7 +313,7 @@ class DeleteWaypointView(View):
 
         logger.info(message)
 
-        return redirect(reverse("waypoint_index"))
+        return redirect(reverse("index"))
 
 
 

@@ -674,8 +674,10 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
             case "GeoJSON":
                 if (show_features){
                     try{
-                        features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
-                        features[element].addTo(map)
+                        if (data[element].length>0){
+                            features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
+                            features[element].addTo(map)
+                        }
                     }catch(error){
                         console.log("Cannot do "+ element +": "+error)
                         console.log("data[element]", data[element])

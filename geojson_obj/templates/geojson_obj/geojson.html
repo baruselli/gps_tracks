@@ -36,7 +36,11 @@
         min_long=parseFloat({{obj.min_lon}})
         max_long=parseFloat({{obj.max_lon}})
 
-        var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+        try{
+            var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+        }catch(error){
+            var mapBound=undefined
+        }
         
         if (typeof mapBounds !="undefined"){mapBounds=mapBounds}else{mapBounds=null}
 

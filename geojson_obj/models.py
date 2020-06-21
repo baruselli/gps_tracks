@@ -70,28 +70,37 @@ class GeoJsonObject(models.Model):
         max_lat = -1000
         min_lon = 1000
         max_lon = -1000
-        try:
-            lats = [a[1] for a in geojson.utils.coords(obj)]
-            long = [a[0] for a in geojson.utils.coords(obj)]
-            min_lat = min(min_lat,min(lats))
-            min_lon = min(min_lon, min(long))
-            max_lat = max(max_lat, max(lats))
-            max_lon = max(max_lon, max(long))
-        except:
-            pass
-        for child in obj:
+
+
+        if "bbox" in obj.keys():
             try:
-                lats = [a[1] for a in geojson.utils.coords(obj[child])]
-                long = [a[0] for a in geojson.utils.coords(obj[child])]
-                min_lat = min(min_lat, min(lats))
+                min_lon,min_lat,max_lon,max_lat = obj["bbox"]
+            except:
+                pass
+        if min_lat==1000:
+            try:
+                lats = [a[1] for a in geojson.utils.coords(obj)]
+                long = [a[0] for a in geojson.utils.coords(obj)]
+                min_lat = min(min_lat,min(lats))
                 min_lon = min(min_lon, min(long))
                 max_lat = max(max_lat, max(lats))
                 max_lon = max(max_lon, max(long))
             except:
                 pass
+        if min_lat==1000:
+            for child in obj:
+                try:
+                    lats = [a[1] for a in geojson.utils.coords(obj[child])]
+                    long = [a[0] for a in geojson.utils.coords(obj[child])]
+                    min_lat = min(min_lat, min(lats))
+                    min_lon = min(min_lon, min(long))
+                    max_lat = max(max_lat, max(lats))
+                    max_lon = max(max_lon, max(long))
+                except:
+                    pass
         #print(min_lat, min_lon, max_lat,max_lon)
-        self.min_lat=min_lat
-        self.min_lon=min_lon
+        self.min_lat = min_lat
+        self.min_lon = min_lon
         self.max_lat = max_lat
         self.max_lon = max_lon
         self.save()

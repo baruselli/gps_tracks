@@ -43,6 +43,8 @@ class GeoJsonObject(models.Model):
         if self.geojson:
             logger.debug("reading saved text")
             json_ok = json.loads(self.geojson)
+            json_ok["point_type"] = "external_geojson"
+            json_ok["external_geojson_name"] = self.name
         elif self.website:
             logger.info("downloading from website")
             import urllib.request

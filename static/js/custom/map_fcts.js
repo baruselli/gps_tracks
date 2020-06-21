@@ -354,6 +354,8 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     //     this.setStyle({"weight": 5});
                     //  });
                     layer.setStyle({'className': 'leaflet_track_marker leaflet_trackline_marker leaflet_track_'+feature.pk}) //I assign a class to find these markers
+                } else if (feature.point_type==="external_geojson"){
+                    layer.bindPopup(feature.external_geojson_name);
                 }
             },
             // all the rest are points, so I create marker and assign popup here

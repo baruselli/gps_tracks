@@ -177,7 +177,7 @@ class GeoJsonObjectJsonView(View):
         obj = get_object_or_404(GeoJsonObject, pk=obj_id)
         logger.info("GeoJsonObjectJsonView %s" % obj_id)
 
-        json_ok = {"GeoJSON": obj.get_geojson(),
+        json_ok = {"GeoJSON": [obj.get_geojson()],
                    "minmaxlatlong": [obj.min_lat, obj.max_lat, obj.min_lon, obj.max_lon]}
 
         return JsonResponse(json_ok, safe=False)

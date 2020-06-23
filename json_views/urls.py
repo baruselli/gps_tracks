@@ -15,6 +15,7 @@ urlpatterns = [
     url(r"^line/(?P<line_id>[0-9]+)/$", views.LineJsonView.as_view(), name="line_json"),
     ### geojson
     url(r"^geojson/(?P<geojsonobj_id>[0-9]+)/", views.GeoJsonObjectJsonView.as_view(), name="geojsonobj_json", ),
+    url(r"^geojson/all/", views.GeoJsonObjectsJsonView.as_view(), name="geojsonobj_json_all", ),
     ### tracks
     ## one
     url(r"^track/json_list_of_points/(?P<track_id>[0-9]+)/$", (views.TrackJsonView.as_view()), name="track_json_list_of_points", ),

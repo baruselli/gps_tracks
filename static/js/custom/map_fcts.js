@@ -250,13 +250,22 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     return true
                 }
             },
-            // this is only set for lines
+            // this is only set for lines or geojson
             style:function(feature, layer){
                 if (feature.point_type==="global_line"){
                     color=feature.properties.color
                     if (!color) color="black"
                     return {"color":color,
                         weight: 3,   opacity: 0.5,   smoothFactor: 1}
+                }
+                if (feature.point_type==="external_geojson"){
+                    console.log(feature)
+                    if (feature["properties"] && feature["properties"]["color"]){
+                        color=feature["properties"]["color"]
+                    }else{
+                        color="blue"
+                    }
+                    return {"color":color}
                 }
             },
             onEachFeature: function (feature, layer){
@@ -713,7 +722,14 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     for (i=0; i<element_length;i++ ){
                         single_element_data=data[element][i]
                         options["feature_for_name"]=single_element_data.feature_for_name
-                        text=single_element_data["external_geojson_name"]
+                        //set color
+                        if (single_element_data["properties"] && single_element_data["properties"]["color"]){
+                            color=single_element_data["properties"]["color"]
+                        }else{
+                            color="black"
+                        }
+                        name=single_element_data["external_geojson_name"]
+                        text="<font color='"+color+"'>"+name+"</font>"
                         geojson[text]=track_layer_fromjson(single_element_data,geojsonMarkerOptions,options)
                         if (element=="GeoJSON"){
                             geojson[text].addTo(map)

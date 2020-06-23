@@ -365,8 +365,10 @@ def geojson_json(geojsonobjs=None, is_global=True, bounds={}):
                             min_lon__lte=bounds["max_long"],
                              )
 
-    for obj in geojsonobjs:
-        json_ok.append(obj.get_geojson())
+    colors=get_colors(geojsonobjs.count())
+
+    for obj,color in zip(geojsonobjs,colors):
+        json_ok.append(obj.get_geojson(color=color))
     return json_ok
 
 ###tracks

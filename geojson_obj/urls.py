@@ -13,4 +13,5 @@ urlpatterns = [
     url(r"^edit/", views.CreateGeoJsonView.as_view(), name="geojsonobj_edit", ),
     url(r"^(?P<geojsonobj_id>[0-9]+)/", views.GeoJsonObjectView.as_view(), name="geojsonobj", ),
     url(r"^set_properties/(?P<geojsonobj_id>[0-9]+)/", views.GeoJsonSetPropertiesView.as_view(),name="geojsonobj_properties", ),
+    url(r"^map/", views.GeoJsonObjectMapView.as_view(), name="geojson_map", ),
 ]

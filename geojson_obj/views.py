@@ -122,3 +122,14 @@ class GeoJsonSetPropertiesView(View):
         obj.set_properties()
 
         return redirect(reverse("geojsonobj", args=(obj_id,)))
+
+class GeoJsonObjectMapView(View):
+    template_name = "geojson_obj/geojson_map.html"
+    def get(self, request, *args, **kwargs):
+        logger.info("GeoJsonObjectMapView")
+
+        objs =GeoJsonObject.objects.all()
+
+        return render(
+            request, self.template_name, {"objs":objs}
+        )

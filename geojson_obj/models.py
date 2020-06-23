@@ -39,7 +39,7 @@ class GeoJsonObject(models.Model):
     def __str__(self):
         return str(self.name)
 
-    def get_geojson(self):
+    def get_geojson(self,color=None):
         if self.geojson:
             logger.debug("reading saved text")
             json_ok = json.loads(self.geojson)
@@ -48,9 +48,20 @@ class GeoJsonObject(models.Model):
                 for f in json_ok["features"]:
                     f["feature_for_name"] = self.feature_for_name
                     f["point_type"] = "external_geojson" # not needed, just for info
+                    if color:
+                        if "properties" in f:
+                            f["properties"]["color"]=color
+                        else:
+                            f["properties"]={"color":color}
             # otherwise, i assign name by hand
             json_ok["external_geojson_name"] = self.name
             json_ok["point_type"] = "external_geojson" # not needed, just for info
+            if color:
+                if "properties" in json_ok:
+                    json_ok["properties"]["color"]=color
+                else:
+                    json_ok["properties"]={"color":color}
+
         elif self.website:
             logger.info("downloading from website")
             import urllib.request

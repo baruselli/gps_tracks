@@ -182,6 +182,32 @@ class GeoJsonObjectJsonView(View):
 
         return JsonResponse(json_ok, safe=False)
 
+class GeoJsonObjectsJsonView(View):
+    def get(self, request, *args, **kwargs):
+
+        logger.info("GeoJsonObjectsJsonView")
+
+        objects=GeoJsonObject.objects.all()
+        json_tot=[]
+        minmaxlatlon=[]
+        
+        colors = get_colors(objects.count())
+
+        for obj,color in zip(objects,colors):
+            json=obj.get_geojson(color=color)
+            json_tot.append(json)
+
+        min_lat=np.nanmin([a for a in objects.values_list("min_lat",flat=True) if a])
+        max_lat=np.nanmax([a for a in objects.values_list("max_lat",flat=True) if a])
+        min_lon=np.nanmin([a for a in objects.values_list("min_lon",flat=True) if a])
+        max_lon=np.nanmax([a for a in objects.values_list("max_lon",flat=True) if a])
+
+        json_ok = {"GeoJSON": json_tot,
+                   "minmaxlatlong": [min_lat, max_lat, min_lon, max_lon]}
+
+        return JsonResponse(json_ok, safe=False)
+
+
 ###Tracks
 ##many
 # as lines

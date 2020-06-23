@@ -22,7 +22,7 @@ class GeoJsonObject(models.Model):
     min_lon = models.FloatField(null=True, blank=True)
     max_lat = models.FloatField(null=True, blank=True)
     max_lon = models.FloatField(null=True, blank=True)
-
+    feature_for_name=models.CharField(max_length=512, null=True, blank=True,verbose_name="Property name under properties to be shown on popup (only for FeatureCollection)")
 
     class Meta:
         verbose_name = "GeoJsonObject"
@@ -43,8 +43,14 @@ class GeoJsonObject(models.Model):
         if self.geojson:
             logger.debug("reading saved text")
             json_ok = json.loads(self.geojson)
-            json_ok["point_type"] = "external_geojson"
+            # in FeatureCollection I give to all subfeatures feature_for_name to get their name
+            if "type" in json_ok and "features" in json_ok and json_ok["type"]=="FeatureCollection":
+                for f in json_ok["features"]:
+                    f["feature_for_name"] = self.feature_for_name
+                    f["point_type"] = "external_geojson" # not needed, just for info
+            # otherwise, i assign name by hand
             json_ok["external_geojson_name"] = self.name
+            json_ok["point_type"] = "external_geojson" # not needed, just for info
         elif self.website:
             logger.info("downloading from website")
             import urllib.request

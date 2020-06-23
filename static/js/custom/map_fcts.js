@@ -218,7 +218,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
     filter=options.filter===true //default false
     table=options.table
     track_name=options.track_name
-    external=options.external===true //def false,
+    //external=options.external===true //def false,
     split=options.split,
     lap=options.lap,
     do_popup=options.do_popup!==false //default true
@@ -244,10 +244,10 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     }else{ //filter by point type and track_name
                     return feature.point_type===filter_point_type & feature.track_name===track_name
                     }
-                }else if (external){
-                return  feature.point_type === undefined //all external geojson, which does not have point_type
+                //}else if (external){ //probably not needed
+                //    return  feature.point_type === undefined //all external geojson, which does not have point_type
                 }else{
-                return true
+                    return true
                 }
             },
             // this is only set for lines
@@ -354,8 +354,21 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     //     this.setStyle({"weight": 5});
                     //  });
                     layer.setStyle({'className': 'leaflet_track_marker leaflet_trackline_marker leaflet_track_'+feature.pk}) //I assign a class to find these markers
-                } else if (feature.point_type==="external_geojson"){
-                    layer.bindPopup(feature.external_geojson_name);
+                } else if (feature.external_geojson_name){
+                    // only works if geojson is a single feature
+                    // if it is a feature collection, features are taken as children of the object that 
+                    // has external_geojson_name property, so this part is skipped
+                    popup_text=feature.external_geojson_name
+                    layer.bindPopup(popup_text);
+                } else if (feature.feature_for_name){
+                    //this works for a featurecollection of external geojson
+                    // in case of geojson with feature collection, I give feature_for_name
+                    // to all children, see get_geojson
+                    feature_for_name=feature.feature_for_name
+                    if (feature_for_name && feature.properties[feature_for_name]){
+                        popup_text=feature.properties[feature_for_name]
+                        layer.bindPopup(popup_text);
+                    }
                 }
             },
             // all the rest are points, so I create marker and assign popup here
@@ -532,9 +545,10 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
 
     tracks={}      //tracks
     track_group={} //for single track
-    features={}  //geojson, wps, photos, lines, (groups?)
-    global_features={}  //global geojson, wps, photos, lines
+    features={}  // wps, photos, lines, (groups?)
+    global_features={}  //global wps, photos, lines
     groups={} // groups
+    geojson={} //all geojson
     var groupCheckboxes=false
     colors_tracks=null
     plot_track=true
@@ -671,7 +685,6 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
             case "Waypoints":
             case "Photos":
             case "Lines":
-            case "GeoJSON":
                 if (show_features){
                     try{
                         if (data[element].length>0){
@@ -692,8 +705,20 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                 }
                 break;
             case "Global GeoJSON":
-                if (data[element].length>0){
-                    global_features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options)
+            case "GeoJSON":
+                var element_length=data[element].length
+                if (element_length){
+                    // here I make a menu entry for each geojson object
+                    // different from wps and photos, which get a single menu for all elements
+                    for (i=0; i<element_length;i++ ){
+                        single_element_data=data[element][i]
+                        options["feature_for_name"]=single_element_data.feature_for_name
+                        text=single_element_data["external_geojson_name"]
+                        geojson[text]=track_layer_fromjson(single_element_data,geojsonMarkerOptions,options)
+                        if (element=="GeoJSON"){
+                            geojson[text].addTo(map)
+                        }
+                    }
                 }
                 break;
             case "minmaxlatlong": //used to give map bounds
@@ -750,6 +775,10 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
     if (global_features!={}){
         groupedOverlays["Global Features"]=global_features
     }
+    if (geojson!={}){
+        groupedOverlays["Geojson"]=geojson
+    }
+    
 
     var options2 = {
       exclusiveGroups: exclusiveGroups,

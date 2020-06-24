@@ -72,11 +72,12 @@ class CreateGeoJsonView(View):
 
             geojsonobj = GeoJsonObject.objects.get(pk=geojsonobj_id)
 
-            if geojsonobj.website:
-                geojsonobj.geojson=""
+            if geojsonobj.website and not geojsonobj.geojson:
+                geojsonobj.download_from_web()
+                
             geojsonobj.geojson = geojsonobj.geojson.replace("'", "\"")
             geojsonobj.save()
-
+            geojsonobj.set_properties()
 
 
             return HttpResponseRedirect(
@@ -86,6 +87,25 @@ class CreateGeoJsonView(View):
             logger.error("Form geojsonobj_id")
             return render(
                 request, self.template_name, {"form": form, "has_error": True}
+            )
+
+class DwonloadGeoJsonView(View):
+
+    def post(self, request, *args, **kwargs):
+
+        geojsonobj_id = kwargs.get("geojsonobj_id", None)
+
+        if geojsonobj_id:
+            geojsonobj = GeoJsonObject.objects.get(pk=geojsonobj_id)
+
+            geojsonobj.download_from_web()
+            geojsonobj.geojson = geojsonobj.geojson.replace("'", "\"")
+            geojsonobj.save()
+            geojsonobj.set_properties()
+
+
+            return HttpResponseRedirect(
+                reverse("geojsonobj", kwargs={"geojsonobj_id": geojsonobj_id})
             )
 
 class GeoJsonObjectView(View):

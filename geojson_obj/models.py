@@ -63,21 +63,24 @@ class GeoJsonObject(models.Model):
                     json_ok["properties"]={"color":color}
 
         elif self.website:
-            logger.info("downloading from website")
-            import urllib.request
-
-            url = self.website
-            response = urllib.request.urlopen(url)
-            data = response.read()
-            text = data.decode('utf-8')
-            json_ok = json.loads(text)
-            self.geojson = text
-            self.save()
+            self.download_from_web()
             self.set_properties()
-            logger.info("OK downloading and saving to db")
         else:
             json_ok = {}
         return json_ok
+
+    def download_from_web(self):
+        logger.info("downloading from website")
+        import urllib.request
+
+        url = self.website
+        response = urllib.request.urlopen(url)
+        data = response.read()
+        text = data.decode('utf-8')
+        json_ok = json.loads(text)
+        self.geojson = text
+        self.save()
+        logger.info("OK downloading and saving to db")
 
     def set_properties(self):
         logger.info("set_properties")

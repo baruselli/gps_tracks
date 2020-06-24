@@ -19,6 +19,12 @@
     <button onclick="location.href='{% url 'geojsonobj_edit'  geojsonobj_id=obj.pk  %}'" type="button">Edit</button>
     <button onclick="location.href='{% url 'geojsonobj_json' geojsonobj_id=obj.pk %}'" type="button">See GeoJSON</button>
     <button onclick="location.href='{% url 'geojsonobj_properties' geojsonobj_id=obj.pk %}'" type="button">Set Properties</button>
+    {% if obj.website %}
+    <form method="POST" action="{% url 'geojson_download' geojsonobj_id=obj.id %}" style="display: inline;" >
+        {% csrf_token %}
+        <input type="submit"  name="Download from source" value="Download from source">
+    </form>
+    {% endif %}
 {%endblock%}
 
 {%block content%}

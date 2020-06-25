@@ -622,8 +622,8 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
                 try:
                     v["color"]=colors[i]
                 except Exception as e:
-                    v["color"]=colors[len(colors)-1]
                     logger.error("error with v['color']: %s" %e)
+                    v["color"]=colors[len(colors)-1]
                 v["pace"]={
                     "pace":v["pace"],
                     "pace_string":v["pace_string"],

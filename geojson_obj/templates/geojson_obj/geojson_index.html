@@ -41,7 +41,7 @@
                         <a href="{% url 'geojsonobj' geojsonobj_id=obj.pk %}">{{obj.name}}</a>
                     </td>
                     <td>{% if obj.website %} <a href="{{obj.website}}">{{obj.website}}</a> {%endif%}</td>
-                    <td>{{obj.is_valid}}</td>
+                    <td>{% if obj.is_valid%} &#10004 {% else %} &#10008 {% endif %}</td>
                     <td><a href="{% url 'geojsonobj_edit' geojsonobj_id=obj.pk %}">Edit</a></td>
                 </tr>
                 {% endfor %}

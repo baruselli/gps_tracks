@@ -11,7 +11,10 @@
 {% endblock %}
 
 {% block title %}
-   <h2> {{obj.name}}</h2>
+    <h2> {{obj.name}}</h2>
+    {%if obj.errors %}
+        Errors: {{obj.errors}}
+    {%endif%}
 {%endblock%}
 
 

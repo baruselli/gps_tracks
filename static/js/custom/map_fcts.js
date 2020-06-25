@@ -369,6 +369,18 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     // has external_geojson_name property, so this part is skipped
                     popup_text=feature.external_geojson_name
                     layer.bindPopup(popup_text);
+                    layer.on('click', function (e) {
+                        console.log("------click on external_geojson  ------")
+                        this.openPopup();
+                        this.setStyle({"weight": 8});
+                        this.bringToFront();
+                    });
+                    layer.on('mouseover', function (e) {
+                        this.setStyle({"weight": 8});
+                    });
+                    layer.on('mouseout', function (e) {
+                        this.setStyle({"weight": 3});
+                    });
                 } else if (feature.feature_for_name){
                     //this works for a featurecollection of external geojson
                     // in case of geojson with feature collection, I give feature_for_name
@@ -377,7 +389,19 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     if (feature_for_name && feature.properties[feature_for_name]){
                         popup_text=feature.properties[feature_for_name]
                         layer.bindPopup(popup_text);
-                    }
+                        layer.on('click', function (e) {
+                            console.log("------click on external_geojson  ------")
+                            this.openPopup();
+                            this.setStyle({"weight": 8});
+                            this.bringToFront();
+                        });
+                        layer.on('mouseover', function (e) {
+                            this.setStyle({"weight": 8});
+                        });
+                        layer.on('mouseout', function (e) {
+                            this.setStyle({"weight": 3});
+                        });
+                        }
                 }
             },
             // all the rest are points, so I create marker and assign popup here
@@ -713,8 +737,9 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     global_features[element]=track_layer_fromjson(data[element],geojsonMarkerOptions,options).addTo(map)
                 }
                 break;
-            case "Global GeoJSON":
             case "GeoJSON":
+                groupCheckboxes=true
+            case "Global GeoJSON":
                 var element_length=data[element].length
                 if (element_length){
                     // here I make a menu entry for each geojson object

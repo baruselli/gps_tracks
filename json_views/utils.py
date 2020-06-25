@@ -619,7 +619,11 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
                 v["geometry"]={"type": "Point",
                                    "coordinates": [v["avg_long"],v["avg_lat"]]}
                 v["point_type"]= "track"
-                v["color"]=colors[i]
+                try:
+                    v["color"]=colors[i]
+                except Exception as e:
+                    v["color"]=colors[len(colors)-1]
+                    logger.error("error with v['color']: %s" %e)
                 v["pace"]={
                     "pace":v["pace"],
                     "pace_string":v["pace_string"],

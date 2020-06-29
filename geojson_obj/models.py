@@ -16,7 +16,7 @@ class GeoJsonObject(models.Model):
     modified = models.DateTimeField(auto_now=True, verbose_name="Date of modification", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name="Date of creation", null=True, blank=True)
     is_global = models.BooleanField(default=False, verbose_name="Shown on all maps")
-    is_valid = models.CharField(default="", verbose_name="Is valid GeoJSON", max_length=10)
+    is_valid = models.BooleanField(default=False, verbose_name="Is valid GeoJSON")
     errors = models.TextField(verbose_name="GeoJSON validation errors", null=True, blank=True, unique=False)
     min_lat = models.FloatField(null=True, blank=True)
     min_lon = models.FloatField(null=True, blank=True)
@@ -88,6 +88,7 @@ class GeoJsonObject(models.Model):
         try:
             obj=geojson.loads(self.geojson)
             self.is_valid=obj.is_valid
+            print("obj.is_valid",obj.is_valid.__class__)
             self.errors = obj.errors()
 
             min_lat=1000

@@ -41,32 +41,34 @@ class GeoJsonObject(models.Model):
 
     def get_geojson(self,color=None):
         if self.geojson:
-            logger.debug("reading saved text")
-            json_ok = json.loads(self.geojson)
-            # in FeatureCollection I give to all subfeatures feature_for_name to get their name
-            if "type" in json_ok and "features" in json_ok and json_ok["type"]=="FeatureCollection":
-                for f in json_ok["features"]:
-                    f["feature_for_name"] = self.feature_for_name
-                    f["point_type"] = "external_geojson" # not needed, just for info
-                    if color:
-                        if "properties" in f:
-                            f["properties"]["color"]=color
-                        else:
-                            f["properties"]={"color":color}
-            # otherwise, i assign name by hand
-            json_ok["external_geojson_name"] = self.name
-            json_ok["point_type"] = "external_geojson" # not needed, just for info
-            if color:
-                if "properties" in json_ok:
-                    json_ok["properties"]["color"]=color
-                else:
-                    json_ok["properties"]={"color":color}
-
+            try:
+                logger.debug("reading saved text")
+                json_ok = json.loads(self.geojson)
+                # in FeatureCollection I give to all subfeatures feature_for_name to get their name
+                if "type" in json_ok and "features" in json_ok and json_ok["type"]=="FeatureCollection":
+                    for f in json_ok["features"]:
+                        f["feature_for_name"] = self.feature_for_name
+                        f["point_type"] = "external_geojson" # not needed, just for info
+                        if color:
+                            if "properties" in f:
+                                f["properties"]["color"]=color
+                            else:
+                                f["properties"]={"color":color}
+                # otherwise, i assign name by hand
+                json_ok["external_geojson_name"] = self.name
+                json_ok["point_type"] = "external_geojson" # not needed, just for info
+                if color:
+                    if "properties" in json_ok:
+                        json_ok["properties"]["color"]=color
+                    else:
+                        json_ok["properties"]={"color":color}
+            except:
+                json_ok = {"external_geojson_name":self.name + " (not valid)","properties":{"color":color}}
         elif self.website:
             self.download_from_web()
             self.set_properties()
         else:
-            json_ok = {}
+            json_ok = {"external_geojson_name":self.name + " (not valid)","properties":{"color":color}}    
         return json_ok
 
     def download_from_web(self):

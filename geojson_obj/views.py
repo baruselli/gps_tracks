@@ -89,6 +89,30 @@ class CreateGeoJsonView(View):
                 request, self.template_name, {"form": form, "has_error": True}
             )
 
+class DeleteGeoJsonView(View):
+
+
+    def get(self, request, *args, **kwargs):
+
+        geojsonobj_id = kwargs.get("geojsonobj_id", None)
+
+        logger.debug("CreateGeoJsonView")
+
+        geojsonobj = GeoJsonObject.objects.get(pk=geojsonobj_id)
+        name=geojsonobj.name
+
+        geojsonobj.delete()
+
+        message = "Geojson object %s deleted" %(name)
+        logger.info(message)
+        messages.success(request, message)
+
+        return HttpResponseRedirect(
+            reverse("geojson_index",)
+        )
+
+
+
 class DwonloadGeoJsonView(View):
 
     def post(self, request, *args, **kwargs):

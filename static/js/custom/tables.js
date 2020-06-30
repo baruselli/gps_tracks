@@ -62,7 +62,7 @@ function create_table(
            },
                       )
     }else{
-        $( ".hr_field" ).remove();
+        $( ".freq_field" ).remove();
         $( ".pace_field" ).remove();
     }
 
@@ -75,7 +75,7 @@ function create_table(
                 }
             },)
     }else{
-        $( ".freq_field" ).remove();
+        $( ".hr_field" ).remove();
     }
 
 

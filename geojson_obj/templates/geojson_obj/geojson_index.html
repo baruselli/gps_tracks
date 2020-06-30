@@ -27,7 +27,8 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Website</th>
-                <th>Is Valid</th>
+                <th>Valid</th>
+                <th>Global</th>
                 <th>Modify</th>
 
             </tr>
@@ -42,6 +43,7 @@
                     </td>
                     <td>{% if obj.website %} <a href="{{obj.website}}">{{obj.website}}</a> {%endif%}</td>
                     <td>{% if obj.is_valid%} &#10004 {% else %} &#10008 {% endif %}</td>
+                    <td>{% if obj.is_global%} &#10004 {% else %} &#10008 {% endif %}</td>
                     <td><a href="{% url 'geojsonobj_edit' geojsonobj_id=obj.pk %}">Edit</a></td>
                 </tr>
                 {% endfor %}

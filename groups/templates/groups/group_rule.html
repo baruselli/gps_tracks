@@ -1,0 +1,71 @@
+{% extends "base/base.html" %}
+{% load staticfiles%}
+
+{% load crispy_forms_tags %}
+
+{% block head_title %}
+    {% if obj %}
+        <title>Rule {{obj.name}}</title>
+    {% else %}
+        <title>New Rule</title>
+    {%endif %}
+{% endblock %}
+
+{% block title %}
+    {% if obj %}
+        <div><h1>Rule {{obj.name}}</h1></div>
+    {% else %}
+        <div><h1>New Rule</h1></div>
+    {%endif %}
+{%endblock%}
+
+{% block buttons %}
+    {% if obj %}
+        <button onclick="deleterule_fct()" type="button">Delete rule</button>
+    {%endif %}
+{%endblock%}
+
+
+{% block js %}
+    <script>
+        {% if obj %}
+            function deleterule_fct() {
+                var r=confirm("Really delete rule?");
+                if (r == true) {
+                    location.href='{% url 'group_rule_delete' rule_id=obj.pk  %}'
+                }
+            } 
+        {%endif %}
+    </script>
+{%endblock%}
+
+
+{% block content %}
+
+{% endblock %}
+
+
+{% block form %}
+  <br>
+   <form method="POST" action=""" id="searchform">
+        {% csrf_token %}
+        {{ form}}
+        <input type="submit"  name="rule_form" value="Submit">
+    </form>
+
+    {% if obj %}
+        <a href="{% url 'track_index' %}{{obj.request_string}}" >Track list</a>
+
+        {% if obj.group_set.all %}
+            <h2>Groups</h2>
+            {% for group in obj.group_set.all %}
+                <a href="{% url 'group_detail' group_id=group.pk %}" >{{group}}</a><br>
+            {% endfor %}
+        {% endif %}
+
+    {% endif %}
+{%endblock%}
+
+{% block form0 %}
+
+{%endblock%}

@@ -24,5 +24,10 @@ urlpatterns = [
     url(r"^autocreate$",views.CreateGroups.as_view(), name="autocreate_groups",),
     #autocomplete
     url(r'^group-autocomplete/$',views.GroupAutocomplete.as_view(),name='group-autocomplete', ),
+    # rules
+    url(r'^group_rules/$',views.GroupRulesView.as_view(),name='group_rules', ),
+    url(r'^group_rule/(?P<rule_id>[0-9]+)/$',views.GroupRuleView.as_view(),name='group_rule', ),
+    url(r'^group_rule/$',views.GroupRuleView.as_view(),name='group_rule_new', ),
+    url(r'^group_rule_delete/(?P<rule_id>[0-9]+)/$',views.GroupRuleDeleteView.as_view(),name='group_rule_delete', ),
 
 ]

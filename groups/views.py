@@ -10,7 +10,7 @@ import logging
 import traceback
 logger = logging.getLogger("gps_tracks")
 
-from .models import Group
+from .models import *
 from tracks.utils import get_colors
 from tracks.models import *
 from waypoints.models import *
@@ -300,3 +300,105 @@ class GroupAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__icontains=self.q).order_by("-pk")
 
         return qs
+
+
+## rules
+class GroupRulesView(View):
+
+    template_name = "groups/group_rules.html"
+
+    def get(self, request, *args, **kwargs):
+        logger.debug("GroupRulesView")
+        rules = GroupRule.objects.all()
+
+        return render(request, self.template_name, {"rules": rules})
+
+class GroupRuleView(View):
+
+    template_name = "groups/group_rule.html"
+
+    def get(self, request, *args, **kwargs):
+        id = kwargs.get("rule_id", None)
+
+        print(request.GET)
+
+        logger.debug("GroupRuleView")
+        Model=GroupRule
+
+        if id:
+            from .forms import GroupRuleForm as ModelForm
+            object = Model.objects.get(pk=id)
+            form = ModelForm(instance=object )
+            return render(
+                request,
+                self.template_name,
+                {"obj": object, "id": id, "form": form},
+            )
+        else:
+            try:
+                import urllib
+                initial_string = "?" + urllib.parse.urlencode(request.GET)
+            except:
+                initial_string = "?"
+
+            from .forms import GroupRuleForm as ModelForm
+            form = ModelForm(initial={'query_string': initial_string})
+            return render(
+                request, self.template_name, {"form": form, "id": id}
+            )
+
+    def post(self, request, *args, **kwargs):
+        from .models import GroupRule as Model
+
+        id = kwargs.get("rule_id", None)
+
+        if id:
+            from .forms import GroupRuleForm as ModelForm
+            instance = get_object_or_404(Model, pk=id)
+            form = ModelForm(request.POST or None, instance=instance)
+            new = False
+            logger.info("Modify object %s" % id)
+        else:
+            from .forms import GroupRuleForm as ModelForm
+            form = ModelForm(request.POST)
+            new = True
+            logger.info("Create object")
+
+        if form.is_valid():
+            f = form.save()
+            id = f.pk
+            instance = get_object_or_404(Model, pk=id)
+            logger.info("Object pk %s" % f.pk)
+
+            instance.save()
+
+            messages.success(request, "OK")
+
+            return HttpResponseRedirect(
+                reverse("group_rules")
+            )
+        else:
+            logger.error("Form")
+            return render(
+                request, self.template_name, {"form": form, "has_error": True}
+            )
+
+class GroupRuleDeleteView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        id = kwargs.get("rule_id", None)
+
+        logger.debug("GroupRuleDeleteView")
+
+
+        rule = GroupRule.objects.get(pk=id)
+        rule_name = rule.name
+        rule.delete()
+
+        message = "Rule %s deleted" %rule_name
+        messages.success(request, message)
+
+        return HttpResponseRedirect(
+            reverse("group_rules")
+        )

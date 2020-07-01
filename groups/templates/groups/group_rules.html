@@ -1,0 +1,89 @@
+{% extends "base/base_map.html" %}
+
+{% load leaflet_tags %}
+{% load mathfilters %}
+{% load static %}
+
+{% block head_title %}
+    <title>Rules</title>
+{% endblock %}
+
+{%block map%}
+{% endblock %}
+
+{%block title%}
+    <h1>Group Rules / Saved searches</h1>
+{%endblock%}
+
+{% block buttons %}
+    <button onclick="location.href='{% url 'group_rule_new' %}'" type="button">Create Rule</button>
+{%endblock%}
+
+{%block table%}
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="import_table">
+
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Track List</th>
+                <th>Groups</th>
+                <!-- <th>String</th> -->
+
+            </tr>
+            </thead>
+        
+    
+            <tbody>
+                {% for rule in rules %}
+                <tr>
+                    <td><a href="{% url 'group_rule' rule_id=rule.pk %}" >{{rule.name}}</a></td>
+                    <td><a href="{% url 'track_index' %}{{rule.request_string}}" >Track list</a></td>
+                    <!-- <td>{{rule.query_string}}</td> -->
+                    <td>
+                        {% for group in rule.group_set.all %}
+                            <a href="{% url 'group_detail' group_id=group.pk %}" >{{group}}</a><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <!-- <td></td> -->
+                    <td></td>
+                    </tr>
+                </tfoot>
+        </table>
+    </div>
+</div>
+
+{%endblock%}
+
+
+{%block mapjs%}
+
+
+<script>
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#import_table')
+        .DataTable({
+            paging: true,
+            "order": [[ 1, "desc" ]],
+            dom: 'Bfrtip',
+            select: true,
+            searching: true, 
+            info: true,
+            //keys: true,
+            buttons:[],
+        });
+    });
+    </script>
+
+
+{%endblock%}
+

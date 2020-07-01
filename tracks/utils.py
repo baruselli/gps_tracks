@@ -379,7 +379,7 @@ def filter_queryset_by_distance(query_set, lat,long, distance=None, limit=None):
         
 
 
-def filter_tracks(request,silent=True):
+def filter_tracks(request,silent=True,initial_queryset=None):
     from datetime import datetime, timedelta
     from .models import Track
     from django.db.models import Q
@@ -393,7 +393,10 @@ def filter_tracks(request,silent=True):
     start=time.time()
     logger.debug("filter_tracks")
 
-    tracks=Track.objects.all()
+    if initial_queryset:
+        tracks=initial_queryset
+    else:
+        tracks=Track.objects.all()
 
     n_days=request.get('n_days',None)           #OK
     name = request.get('name',None)           #OK

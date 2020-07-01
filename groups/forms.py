@@ -1,5 +1,5 @@
 from django import forms
-from .models import Group
+from .models import *
 from tracks.models import Track
 from django.contrib.admin.widgets import FilteredSelectMultiple
 import os
@@ -11,7 +11,7 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
 
-        fields = ["name","tracks","exclude_from_search", "auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines"]
+        fields = ["name","tracks","exclude_from_search", "auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules"]
         widgets = {"tracks":autocomplete.ModelSelect2Multiple(url='track-autocomplete') }
 
     # class Media:
@@ -32,5 +32,9 @@ class GroupForm(forms.ModelForm):
 class GroupFormQuick(forms.ModelForm):
     class Meta:
         model = Group
-        fields = ["name","exclude_from_search","auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines"]
+        fields = ["name","exclude_from_search","auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules","rules_act_as_and"]
 
+class GroupRuleForm(forms.ModelForm):
+    class Meta:
+        model = GroupRule
+        fields = ["name","query_string"]

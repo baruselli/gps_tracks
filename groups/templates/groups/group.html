@@ -41,11 +41,18 @@
 
 {% block content %}
     {% if group %}
-    <h2><a href="{% url 'track_index' %}?special_search=similar_to_group&special_search_pk={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Similar tracks</a></h2>
-    <!-- <h2><a href="{% url 'track_index' %}?similar_to_group={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Similar tracks</a></h2> -->
-    <!-- <h2><a href="{% url 'track_index' %}?close_to_group={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Nearby tracks</a></h2> -->
-    <h2><a href="{% url 'track_index' %}?special_search=close_to_group&special_search_pk={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Nearby tracks</a></h2>
-    {% endif %}
+        <h2><a href="{% url 'track_index' %}?special_search=similar_to_group&special_search_pk={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Similar tracks</a></h2>
+        <!-- <h2><a href="{% url 'track_index' %}?similar_to_group={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Similar tracks</a></h2> -->
+        <!-- <h2><a href="{% url 'track_index' %}?close_to_group={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Nearby tracks</a></h2> -->
+        <h2><a href="{% url 'track_index' %}?special_search=close_to_group&special_search_pk={{group.pk}}&how_many=20&use_color=1&how=line_smooth2&exclude_excluded_groups=1">Nearby tracks</a></h2>
+
+        {% if group.rules.all %}
+            <h2>Rules</h2>
+            {% for rule in group.rules.all %}
+                <a href="{% url 'group_rule'  rule_id=rule.pk %}">{{rule}}</a><br>
+            {% endfor %}
+        {%endif %}
+    {%endif %}
 {% endblock %}
 
 

@@ -508,8 +508,12 @@ class Track(models.Model):
             self.info("_%s - set_activity_group" %step)
             step += 1
             self.set_activity_group()
+            #
+            self.info("_%s - set_rules_groups" %step)
+            step += 1
+            self.set_rules_groups()
         except Exception as e:
-            self.warning("Error in set_path_groups,set_activity_group: %s"  %e)
+            self.warning("Error in set_path_groups,set_activity_group,set_rules_groups: %s"  %e)
         try:
             #
             self.info("_%s - draw_svg" %step)
@@ -2029,6 +2033,19 @@ class Track(models.Model):
 
         except Exception as e:
             self.error("Error in set_activity_group: %s" %e)
+
+    def set_rules_groups(self):
+        """
+        aggiunge gruppi in base alle regole di ogni gruppo
+        """
+        try:
+            for g in Group.objects.filter(rules__isnull=False):
+                # see if track survives group rule
+                if self in g.filtered_tracks(initial_queryset=Track.objects.filter(pk=self.pk)):
+                    self.info("Added to group %s following rules" %g)
+                    self.groups.add(g)
+        except Exception as e:
+            self.error("Error in set_rules_groups: %s" %e)
 
     def read_csv(self):
         """Reads csv files using the pandas library"""

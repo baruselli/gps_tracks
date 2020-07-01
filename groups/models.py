@@ -38,6 +38,8 @@ class Group(models.Model):
     is_path_group = models.BooleanField(default=False)
     hide_in_forms = models.BooleanField(default=False, verbose_name="Hide from track form")
     always_use_lines = models.BooleanField(default=False, verbose_name="Always use lines instead of points in this page")
+    rules = models.ManyToManyField('groups.GroupRule',blank=True)
+    rules_act_as_and = models.BooleanField(default=True, verbose_name="Take intersection of rules (instead of union)")
 
     @property
     def n_tracks(self):
@@ -279,3 +281,58 @@ class Group(models.Model):
 
     def save(self, *args, **kwargs):
         super(Group, self).save(*args, **kwargs)
+
+    def filtered_tracks(self,initial_queryset=None):
+        # rules go in AND
+        if initial_queryset:
+            tracks=initial_queryset
+        else:
+            tracks=Track.objects.all()
+        if self.rules.all():
+            for rule in self.rules.all():
+                tracks = rule.filtered_tracks(tracks)
+            return tracks
+        else:
+            return []
+
+class GroupRule(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Name", null=False, blank=False,unique=True)
+    query_string = models.TextField(null=True, blank=True, unique=False,default="?")
+
+    def __str__(self):
+        return self.name
+
+    def filter_dict(self):
+        """
+        returns a dict to mimic a request.GET dict obtained in a view 
+        """
+        from urllib import parse
+        try:
+            return_dict = parse.parse_qs(parse.urlsplit(self.query_string).query)
+            if not return_dict:
+                return_dict = {"no_search":1}
+            return return_dict
+        except:
+            return {"no_search":1}
+
+    def request_string(self):
+        """
+        returns a string, starting with ?, to be appended to the url
+        """
+        query_string = self.query_string
+        try:
+            if query_string.startswith("?"):
+                return query_string
+            else:
+                return "?"+query_string
+        except:
+            return "?no_query=1"
+        #import urllib
+        #return urllib.parse.urlencode(self.filter_dict())
+
+    def filtered_tracks(self,initial_queryset=None):
+        """
+        filters tracks according to the mimicked request.GET dict
+        """
+        from tracks.utils import filter_tracks
+        return filter_tracks(request=self.filter_dict(),initial_queryset=initial_queryset)

@@ -78,7 +78,8 @@
 {%block map%}
     {{block.super}}
     <div style="float: left width= 25%";>
-        <h2>Search -  <a href="{% url 'track_gen_index' %}">Simple searches</a> </h2>
+        <h2>Search -  <a href="{% url 'track_gen_index' %}">Simple searches</a>
+        -  <a href="{% url 'group_rules' %}">Saved searches</a> </h2>
         <form method="GET" action="{% url 'track_index' %}" id="searchform">
             {{track_form.media}}
             {{track_form.as_p}}
@@ -160,6 +161,7 @@
             <input type="submit" value="Search" id ="submit_button">
             <!-- <input type="reset" value="Reset"> -->
             <button type="button" onclick="window.location.href = '{% url  'track_index' %}?no_search=1'">Reset</button>
+            <button type="button" onclick="window.location.href = '{% url  'group_rule_new' %}?{{request}}'">Save search</button>
         </form>
     </div>
 {%endblock%}

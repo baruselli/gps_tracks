@@ -12,7 +12,8 @@ class GroupForm(forms.ModelForm):
         model = Group
 
         fields = ["name","tracks","exclude_from_search", "auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules"]
-        widgets = {"tracks":autocomplete.ModelSelect2Multiple(url='track-autocomplete') }
+        widgets = {"tracks":autocomplete.ModelSelect2Multiple(url='track-autocomplete') ,
+                    'rules': forms.widgets.CheckboxSelectMultiple() }
 
     # class Media:
     #     css = {
@@ -33,6 +34,7 @@ class GroupFormQuick(forms.ModelForm):
     class Meta:
         model = Group
         fields = ["name","exclude_from_search","auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules","rules_act_as_and"]
+        widgets = {'rules': forms.widgets.CheckboxSelectMultiple() }
 
 class GroupRuleForm(forms.ModelForm):
     class Meta:

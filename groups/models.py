@@ -306,19 +306,64 @@ class Group(models.Model):
                     # intersection with what is there; this is the safest way to do intersection
                     total_tracks = total_tracks.filter(pk__in=tracks_rule.values("pk")) 
                     logger.info("total_tracks %s"  %total_tracks.count())
+                logger.info("OK filtered_tracks for group %s" %self)
                 return total_tracks
             else:
                 # rules go in OR
                 total_tracks = Track.objects.none()
+                all_pks=[]
                 for rule in self.rules.all():
                     logger.info("applying rule %s in OR" %rule)
                     tracks_rule = rule.filtered_tracks(tracks)
                     logger.info("tracks_rule %s" %tracks_rule.count())
-                    total_tracks = total_tracks | tracks_rule  #union
-                    logger.info("total_tracks %s"  %total_tracks.count())
+                    all_pks.extend(tracks_rule.values_list("pk",flat=True))
+                    #total_tracks = total_tracks | tracks_rule  #union -> gives problem if a queryset has the "distance" field
+                    #logger.info("total_tracks %s"  %total_tracks.count())
+                total_tracks=Track.all_objects.filter(pk__in=all_pks)
+                logger.info("OK filtered_tracks for group %s" %self)
                 return total_tracks
         else:
+            logger.info("OK filtered_tracks for group %s" %self)
             return Track.objects.none()
+
+    def get_infos_on_filtered_tracks(self):
+        filtered_tracks=set(self.filtered_tracks().values_list("pk",flat=True))
+        #filtered_tracks=set([a.pk for a in self.filtered_tracks()])
+        group_tracks=set(self.tracks.all().values_list("pk",flat=True))
+
+        filtered_tracks_not_in_group=set(filtered_tracks)-set(group_tracks)
+
+        tracks_in_group_not_filtered=set(group_tracks)-set(filtered_tracks)
+
+        tracks_in_group_filtered=set(group_tracks).intersection(set(filtered_tracks))
+
+        return{
+            "filtered_tracks_not_in_group":len(filtered_tracks_not_in_group),
+            "filtered_tracks_not_in_group_pk":"_".join([str(a) for a in filtered_tracks_not_in_group]),
+            "tracks_in_group_not_filtered":len(tracks_in_group_not_filtered),
+            "tracks_in_group_not_filtered_pk":"_".join([str(a) for a in tracks_in_group_not_filtered]),
+            "tracks_in_group_filtered":len(tracks_in_group_filtered),
+            "tracks_in_group_filtered_pk":"_".join([str(a) for a in tracks_in_group_filtered]),
+        }
+
+        # filtered_tracks=self.filtered_tracks()
+
+        # filtered_tracks_not_in_group=filtered_tracks.exclude(pk__in=self.tracks.all().values("pk"))
+
+        # tracks_in_group_not_filtered=self.tracks.all().exclude(pk__in=filtered_tracks.values("pk"))
+
+        # tracks_in_group_filtered=self.tracks.all().filter(pk__in=filtered_tracks.values("pk"))
+
+        # return{
+        #     "filtered_tracks_not_in_group":filtered_tracks_not_in_group.count(),
+        #     "filtered_tracks_not_in_group_pk":"_".join([str(a) for a in filtered_tracks_not_in_group.values_list("pk",flat=True)]),
+        #     "tracks_in_group_not_filtered":tracks_in_group_not_filtered.count(),
+        #     "tracks_in_group_not_filtered_pk":"_".join([stra(a) for a in tracks_in_group_not_filtered.values_list("pk",flat=True)]),
+        #     "tracks_in_group_filtered":tracks_in_group_filtered.count(),
+        #     "tracks_in_group_filtered_pk":"_".join([str(a) for a in tracks_in_group_filtered.values_list("pk",flat=True)]),
+        # }
+
+
 
 class GroupRule(models.Model):
     name = models.CharField(max_length=255, verbose_name="Name", null=False, blank=False,unique=True)

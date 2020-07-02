@@ -51,6 +51,26 @@
             {% for rule in group.rules.all %}
                 <a href="{% url 'group_rule'  rule_id=rule.pk %}">{{rule}}</a><br>
             {% endfor %}
+
+            <br>
+            {%if infos_on_filtered_tracks.tracks_in_group_filtered %}
+                <a href='{% url "track_index" %}?track_ids={{infos_on_filtered_tracks.tracks_in_group_filtered_pk}}'>{{infos_on_filtered_tracks.tracks_in_group_filtered}} tracks in group and rules </a><br>
+            {%else%}
+                {{infos_on_filtered_tracks.tracks_in_group_filtered}} tracks in group and rules<br>
+            {%endif %}
+
+            {%if infos_on_filtered_tracks.filtered_tracks_not_in_group_pk %}
+                <a href='{% url "track_index" %}?track_ids={{infos_on_filtered_tracks.filtered_tracks_not_in_group_pk}}'>{{infos_on_filtered_tracks.filtered_tracks_not_in_group}} tracks in rules but not in group </a><br>
+            {%else%}
+                {{infos_on_filtered_tracks.filtered_tracks_not_in_group}} tracks in rules but not in group </a><br>
+            {%endif%}
+
+            {%if infos_on_filtered_tracks.tracks_in_group_not_filtered %}
+                <a href='{% url "track_index" %}?track_ids={{infos_on_filtered_tracks.tracks_in_group_not_filtered_pk}}'>{{infos_on_filtered_tracks.tracks_in_group_not_filtered}} tracks in group but not in rules </a><br>
+            {%else %}
+                {{infos_on_filtered_tracks.tracks_in_group_not_filtered}} tracks in group but not in rules<br>
+            {%endif%}
+
         {%endif %}
     {%endif %}
 {% endblock %}

@@ -55,6 +55,8 @@ class GroupView(View):
         from .forms import GroupFormQuick
         form = GroupFormQuick(instance=group)
 
+        infos_on_filtered_tracks = group.get_infos_on_filtered_tracks()
+
         return render(
             request,
             self.template_name,
@@ -66,7 +68,8 @@ class GroupView(View):
                 "form":form,
                 "with_waypoints":with_waypoints,
                 "with_photos":with_photos,
-                "request":request_str
+                "request":request_str,
+                "infos_on_filtered_tracks":infos_on_filtered_tracks
             },
         )
 
@@ -329,10 +332,13 @@ class GroupRuleView(View):
             from .forms import GroupRuleForm as ModelForm
             object = Model.objects.get(pk=id)
             form = ModelForm(instance=object )
+
+            n_tracks = object.filtered_tracks().count()
+
             return render(
                 request,
                 self.template_name,
-                {"obj": object, "id": id, "form": form},
+                {"obj": object, "id": id, "form": form,"n_tracks":n_tracks},
             )
         else:
             try:

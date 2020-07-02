@@ -7,6 +7,7 @@ import logging
 from pprint import pprint
 from photos.models import Photo
 from options.models import OptionSet
+
 logger = logging.getLogger("gps_tracks")
 
 class Group(models.Model):
@@ -283,17 +284,41 @@ class Group(models.Model):
         super(Group, self).save(*args, **kwargs)
 
     def filtered_tracks(self,initial_queryset=None):
-        # rules go in AND
+        """
+        filter tracks according to assigned rules
+        """
+        logger.info("filtered_tracks for group %s" %self)
+        from tracks.models import Track 
+
         if initial_queryset:
             tracks=initial_queryset
         else:
             tracks=Track.objects.all()
+
         if self.rules.all():
-            for rule in self.rules.all():
-                tracks = rule.filtered_tracks(tracks)
-            return tracks
+            if self.rules_act_as_and:
+                # rules go in AND
+                total_tracks= Track.all_objects.all()
+                for rule in self.rules.all():
+                    logger.info("applying rule %s in AND" %rule)
+                    tracks_rule = rule.filtered_tracks(tracks)
+                    logger.info("tracks_rule %s" %tracks_rule.count())
+                    # intersection with what is there; this is the safest way to do intersection
+                    total_tracks = total_tracks.filter(pk__in=tracks_rule.values("pk")) 
+                    logger.info("total_tracks %s"  %total_tracks.count())
+                return total_tracks
+            else:
+                # rules go in OR
+                total_tracks = Track.objects.none()
+                for rule in self.rules.all():
+                    logger.info("applying rule %s in OR" %rule)
+                    tracks_rule = rule.filtered_tracks(tracks)
+                    logger.info("tracks_rule %s" %tracks_rule.count())
+                    total_tracks = total_tracks | tracks_rule  #union
+                    logger.info("total_tracks %s"  %total_tracks.count())
+                return total_tracks
         else:
-            return []
+            return Track.objects.none()
 
 class GroupRule(models.Model):
     name = models.CharField(max_length=255, verbose_name="Name", null=False, blank=False,unique=True)
@@ -308,7 +333,10 @@ class GroupRule(models.Model):
         """
         from urllib import parse
         try:
-            return_dict = parse.parse_qs(parse.urlsplit(self.query_string).query)
+            return_dict_with_lists = parse.parse_qs(parse.urlsplit(self.query_string).query)
+            # for some stupid reason parse_qs always returns lists
+            return_dict = {a:b[0] for a, b in return_dict_with_lists.items()}
+
             if not return_dict:
                 return_dict = {"no_search":1}
             return return_dict

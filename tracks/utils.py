@@ -387,13 +387,13 @@ def filter_tracks(request,silent=True,initial_queryset=None):
 
     today = datetime.today()
 
-    print(request)
+    logger.info("filter_tracks: %s" %request)
+
 
     import time
     start=time.time()
-    logger.debug("filter_tracks")
 
-    if initial_queryset:
+    if initial_queryset is not None:
         tracks=initial_queryset
     else:
         tracks=Track.objects.all()
@@ -435,6 +435,9 @@ def filter_tracks(request,silent=True,initial_queryset=None):
 
     if no_search:
         return Track.objects.none()
+    # if empty search, return nothing
+    if list(request.keys())==["use_color"] or not request.keys():
+        return Track.objects.none() 
 
 
     # by group

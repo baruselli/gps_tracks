@@ -173,7 +173,7 @@
 
             <input type="submit" value="Search" id ="submit_button">
             <!-- <input type="reset" value="Reset"> -->
-            <button type="button" onclick="window.location.href = '{% url  'track_index' %}?no_search=1'">Reset</button>
+            <button type="button" onclick="window.location.href = '{% url  'track_index' %}'">Reset</button>
             <button type="button" onclick="window.location.href = '{% url  'group_rule_new' %}?{{request}}'">Save search</button>
         </form>
     </div>

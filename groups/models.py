@@ -327,41 +327,23 @@ class Group(models.Model):
             return Track.objects.none()
 
     def get_infos_on_filtered_tracks(self):
-        filtered_tracks=set(self.filtered_tracks().values_list("pk",flat=True))
-        #filtered_tracks=set([a.pk for a in self.filtered_tracks()])
-        group_tracks=set(self.tracks.all().values_list("pk",flat=True))
 
-        filtered_tracks_not_in_group=set(filtered_tracks)-set(group_tracks)
+        filtered_tracks=self.filtered_tracks()
 
-        tracks_in_group_not_filtered=set(group_tracks)-set(filtered_tracks)
+        filtered_tracks_not_in_group=filtered_tracks.exclude(pk__in=self.tracks.all().values("pk"))
 
-        tracks_in_group_filtered=set(group_tracks).intersection(set(filtered_tracks))
+        tracks_in_group_not_filtered=self.tracks.all().exclude(pk__in=filtered_tracks.values("pk"))
+
+        tracks_in_group_filtered=self.tracks.all().filter(pk__in=filtered_tracks.values("pk"))
 
         return{
-            "filtered_tracks_not_in_group":len(filtered_tracks_not_in_group),
-            "filtered_tracks_not_in_group_pk":"_".join([str(a) for a in filtered_tracks_not_in_group]),
-            "tracks_in_group_not_filtered":len(tracks_in_group_not_filtered),
-            "tracks_in_group_not_filtered_pk":"_".join([str(a) for a in tracks_in_group_not_filtered]),
-            "tracks_in_group_filtered":len(tracks_in_group_filtered),
-            "tracks_in_group_filtered_pk":"_".join([str(a) for a in tracks_in_group_filtered]),
+            "filtered_tracks_not_in_group":filtered_tracks_not_in_group.count(),
+            "filtered_tracks_not_in_group_pk":"_".join([str(a) for a in filtered_tracks_not_in_group.values_list("pk",flat=True)]),
+            "tracks_in_group_not_filtered":tracks_in_group_not_filtered.count(),
+            "tracks_in_group_not_filtered_pk":"_".join([str(a) for a in tracks_in_group_not_filtered.values_list("pk",flat=True)]),
+            "tracks_in_group_filtered":tracks_in_group_filtered.count(),
+            "tracks_in_group_filtered_pk":"_".join([str(a) for a in tracks_in_group_filtered.values_list("pk",flat=True)]),
         }
-
-        # filtered_tracks=self.filtered_tracks()
-
-        # filtered_tracks_not_in_group=filtered_tracks.exclude(pk__in=self.tracks.all().values("pk"))
-
-        # tracks_in_group_not_filtered=self.tracks.all().exclude(pk__in=filtered_tracks.values("pk"))
-
-        # tracks_in_group_filtered=self.tracks.all().filter(pk__in=filtered_tracks.values("pk"))
-
-        # return{
-        #     "filtered_tracks_not_in_group":filtered_tracks_not_in_group.count(),
-        #     "filtered_tracks_not_in_group_pk":"_".join([str(a) for a in filtered_tracks_not_in_group.values_list("pk",flat=True)]),
-        #     "tracks_in_group_not_filtered":tracks_in_group_not_filtered.count(),
-        #     "tracks_in_group_not_filtered_pk":"_".join([stra(a) for a in tracks_in_group_not_filtered.values_list("pk",flat=True)]),
-        #     "tracks_in_group_filtered":tracks_in_group_filtered.count(),
-        #     "tracks_in_group_filtered_pk":"_".join([str(a) for a in tracks_in_group_filtered.values_list("pk",flat=True)]),
-        # }
 
 
 

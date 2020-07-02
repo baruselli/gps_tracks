@@ -46,11 +46,13 @@
     </script>
     <script>
         $( document ).ready(function() {
-    
+
+
             // pass ids parameters instead of tracks
-            $("#submit_button").click(function(){        
+            $("#submit_button").click(function(e){        
+                e.preventDefault();
                 input = $("#id_tracks").val()
-                console.log("input",input)
+                //console.log("input",input)
                 if (input && input.length>0 && input !=[""]){
                     ids=""
                     for (i in input){
@@ -61,8 +63,19 @@
                     $("#searchform").append('<input type="hidden" name="track_ids" value='+ids+' /> ');
                     $('#id_tracks').remove(); //dont pass tracks parameters
                 }
-         
-             $("#searchform").submit(); // Submit the form
+            
+                // remove empty fields, try various ways
+               // $("#searchform").children(':input[value=""]').attr("disabled", "disabled");
+                $('select option:empty').attr("disabled", "disabled")
+                $("select").filter(function() {
+                    return !this.value;
+                }).attr("disabled", "disabled")
+                $("input").filter(function() {
+                    return !this.value;
+                }).attr("disabled", "disabled")
+
+                //submit
+                $("#searchform").submit(); // Submit the form
     
     
             });

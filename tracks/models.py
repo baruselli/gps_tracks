@@ -316,8 +316,9 @@ class Track(models.Model):
                 self.error(".. input file not found.")
                 return None
 
-    def set_all_properties(self):
+    def set_all_properties(self,direct_call=False):
         # if It do not already have a gpx file, I create a gpx obj to use all the utilities of gpxpy
+        # when direct call, noone outside takes care of added groups, so i have to refresh their properties by hand
         self.info("set_all_properties")
         step=1
         self.info("_%s - set_initial_final_coords" % step)
@@ -511,7 +512,7 @@ class Track(models.Model):
             #
             self.info("_%s - set_rules_groups" %step)
             step += 1
-            self.set_rules_groups()
+            self.set_rules_groups(direct_call=direct_call)
         except Exception as e:
             self.warning("Error in set_path_groups,set_activity_group,set_rules_groups: %s"  %e)
         try:
@@ -2034,7 +2035,7 @@ class Track(models.Model):
         except Exception as e:
             self.error("Error in set_activity_group: %s" %e)
 
-    def set_rules_groups(self):
+    def set_rules_groups(self,direct_call=False):
         """
         aggiunge gruppi in base alle regole di ogni gruppo
         """
@@ -2042,8 +2043,13 @@ class Track(models.Model):
             for g in Group.objects.filter(rules__isnull=False):
                 # see if track survives group rule
                 if self in g.filtered_tracks(initial_queryset=Track.objects.filter(pk=self.pk)):
-                    self.info("Added to group %s following rules" %g)
-                    self.groups.add(g)
+                    if self in g.tracks.all():
+                        self.info("Already in group %s following rules" %g)
+                    else:
+                        self.info("Add to group %s following rules" %g)
+                        self.groups.add(g)
+                        if direct_call:
+                            g.set_attributes(updated_tracks=[self])
         except Exception as e:
             self.error("Error in set_rules_groups: %s" %e)
 

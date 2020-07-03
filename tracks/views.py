@@ -201,7 +201,7 @@ class TrackView(View):
                 track.starting_index = max(track.starting_index,0)
                 track.ending_index = max(track.ending_index,0)
                 track.save()
-                track.set_all_properties()
+                track.set_all_properties(direct_call=True)
 
 
             new_set = set(track.groups.filter(auto_update_properties=True))
@@ -984,7 +984,7 @@ class TrackSetAllPropertiesView(View):
         track_id = kwargs.get("track_id", None)
         track = get_object_or_404(Track.all_objects, pk=track_id)
 
-        track.set_all_properties()
+        track.set_all_properties(direct_call=True)
         messages.success(request, "OK set properties")
 
         return HttpResponseRedirect(
@@ -998,7 +998,7 @@ class TracksSetAllPropertiesView(View):
         from .utils import refresh_properties
 
         logger.info("TracksSetAllPropertiesView")
-        t = threading.Thread(target=refresh_properties, kwargs={"tracks":Track.objects.all()})
+        t = threading.Thread(target=refresh_properties, kwargs={"tracks":Track.objects.all(),"direct_call":true})
         t.start()
 
         message = "Started import in a parallel thread, check logs for details"

@@ -1417,11 +1417,11 @@ def loosen_bounds(bounds):
             "max_long": max_long,
     }
 
-def refresh_properties(tracks):
+def refresh_properties(tracks,direct_call=False):
     logger.info("refresh_properties")
     for t in tracks:
         logger.info("refresh_properties %s" % t)
-        t.set_all_properties()
+        t.set_all_properties(direct_call=direct_call)
     logger.info("end refresh_properties")
 
 

@@ -393,10 +393,8 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     import time
     start=time.time()
 
-    if initial_queryset is not None:
-        tracks=initial_queryset
-    else:
-        tracks=Track.objects.all()
+    if initial_queryset is None:
+        initial_queryset=Track.all_objects.all()
 
     n_days=request.get('n_days',None)           #OK
     name = request.get('name',None)           #OK
@@ -442,20 +440,20 @@ def filter_tracks(request,silent=True,initial_queryset=None):
 
     # by group
     if group_pk:
-        return Track.all_objects.filter(group__pk=int(group_pk))
+        return initial_queryset.filter(group__pk=int(group_pk))
 
     tracks=None
     # by ids, here I must take the all_objects selector
     if ids_string:
-        tracks = Track.all_objects.filter(pk__in=[int(pk) for pk in ids_string.split("_") ])
+        tracks =initial_queryset.filter(pk__in=[int(pk) for pk in ids_string.split("_") ])
 
     # by group, in OR with ids
     if group_pk_search:
-        tracks_group =  Track.all_objects.filter(group__pk=int(group_pk_search))
+        tracks_group =  initial_queryset.filter(group__pk=int(group_pk_search))
         if tracks is None:
             tracks = tracks_group
         else:
-            tracks = tracks | tracks_group
+            tracks = (tracks | tracks_group).distinct()
 
     if deleted_tracks:
         deleted_tracks=int(deleted_tracks)
@@ -463,12 +461,17 @@ def filter_tracks(request,silent=True,initial_queryset=None):
         # 0: only active tracks (does not enter here)
         # 1: only deleted tracks 
         # 2: also deleted tracks
-        if deleted_tracks==1 and tracks is None:
-            tracks=Track.all_objects.filter(is_active=False)
+        if deleted_tracks==1 and tracks is None: #tracks is none if I haven't filtered by id or group
+            tracks=initial_queryset.filter(is_active=False)
         elif deleted_tracks==2 and tracks is None:
-            tracks=Track.all_objects.all()
-    elif tracks is None:
-        tracks=Track.objects.all()
+            tracks=initial_queryset
+        elif deleted_tracks==0 and tracks is None:
+            tracks=initial_queryset.filter(is_active=True)    
+    elif tracks is None: #if not deleted tracks->needs only active
+        tracks=initial_queryset.filter(is_active=True)
+    else:
+        pass
+        # this means I have filtered by id or group, so tracks exists as a queryset
 
 
     if how_many:

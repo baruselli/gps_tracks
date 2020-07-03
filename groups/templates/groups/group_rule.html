@@ -36,6 +36,12 @@
                 }
             } 
         {%endif %}
+
+        $( "#rule_choice" ).change(function() {
+            name=$("#rule_choice").find('option:selected').text()
+            $("#id_name").val(name)
+            console.log(name)
+        });
     </script>
 {%endblock%}
 
@@ -49,7 +55,18 @@
   <br>
    <form method="POST" action=""" id="searchform">
         {% csrf_token %}
+        {% if all_rules and not obj %}
+            <label for="rule_choice">Update following rule (leave blank to create new object):</label>
+            <select name="rule_choice" id="rule_choice">
+                <option value="" selected>---</option>
+                {%for rule in all_rules %}
+                    <option value="{{rule.pk}}" >{{rule.name}}</option>
+                {%endfor %}
+            </select><br><br>
+        {%endif%}
+
         {{ form}}
+
         <input type="submit"  name="rule_form" value="Submit">
     </form>
 

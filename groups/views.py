@@ -347,10 +347,12 @@ class GroupRuleView(View):
             except:
                 initial_string = "?"
 
+            all_rules=GroupRule.objects.all()
+            
             from .forms import GroupRuleForm as ModelForm
             form = ModelForm(initial={'query_string': initial_string})
             return render(
-                request, self.template_name, {"form": form, "id": id}
+                request, self.template_name, {"form": form, "id": id,"all_rules":all_rules}
             )
 
     def post(self, request, *args, **kwargs):
@@ -365,10 +367,17 @@ class GroupRuleView(View):
             new = False
             logger.info("Modify object %s" % id)
         else:
+            # in the form for a new object, I can select an old object to edit
             from .forms import GroupRuleForm as ModelForm
-            form = ModelForm(request.POST)
-            new = True
-            logger.info("Create object")
+            id_to_edit = request.POST.get("rule_choice", None)
+            if id_to_edit:
+                instance=get_object_or_404(Model, pk=id_to_edit)
+                form = ModelForm(request.POST or None, instance=instance)
+                logger.info("Editing object %s" %instance)
+            else:
+                form = ModelForm(request.POST)
+                new = True
+                logger.info("Create object")
 
         if form.is_valid():
             f = form.save()

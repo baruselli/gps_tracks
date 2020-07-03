@@ -293,7 +293,7 @@ class Group(models.Model):
         if initial_queryset:
             tracks=initial_queryset
         else:
-            tracks=Track.objects.all()
+            tracks=Track.all_objects.all()
 
         if self.rules.all():
             if self.rules_act_as_and:
@@ -301,6 +301,7 @@ class Group(models.Model):
                 total_tracks= Track.all_objects.all()
                 for rule in self.rules.all():
                     logger.info("applying rule %s in AND" %rule)
+                    #print("tracks in group",tracks)
                     tracks_rule = rule.filtered_tracks(tracks)
                     logger.info("tracks_rule %s" %tracks_rule.count())
                     # intersection with what is there; this is the safest way to do intersection
@@ -406,4 +407,5 @@ class GroupRule(models.Model):
         filters tracks according to the mimicked request.GET dict
         """
         from tracks.utils import filter_tracks
+        #print("initial_queryset",initial_queryset)
         return filter_tracks(request=self.filter_dict(),initial_queryset=initial_queryset)

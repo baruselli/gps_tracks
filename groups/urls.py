@@ -18,6 +18,7 @@ urlpatterns = [
     url(r"^group/delete/(?P<group_id>[0-9]+)$", views.DeleteGroupView.as_view(), name="delete_group", ),
     url(r"^group/plot/(?P<group_id>[0-9]+)/$", views.GroupPlotsView.as_view(), name="group_plots", ),
     url(r"^group/statistics/(?P<group_id>[0-9]+)/$", views.GroupStatisticsView.as_view(), name="group_statistics", ),
+    url(r"^group/add_tracks_from_rules/(?P<group_id>[0-9]+)/$", views.GroupAddTracksFromRulesView.as_view(), name="group_add_tracks_from_rules", ),
     #many groups
     url(r"^resave_all/$$", views.ResaveAllGroupsView.as_view(), name="resave_all_groups", ),
     url(r"^delete$", views.DeleteGroups.as_view(), name="delete_groups"),

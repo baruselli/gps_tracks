@@ -62,9 +62,11 @@
             {%endif %}
 
             {%if infos_on_filtered_tracks.filtered_tracks_not_in_group_pk %}
-                <a href='{% url "track_index" %}?track_ids={{infos_on_filtered_tracks.filtered_tracks_not_in_group_pk}}'>{{infos_on_filtered_tracks.filtered_tracks_not_in_group}} tracks in rules but not in group </a><br>
+                <a href='{% url "track_index" %}?track_ids={{infos_on_filtered_tracks.filtered_tracks_not_in_group_pk}}'>{{infos_on_filtered_tracks.filtered_tracks_not_in_group}} tracks in rules but not in group </a>
+                <button onclick="location.href='{% url 'group_add_tracks_from_rules' group_id=group.pk %}'" type="button">Add missing tracks</button>
+                <br>
             {%else%}
-                {{infos_on_filtered_tracks.filtered_tracks_not_in_group}} tracks in rules but not in group </a><br>
+                {{infos_on_filtered_tracks.filtered_tracks_not_in_group}} tracks in rules but not in group </a>             <br>
             {%endif%}
 
             {%if infos_on_filtered_tracks.tracks_in_group_not_filtered %}

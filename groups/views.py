@@ -304,6 +304,18 @@ class GroupAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
+## group  + rules
+class GroupAddTracksFromRulesView(View):
+    def get(self, request, *args, **kwargs):
+        logger.info("GroupAddTracksFromRulesView")
+        group_id = kwargs.get("group_id", None)
+        group = get_object_or_404(Group, pk=group_id)
+
+        track_names=group.add_tracks_from_rules()
+
+        messages.success(request, "%s tracks added: %s" %(len(track_names),track_names))
+
+        return redirect(reverse("group_detail", args=(group_id,)))
 
 ## rules
 class GroupRulesView(View):

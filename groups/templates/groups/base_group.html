@@ -34,6 +34,7 @@
 {%endblock%}
 
 {%block table%}
+    <div id="warning_tracks"></div>
     <div id="table_div"   style="display:none">
             <table id="import_table">
                     <thead>
@@ -129,6 +130,23 @@
 
         $.getJSON(url,function(data){
         console.log("data", data)
+
+        //add warnings!
+        if (data["warnings"]){
+            string=""
+            if (data["warnings"]["missing_tracks"].length>0){
+                string+="<b>Warning! Some tracks are missing: "+data["warnings"]["missing_tracks"]+"</b><br>"
+            }
+            if (data["warnings"]["excess_tracks"].length>0){
+                string+="<b>Warning! Some tracks are no more in the group: "+data["warnings"]["excess_tracks"]+"<br></b>"
+            }
+            if (string){
+                string+="<b>Click 'Resave group' to fix the cached tracks list<br><br></b>"
+                $("#warning_tracks").html(string)
+            }
+        }
+
+        
         //first, create table
         options=data["features"] //contains has_hr and has_freq
         var table=create_table('#import_table',data["Tracks"],url_many_tracks,url_many_tracks_group,url_many_tracks_delete, url_many_tracks_merge,url_many_tracks_plot,options)

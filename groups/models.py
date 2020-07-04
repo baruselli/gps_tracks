@@ -53,6 +53,28 @@ class Group(models.Model):
         # pprint(json.loads(self.properties_json))
         return json.loads(self.properties_json)
 
+    def check_properties(self,properties=None):
+        """check if the saved json has the right tracks"""
+        if properties is None:
+            properties=self.get_properties()
+        import time
+        start = time.time()
+        stored_tracks_names =set([t["name"] for t in properties["Tracks"]])
+        real_tracks_names = set(self.tracks.all().values_list("name_wo_path_wo_ext",flat=True))
+
+        missing_tracks=real_tracks_names-stored_tracks_names
+        excess_tracks=stored_tracks_names-real_tracks_names
+        end=time.time()
+
+        logger.info("Time for calling check_properties: %s" %(end-start))
+
+        properties["warnings"]={
+           "missing_tracks":list(missing_tracks),
+           "excess_tracks":list(excess_tracks),
+        }
+
+        return properties
+
     def set_attributes(self,updated_tracks=[],refresh_all=False):
         import time
         start = time.time()

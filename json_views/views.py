@@ -309,6 +309,8 @@ class TracksAsLinesJsonView(View):
                     try:
                         json_tracks=group.get_properties()
                         ok_load_from_db=True
+                        # check that the number of tracks is correct!
+                        json_tracks=group.check_properties(json_tracks)
                     except Exception as e:
                         logger.error("Cannot load properties_json for group %s: %s" %(group, e))
 

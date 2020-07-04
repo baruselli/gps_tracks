@@ -39,7 +39,14 @@
 
         $( "#rule_choice" ).change(function() {
             name=$("#rule_choice").find('option:selected').text()
+            string=$("#rule_choice").find('option:selected').attr('string')
             $("#id_name").val(name)
+            if (string){
+                $("#old_string").html("Old query string: "+string)
+            }else{
+                $("#old_string").html("")
+            }
+            console.log(string)
             console.log(name)
         });
     </script>
@@ -60,15 +67,17 @@
             <select name="rule_choice" id="rule_choice">
                 <option value="" selected>---</option>
                 {%for rule in all_rules %}
-                    <option value="{{rule.pk}}" >{{rule.name}}</option>
+                    <option value="{{rule.pk}}" string={{rule.query_string}}>{{rule.name}}</option>
                 {%endfor %}
             </select><br><br>
+            <div id="old_string"></div><br>
         {%endif%}
 
         {{ form}}
 
         <input type="submit"  name="rule_form" value="Submit">
     </form>
+
 
     {% if obj %}
         <a href="{% url 'track_index' %}{{obj.request_string}}" >Track list</a>

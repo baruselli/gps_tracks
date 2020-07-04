@@ -318,7 +318,11 @@ function get_track_ids(e, dt, node, config) {
     var track_list = dt  .rows( { selected: true } )
                             .every( function ( rowIdx, tableLoop, rowLoop ) {
                             var data = this.data();
-                            id_list.push(data["pk"]);
+                            if(data["pk"]){
+                                id_list.push(data["pk"]);
+                            }else{
+                                id_list.push(data[0]);
+                            }
                             });
     console.log(id_list);
     var ids="";

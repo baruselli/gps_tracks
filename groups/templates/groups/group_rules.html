@@ -26,6 +26,7 @@
 
             <thead>
             <tr>
+                <th>Id</th>
                 <th>Name</th>
                 <th>Track List</th>
                 <th>String</th>
@@ -38,6 +39,7 @@
             <tbody>
                 {% for rule in rules %}
                 <tr>
+                    <td>{{rule.pk}}</td>
                     <td><a href="{% url 'group_rule' rule_id=rule.pk %}" >{{rule.name}}</a></td>
                     <td><a href="{% url 'track_index' %}{{rule.request_string}}" >Track list</a></td>
                     <td>{{rule.query_string}}</td>
@@ -51,6 +53,7 @@
             </tbody>
             <tfoot>
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -79,7 +82,15 @@
             searching: true, 
             info: true,
             //keys: true,
-            buttons:[],
+            buttons:[
+            { text: 'Create Group',
+                action:function ( e, dt, node, config) {
+                ids=get_track_ids(e, dt, node, config) //in reality it just gets the pk of each row
+                console.log(ids);
+                if (ids) {window.location="{% url 'many_tracks_group'%}?rule_ids="+ids}
+            }},
+
+            ],
         });
     });
     </script>

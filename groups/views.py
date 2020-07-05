@@ -304,6 +304,18 @@ class GroupAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
+class GroupRuleAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+
+        qs = GroupRule.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__icontains=self.q).order_by("-pk")
+
+        return qs
+
+
 ## group  + rules
 class GroupAddTracksFromRulesView(View):
     def get(self, request, *args, **kwargs):

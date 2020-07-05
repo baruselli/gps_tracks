@@ -149,13 +149,14 @@ class Group(models.Model):
                 updated_tracks_in_group=Track.objects.filter(name_wo_path_wo_ext__in=updated_tracks).filter(groups__id=self.pk)
                 new_tracks_in_group = Track.objects.filter(name_wo_path_wo_ext__in=new_tracks_names)
                 # build json for new/updated tracks
-                json_obj = tracks_json(tracks=updated_tracks_in_group|new_tracks_in_group,
+                tracks_to_get_json=(updated_tracks_in_group|new_tracks_in_group).distinct()
+                json_obj = tracks_json(tracks=tracks_to_get_json,
                                        with_color=True,
                                        points_line=points_line,
                                        reduce_points=reduce_points,
                                        add_flat=True,
                                        ranks=False, # I add ranks later
-                                       group_pk=self.pk,
+                                       #group_pk=self.pk,
                                        keep_empty_set=True)
                 new_tracks = json_obj["Tracks"]
                 # add old tracks, if not already in the new json, or removed

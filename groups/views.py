@@ -161,12 +161,36 @@ class CreateGroupView(View):
                 {"group": group_, "group_id": group_id, "form": form},
             )
         else:
+            track_ids_string = request.GET.get("track_ids", "")
+            rule_ids_string = request.GET.get("rule_ids", "")
+
+            if track_ids_string:
+                string_list = track_ids_string.split("_")
+            else:
+                string_list=[]
+            if rule_ids_string:
+                rule_list = rule_ids_string.split("_")
+            else:
+                rule_list = []
+
+            logger.info("CreateGroupView %s %s" %(string_list,rule_list ))
+            track_ids = [int(s) for s in string_list]
+            rule_ids = [int(s) for s in rule_list]
+
+            from datetime import datetime
+            now=datetime.now().strftime("%Y%m%d%H%MS")
+
+            tracks=Track.objects.filter(pk__in=track_ids)
+            rules=GroupRule.objects.filter(pk__in=rule_ids)
+            
             form = modelform(
-                {
-                    "name": "",
+                initial={
+                    "name": "Group "+ now,
+                    "tracks":tracks,
+                    "rules":rules
                 }
             )
-            form.created_by_hand = True
+
             return render(
                 request, self.template_name, {"form": form, "group_id": group_id}
             )
@@ -194,6 +218,8 @@ class CreateGroupView(View):
             f = form.save()
             group_id = f.pk
             group = get_object_or_404(Group, pk=group_id)
+            if new:
+                group.add_tracks_from_rules()
             group.set_attributes()
 
             return HttpResponseRedirect(

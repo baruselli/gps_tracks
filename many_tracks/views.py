@@ -164,37 +164,3 @@ class ManyTracksMergeView(View):
             new_merged_track.input_tracks.add(track)
 
         return redirect(reverse("edit_merged_track",  kwargs={'id': new_merged_track.pk}))
-
-class ManyTracksGroupView(View):
-
-    def get(self, request, *args, **kwargs):
-        track_ids_string = request.GET.get("track_ids", "")
-        rule_ids_string = request.GET.get("rule_ids", "")
-
-        if track_ids_string:
-            string_list = track_ids_string.split("_")
-        else:
-            string_list=[]
-        if rule_ids_string:
-            rule_list = rule_ids_string.split("_")
-        else:
-            rule_list = []
-        logger.info("ManyTracksGroupView %s %s" %(string_list,rule_list ))
-        track_ids = [int(s) for s in string_list]
-        rule_ids = [int(s) for s in rule_list]
-
-        from datetime import datetime
-        now=datetime.now().strftime("%Y%m%d%H%MS")
-        new_group = Group()
-        new_group.name="Group "+ now
-        new_group.save()
-        for track_id in track_ids:
-            track = get_object_or_404(Track.all_objects, pk=track_id)
-            new_group.tracks.add(track)
-
-        for rule_id in rule_ids:
-            new_group.rules.add(rule_id)
-
-        new_group.save()
-
-        return redirect(reverse("edit_group", kwargs={"group_id":new_group.pk, "form":"quick"}))

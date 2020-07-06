@@ -87,7 +87,7 @@
                 action:function ( e, dt, node, config) {
                 ids=get_track_ids(e, dt, node, config) //in reality it just gets the pk of each row
                 console.log(ids);
-                if (ids) {window.location="{% url 'many_tracks_group'%}?rule_ids="+ids}
+                if (ids) {window.location="{% url 'create_group'%}?rule_ids="+ids}
             }},
 
             ],

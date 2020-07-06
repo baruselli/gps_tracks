@@ -12,7 +12,6 @@ urlpatterns = [
     url(r"^tracks/$" ,views.ManyTracksView.as_view() ,name="many_tracks" ,),
     url(r"^tracks_alts/$" ,views.ManyTracksAltsView.as_view() ,name="many_tracks_alts" ,),
     url(r"^delete/$" ,views.DeleteManyTracksView.as_view() ,name="many_tracks_delete" ,),
-    url(r"^create_group/$" ,views.ManyTracksGroupView.as_view() ,name="many_tracks_group" ,),
     url(r"^merge/$" ,views.ManyTracksMergeView.as_view() ,name="many_tracks_merge" ,),
     url(r"^plots/$", views.ManyTracksPlotsView.as_view(), name="many_tracks_plots", ),
 ]

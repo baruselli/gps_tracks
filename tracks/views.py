@@ -326,6 +326,7 @@ class TracksListView(View):
         year=request.GET.get("year","")
         extension=request.GET.get("extension","")
         country=request.GET.get("country","")
+        source=request.GET.get("source","")
         q=request.GET.get("q","")
         min_date=request.GET.get("min_date","")
         max_date=request.GET.get("max_date","")
@@ -384,6 +385,13 @@ class TracksListView(View):
         if "" not in timezone_options:
             timezone_options = [""]+timezone_options
 
+        source_options_1 =  list(Track.objects.values_list('csv_source',flat=True).distinct())
+        source_options_2 =  list(Track.objects.values_list('gpx_creator',flat=True).distinct())
+        source_options = list(set(source_options_1 + source_options_2))
+        source_options = [str(y) if y else "" for y in source_options]
+        if "" not in source_options:
+            source_options = [""]+source_options
+        source_options.sort()
 
         from .forms import FindTracksForm
         if track_ids:
@@ -411,12 +419,14 @@ class TracksListView(View):
              "year":year,
              "extension":extension,
              "country":country,
+             "source":source,
              "q":q,
              "min_date":min_date,
              "max_date":max_date,
              "group_pk_search":group_pk_search,
              "group_form":group_form,
              "country_options": country_options,
+             "source_options":source_options,
              "how_many":how_many,
              "year_options":year_options,
              "ext_options":ext_options,

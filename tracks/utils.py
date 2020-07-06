@@ -400,6 +400,7 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     name = request.get('name',None)           #OK
     extension = request.get('extension',None)           #OK
     country = request.get('country',None)           #OK
+    source = request.get('source',None)           #OK
     address = request.get('address',None)           #OK
     year = request.get('year',None)           #OK
     heartbeat = request.get('heartbeat',None) #OK
@@ -509,6 +510,11 @@ def filter_tracks(request,silent=True,initial_queryset=None):
                               )
     elif country:
         tracks = tracks.filter(Q(beg_country=country)|Q(end_country=country))
+
+    # by source
+    if source:
+        tracks = tracks.filter(Q(csv_source=source)|Q(gpx_creator=source))
+
 
     # by time_zone
     if time_zone=="None":

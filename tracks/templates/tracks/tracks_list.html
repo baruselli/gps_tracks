@@ -105,7 +105,8 @@
             {{group_form.errors}}
             {{group_form.non_field_errors}}
 
-            Name<input class="searchfield" id="searchbox1" name="name" type="text" value="{{name}}" placeholder="Name"/><br>
+            Name<input class="searchfield" id="searchbox1" name="name" type="text" value="{{name}}" placeholder="Name"/>
+            Use Regex<input type="checkbox" name="regex_name" value=1 {% if regex_name %}checked {%endif%}><br>
             Last n days<input class="searchfield" id="searchbox2" name="n_days" type="number" value="{{n_days}}" placeholder="Last n days"/><br>
             Year<select  id="searchbox3" name="year">
                 {% for y in year_options %}

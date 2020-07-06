@@ -347,6 +347,7 @@ class TracksListView(View):
         # merged_tracks = request.GET.get('merged_tracks',False)
         track_ids = request.GET.get('track_ids',None)
         exclude_excluded_groups = request.GET.get('exclude_excluded_groups', 0)#OK
+        regex_name=request.GET.get('regex_name', False)#OK
         special_search=request.GET.get('special_search', None)#OK
         special_search_pk=request.GET.get('special_search_pk', None)#OK
 
@@ -440,6 +441,7 @@ class TracksListView(View):
              "exclude_excluded_groups":exclude_excluded_groups,
              "special_search_pk":special_search_pk,
              "special_search":special_search,
+             "regex_name":regex_name,
              })
 
 

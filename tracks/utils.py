@@ -420,6 +420,7 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     no_search = request.get('no_search', None)
     deleted_tracks = request.get('deleted_tracks', 0)#OK
     exclude_excluded_groups = request.get('exclude_excluded_groups', 0)#OK
+    regex_name = request.get('regex_name', False)#OK
     ## special searches
     # duplicated_tracks = request.get('duplicated_tracks',False)#OK
     #wrong_coords = request.get('wrong_coords',None) #TODO
@@ -491,7 +492,10 @@ def filter_tracks(request,silent=True,initial_queryset=None):
 
     # by name
     if name:
-        tracks = tracks.filter(name_wo_path_wo_ext__icontains=name)
+        if regex_name:
+            tracks = tracks.filter(name_wo_path_wo_ext__iregex=name)
+        else:
+            tracks = tracks.filter(name_wo_path_wo_ext__icontains=name)
 
     # by extension
     if extension:

@@ -165,6 +165,8 @@ class Track(models.Model):
     svg_file = models.TextField(null=True, blank=True, unique=False, default="")
     png_file = models.TextField(null=True, blank=True, unique=False, default="")
     gpx_creator =  models.CharField( max_length=200, null=True)  # from gpx
+    kml_creator =  models.CharField( max_length=200, null=True)  # from kml/kmz
+    tcx_creator =  models.CharField( max_length=200, null=True)  # from tcx
     cardio_0 = models.FloatField(null=True)
     cardio_1 = models.FloatField(null=True)
     cardio_2 = models.FloatField(null=True)
@@ -2459,6 +2461,8 @@ class Track(models.Model):
             self.td.delta_times=delta_times
             self.td.times=times
             self.total_dist_tcx=self.td.dist_tcx[-1]
+            #creator
+            self.tcx_creator = tcx_obj.activity.Creator.Name
 
             self.total_speed_tcx=self.total_dist_tcx/delta_times[-1]
             pace = 1 / 0.06 /  self.total_speed_tcx  # (min/km)

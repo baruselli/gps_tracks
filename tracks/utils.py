@@ -513,8 +513,7 @@ def filter_tracks(request,silent=True,initial_queryset=None):
 
     # by source
     if source:
-        tracks = tracks.filter(Q(csv_source=source)|Q(gpx_creator=source))
-
+        tracks = tracks.filter(Q(csv_source=source)|Q(gpx_creator=source)|Q(tcx_creator=source)|Q(kml_creator=source))
 
     # by time_zone
     if time_zone=="None":

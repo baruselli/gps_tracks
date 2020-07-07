@@ -48,6 +48,7 @@ class OptionSet(models.Model):
     DISTANCE_FOR_CLUSTERING = models.IntegerField(blank=False, null=False, default=50,verbose_name="Minimum distance below which features are clustered (m)")
     MAX_FEATURES_FOR_CLUSTERING = models.IntegerField(blank=False, null=False, default=300,verbose_name="Maximum number of features for which clustering is performed")
     N_BEST_TRACKS_GROUP = models.IntegerField(blank=False, null=False, default=5, verbose_name="Number of best and worst tracks in group statistics")
+    #AUTO_CREATE_TOMTOM_GROUPS = models.BooleanField(default=True, verbose_name="Automatically create track groups for TomTom activities")
     # colors
     COLORSCALE_LISTS = models.CharField(max_length=200, blank=True, null=True, default="gist_rainbow", verbose_name="<h3>Colors </h3> Colorscale when seeing lists of tracks")
     COLORSCALE_RANKS = models.CharField(max_length=200, blank=True, null=True, default="Wistia",verbose_name="Colorscale when seeing ranks of tracks in a group")

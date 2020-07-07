@@ -3233,6 +3233,12 @@ class Track(models.Model):
             from pprint import pprint
 
             self.info("doc: %s" %_doc)
+            #print([a.tag for a in _doc.getchildren()])
+            try:
+                _author = [c for c in _doc.getchildren() if "author" in c.tag]
+                self.kml_creator=_author[0].getchildren()[0].text
+            except Exception as e:
+                self.warning("Cannot get kml source: %s" %e)
             _placemark = [c for c in _doc.getchildren() if "Placemark" in c.tag]
             self.info("placemark: %s" %_placemark)
             #pprint([p.tag for p in _placemark])

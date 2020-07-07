@@ -130,7 +130,7 @@
                     </select><br>
             Source<select  id="searchbox5" name="source">
                 {% for c in source_options %}
-                    <option value='{{c}}'{% if c and c == source %} selected {%endif%}>{{c}}</option>
+                    <option value='{{c}}'{% if c and c == source %} selected {%endif%}>{{c|truncatechars:40 }}</option>
                 {% endfor %}
                 </select><br>
             Address<input class="searchfield" id="searchbox10" name="address" type="text" value="{{address}}" placeholder="Address"/><br>

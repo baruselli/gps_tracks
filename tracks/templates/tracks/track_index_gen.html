@@ -128,6 +128,21 @@
 </table>
 </div>
 
+<h2>By source</h2>
+
+<table>
+{% for a in count_source_list %}
+
+<tr>
+    <td>{%if a.c%}{{a.c}} {%else%} No source {%endif%}: </td>
+    <td>{{a.n_tracks}}</td>
+    <td><a href="{% url 'track_index' %}?source={%if a.c %}{{a.c}}{%else%}None{%endif%}">List</a></td>
+    <td><a href="{% url 'tracks_map' %}?source={%if a.c %}{{a.c}}{%else%}None{%endif%}">Map</a></td>
+</tr>
+{%endfor%}
+</table>
+</div>
+
 
 <div style="float: left";>
 <h2>By heartrate</h2>

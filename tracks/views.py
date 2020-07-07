@@ -280,6 +280,19 @@ class TrackListGeneralView(View):
         ]
         count_country_list.sort(key=lambda x: x["c"] or "")
 
+        # by source
+        source_options_1 =  list(Track.objects.values_list('csv_source',flat=True).distinct())
+        source_options_2 =  list(Track.objects.values_list('gpx_creator',flat=True).distinct())
+        source_options = list(set(source_options_1 + source_options_2))
+        source_options = [str(y) for y in source_options if y]
+        source_options.sort()
+
+        count_source_list=[
+            {"c":c , "n_tracks":filter_tracks({"source":c }).count()}
+            for c in source_options
+        ]
+        count_source_list.sort(key=lambda x: x["c"])
+
         #by heartbeat
         import decimal
         count_heart= filter_tracks({"heartbeat":"yes"}).count()
@@ -304,6 +317,7 @@ class TrackListGeneralView(View):
                                                     "nulldate_tracks":nulldate_tracks,
                                                     "count_ext_dict": count_ext_dict,
                                                     "count_country_list":count_country_list,
+                                                    "count_source_list":count_source_list,
                                                     "count_heart":count_heart,
                                                     "count_noheart":count_noheart,
                                                     "count_years_list":count_years_list,

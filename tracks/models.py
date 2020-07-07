@@ -2125,7 +2125,7 @@ class Track(models.Model):
             self.td.long = list(df["long"])
             self.td.alts = list(df["elevation"])
             self.td.frequencies = list(df["cycles"])
-            self.csv_source = "tomtom"
+            self.csv_source = "TomTom csv"
             self.total_steps= float(df["cycles"].sum())
             self.total_dist_csv = float(df["distance"].tail(1))
             self.total_speed_csv = (float(df["distance"].tail(1)) / float(df["time"].tail(1)) * 3.6)  # km/h
@@ -2188,7 +2188,7 @@ class Track(models.Model):
                 self.td.frequencies=list(df["Cadence"])
                 self.td.alts=list(df["Altitude (m)"])
                 self.td.dist_csv=list(df["Distances (m)"])
-                self.csv_source="polar"
+                self.csv_source="Polar csv"
                 self.total_dist_csv = float(df["Distances (m)"].tail(1))
                 #self.total_speed_csv = (float(df["distance"].tail(1)) / float(df["time"].tail(1)) * 3.6)  # km/h
                 # pace = 1 / 0.06 /  self.total_speed_csv *3.6  # (min/km)

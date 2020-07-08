@@ -14,7 +14,7 @@
 
 {%block form0%}
     <div style="float: left width= 25%";>
-        <h2>Search -  <a href="{% url 'photo_gen_index' %}">Simple searches</a> </h2>
+        <h2>Search -  <a href="{% url 'photo_gen_index' %}">Default searches</a> </h2>
         <form method="GET" action="{% url 'photos_show' %}" id="searchform">
             {{photo_form.media}}
             {{photo_form.as_p}}

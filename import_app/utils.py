@@ -283,7 +283,7 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
                 else:
                     track.error("Unknown extension" + track.extension)
             except Exception as e:
-                track.error("Error with track %s: %e" %(track.name,e))
+                track.error("Error with track %s: %s" %(track.name,e))
 
             track.info("End reading files")
 

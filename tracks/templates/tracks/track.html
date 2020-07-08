@@ -178,6 +178,7 @@
 
                     <tbody>
                         {%if track.gpx_creator%}<tr><td> Gpx creator</td> <td>{{track.gpx_creator}}</td> </tr>{%endif%}
+                        {%if track.gpx_author%}<tr><td> Gpx author</td> <td>{{track.gpx_author}}</td> </tr>{%endif%}
                         <tr><td> # points  </td> <td>{{track.n_points_gpx}}</td> </tr>
                         {%if track.n_tracks > 0 %}<tr><td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td> <td>{{track.n_tracks}} {%if track.n_tracks > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>{%endif%}
                         {%if track.n_segments > 0 %}<tr><td><a href="{% url 'segments' track_id=track.pk %}?{{request}} "> # segments</a>  </td> <td>{{track.n_segments}}</td> </tr>{%endif%}
@@ -196,7 +197,7 @@
 
                     <tbody>
                         <tr><td> # points  </td> <td>{{track.n_points_kml}}</td> </tr>
-                        {%if track.kml_creator%}<tr><td> Kml/Kmz creator</td> <td>{{track.kml_creator}}</td> </tr>{%endif%}
+                        {%if track.kml_creator%}<tr><td> Kml/Kmz author</td> <td>{{track.kml_creator}}</td> </tr>{%endif%}
                         {%if track.length_kml%}<tr><td> Length</td> <td>{{track.length_kml|floatformat:-2}}km</td></tr>{%endif%}
                         {% if track.total_speed_kml %}<tr><td> Speed</td><td>{{track.total_speed_kml|floatformat:-2}}km/h</td></tr>{%endif%}
                         {% if track.pace_string_kml %}<tr><td> Pace</td> <td>{{track.pace_string_kml}}</td></tr>{% endif %}
@@ -218,7 +219,7 @@
 
                     <tbody>
                         <tr><td> # points  </td> <td>{{track.n_points_tcx}}</td> </tr>
-                        {%if track.tcx_creator%}<tr><td> Tcx creator</td> <td>{{track.tcx_creator}}</td> </tr>{%endif%}
+                        {%if track.tcx_creator%}<tr><td> Tcx author</td> <td>{{track.tcx_creator}}</td> </tr>{%endif%}
                         {%if track.total_dist_tcx%}<tr><td> Length </td> <td>{{track.total_dist_tcx|div:1000|floatformat:-2}}km</td></tr>{%endif%}
                         {% if track.total_speed_tcx %}<tr><td> Speed</td><td>{{track.total_speed_tcx|mul:3.6|floatformat:-2}}km/h</td></tr>{%endif%}
                         {% if track.pace_string_tcx %}<tr><td> Pace </td> <td>{{track.pace_string_tcx}}</td></tr>{% endif %}

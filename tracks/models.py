@@ -165,6 +165,7 @@ class Track(models.Model):
     svg_file = models.TextField(null=True, blank=True, unique=False, default="")
     png_file = models.TextField(null=True, blank=True, unique=False, default="")
     gpx_creator =  models.CharField( max_length=200, null=True)  # from gpx
+    gpx_author =  models.CharField( max_length=200, null=True)  # from gpx
     kml_creator =  models.CharField( max_length=200, null=True)  # from kml/kmz
     tcx_creator =  models.CharField( max_length=200, null=True)  # from tcx
     cardio_0 = models.FloatField(null=True)
@@ -2503,6 +2504,9 @@ class Track(models.Model):
             self.error(self.gpx_file + " read _gpx " + str(e))
             return
 
+        self.gpx_creator = _gpx.creator
+        self.gpx_author = _gpx.author_name
+
         #if I am not passing a gpxpy object, read alts, lats, long etc. from file
         if True: #reading_file:
             self.info("Reading from file!")
@@ -2634,7 +2638,7 @@ class Track(models.Model):
         #this part I do for both reading file and passing a gpxpy object
         try:
             self.debug("Part for both reading and passing an object")
-            if hasattr(_gpx,"creator"):
+            if hasattr(_gpx,"creator") and _gpx.creator:
                 self.gpx_creator = _gpx.creator
             self.length_2d = _gpx.length_2d()  # m
             self.length_3d = _gpx.length_3d()

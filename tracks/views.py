@@ -283,9 +283,10 @@ class TrackListGeneralView(View):
         # by source
         source_options_1 =  list(Track.objects.values_list('csv_source',flat=True).distinct())
         source_options_2 =  list(Track.objects.values_list('gpx_creator',flat=True).distinct())
+        source_options_2b =  list(Track.objects.values_list('gpx_author',flat=True).distinct())
         source_options_3 =  list(Track.objects.values_list('tcx_creator',flat=True).distinct())
         source_options_4 =  list(Track.objects.values_list('kml_creator',flat=True).distinct())
-        source_options = list(set(source_options_1 + source_options_2 + source_options_3 + source_options_4))
+        source_options = list(set(source_options_1 + source_options_2 +source_options_2b + source_options_3 + source_options_4))
         source_options = [str(y) for y in source_options if y]
         source_options.sort()
 
@@ -403,9 +404,10 @@ class TracksListView(View):
 
         source_options_1 =  list(Track.objects.values_list('csv_source',flat=True).distinct())
         source_options_2 =  list(Track.objects.values_list('gpx_creator',flat=True).distinct())
+        source_options_2b =  list(Track.objects.values_list('gpx_author',flat=True).distinct())
         source_options_3 =  list(Track.objects.values_list('tcx_creator',flat=True).distinct())
         source_options_4 =  list(Track.objects.values_list('kml_creator',flat=True).distinct())
-        source_options = list(set(source_options_1 + source_options_2 + source_options_3 + source_options_4))
+        source_options = list(set(source_options_1 + source_options_2 + source_options_2b + source_options_3 + source_options_4))
         source_options = [str(y)  for y in source_options if y ]
         if "" not in source_options:
             source_options = [""]+source_options

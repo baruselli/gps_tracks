@@ -115,3 +115,30 @@ body {
 .submit_button:hover {
   background-color: 	#008080;
 }
+
+.column {
+  float: left;
+  width: 33%;
+  text-align: top;
+  vertical-align: top;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.buttons{
+  margin: auto;
+  text-align: center;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.reset_button{
+  background-color: grey;
+}
+.save_button{
+  background-color: grey;
+}

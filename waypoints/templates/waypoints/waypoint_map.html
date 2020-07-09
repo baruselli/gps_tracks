@@ -14,52 +14,85 @@
 
 {%block form0%}
     <div style="float: left width= 25%";>
-        <h2>Search -  <a href="{% url 'waypoint_gen_index' %}">Default searches</a> </h2>
-        <form method="GET" action="" id="searchform">
-            {{wps_form.media}}
-            {{wps_form.as_p}}
-            {{wps_form.errors}}
-            {{wps_form.non_field_errors}}
-            {{group_form.media}}
-            {{group_form.as_p}}
-            {{group_form.errors}}
-            {{group_form.non_field_errors}}
-            {{track_form.media}}
-            {{track_form.as_p}}
-            {{track_form.errors}}
-            {{track_form.non_field_errors}}
-    
+        <h2>Search -  <a href="{% url 'waypoint_gen_index' %}">Default searches</a> 
+            <button onclick="$('#form_id').toggle()">Hide/Show</button>
+        </h2>
+        <div id="form_id">
+            <form method="GET" action="" id="searchform">
+                <div class="row">
+                    <div class="column">
+                        <b>Direct choice</b>
+                        {{wps_form.media}}
+                        {{wps_form.as_p}}
+                        {{wps_form.errors}}
+                        {{wps_form.non_field_errors}}
 
-            Name<input class="searchfield" id="searchbox1" name="name" type="text" value="{{name}}" placeholder="Name"/><br>
-            Last n days<input class="searchfield" id="searchbox2" name="n_days" type="number" value="{{n_days}}" placeholder="Last n days"/><br>
-            Year<select  id="searchbox3" name="year">
-                {% for y in year_options %}
-                    <option value='{{y}}'{% if y and y == year %} selected {%endif%}>{{y}}</option>
-                {% endfor %}
-                </select><br>
-            Country<select  id="searchbox5" name="country">
-                {% for c in country_options %}
-                    <option value='{{c}}'{% if c and c == country %} selected {%endif%}>{{c}}</option>
-                {% endfor %}
-                </select><br>
-            Timezone<select  id="searchbox15" name="time_zone">
-                    {% for c in timezone_options %}
-                        <option value='{{c}}'{% if c and c == time_zone %} selected {%endif%}>{{c}}</option>
-                    {% endfor %}
-                    </select><br>
-            Address<input class="searchfield" id="searchbox10" name="address" type="text" value="{{address}}" placeholder="Address"/><br>
-            Term<input class="searchfield" id="searchbox7" name="q" type="text" value="{{q}}" placeholder="Search for info/description"/><br>
-            Min date<input class="searchfield" id="searchbox8" name="min_date" type="date" value="{{min_date}}" data-date-format="DD MM YYYY" placeholder="Min date"/><br>
-            Max date<input class="searchfield" id="searchbox9" name="max_date" type="date" value="{{max_date}}" placeholder="Max date"/><br>
-            Max results<input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/><br>
-            Latitude<input class="searchfield" id="searchbox_lat" name="lat" type="text" value="{{lat}}" placeholder="Lat"/><br>
-            Longitude<input class="searchfield" id="searchbox_long" name="lng" type="text" value="{{lng}}" placeholder="Long"/><br>
-            Distance<input class="searchfield" id="searchbox14" name="dist" type="number" value="{{dist}}" placeholder="Dist"/><br>
-            Last waypoints by ID<input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="By ID"/><br>
-    
-            <input type="submit" value="Search" id="submit_button">
-            <button type="button" onclick="window.location.href = '{% url  'waypoints_map' %}?no_search=1'">Reset</button>
-        </form>
+                
+                        <h4>Position</h4>
+                        <table>
+                            <tr><td>Country</td><td><select  id="searchbox5" name="country">
+                                {% for c in country_options %}
+                                    <option value='{{c}}'{% if c and c == country %} selected {%endif%}>{{c}}</option>
+                                {% endfor %}
+                                </select></td></tr>
+                            <tr><td>Timezone</td><td><select  id="searchbox15" name="time_zone">
+                                    {% for c in timezone_options %}
+                                        <option value='{{c}}'{% if c and c == time_zone %} selected {%endif%}>{{c}}</option>
+                                    {% endfor %}
+                                    </select></td></tr>
+                            <tr><td>Latitude</td><td><input class="searchfield" id="searchbox_lat" name="lat" type="text" value="{{lat}}" placeholder="Lat"/></td></tr>
+                            <tr><td>Longitude</td><td><input class="searchfield" id="searchbox_long" name="lng" type="text" value="{{lng}}" placeholder="Long"/></td></tr>
+                            <tr><td>Distance</td><td><input class="searchfield" id="searchbox14" name="dist" type="number" value="{{dist}}" placeholder="Dist"/></td></tr>
+                            <tr><td>Address</td><td><input class="searchfield" id="searchbox10" name="address" type="text" value="{{address}}" placeholder="Address"/></td></tr>
+                        </table>
+
+                    </div>
+                    <div class="column">
+                        <h4>Name</h4>
+                        Name &nbsp;<input class="searchfield" id="searchbox1" name="name" type="text" value="{{name}}" placeholder="Name"/><br>
+
+                        <h4>Time</h4>
+                        <table>
+                            <tr><td>Last n days</td><td><input class="searchfield" id="searchbox2" name="n_days" type="number" value="{{n_days}}" placeholder="Last n days"/></td></tr>
+                            <tr><td>Year<select  id="searchbox3" name="year">
+                                {% for y in year_options %}
+                                    <option value='{{y}}'{% if y and y == year %} selected {%endif%}>{{y}}</option>
+                                {% endfor %}
+                                </select></td></tr>
+                            <tr><td>Min date</td><td><input class="searchfield" id="searchbox8" name="min_date" type="date" value="{{min_date}}" data-date-format="DD MM YYYY" placeholder="Min date"/></td></tr>
+                            <tr><td>Max date</td><td><input class="searchfield" id="searchbox9" name="max_date" type="date" value="{{max_date}}" placeholder="Max date"/></td></tr>
+                        </table>
+
+
+                    </div>
+                    <div class="column">
+                        <b>Track / Group</b>
+                        {{group_form.media}}
+                        {{group_form.as_p}}
+                        {{group_form.errors}}
+                        {{group_form.non_field_errors}}
+                        {{track_form.media}}
+                        {{track_form.as_p}}
+                        {{track_form.errors}}
+                        {{track_form.non_field_errors}}
+
+
+                        <h4>Other</h4>
+                            <table>
+                                <tr><td>Term</td><td><input class="searchfield" id="searchbox7" name="q" type="text" value="{{q}}" placeholder="Search for info/description"/></td></tr>
+                                <tr><td>Max results</td><td><input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/></td></tr>
+                                <tr><td>Last waypoints by ID</td><td><input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="By ID"/></td></tr>
+                            </table>
+                        
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <input type="submit" value="Search" id="submit_button" class="submit_button button">
+                    <button type="button" onclick="window.location.href = '{% url  'waypoints_map' %}?no_search=1'" class="reset_button  button">Reset</button>
+                </div>
+            </form>
+        </div>
     </div>
 {%endblock%}
 

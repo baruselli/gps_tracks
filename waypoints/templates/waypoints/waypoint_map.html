@@ -54,7 +54,7 @@
                         <h4>Time</h4>
                         <table>
                             <tr><td>Last n days</td><td><input class="searchfield" id="searchbox2" name="n_days" type="number" value="{{n_days}}" placeholder="Last n days"/></td></tr>
-                            <tr><td>Year<select  id="searchbox3" name="year">
+                            <tr><td>Year</td><td><select  id="searchbox3" name="year">
                                 {% for y in year_options %}
                                     <option value='{{y}}'{% if y and y == year %} selected {%endif%}>{{y}}</option>
                                 {% endfor %}
@@ -114,9 +114,25 @@
 <script type="text/javascript">
 
 
+
     function map_init_basic (map, options) {
 
-      init_map_base(map,options, mapBounds=null,add_basemaps=false)
+        lat="{{initial_lat}}"
+        long="{{initial_long}}"
+        if (lat && long){
+            try{
+                lat=parseFloat(lat)
+                long=parseFloat(long)
+                var mapBounds = L.latLngBounds([
+                    [lat-0.1, long-0.1],
+                    [lat+0.1, long+0.1],
+                ]);
+            }catch(error){
+                var mapBounds=null 
+            }
+        }
+
+      init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false)
 
 
     url='{% url 'allwps_json'%}?{{request}}'

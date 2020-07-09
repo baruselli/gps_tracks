@@ -102,6 +102,11 @@ class AllWaypointsView(View):
 
         ## option to avoid doing any search (for page initialization)
         no_search = request.GET.get('no_search', "")
+        if list(request.GET.keys())==["use_color"] or not request.GET.keys() or no_search:
+            from base.utils import get_coords_from_ip
+            initial_lat, initial_long, initial_address = get_coords_from_ip()
+        else:
+            initial_lat, initial_long, initial_address  = None, None, None
 
         ## General remark: "None" is to filter for objects with the given field null or empty
         ## "" is no filtering for the given field
@@ -170,7 +175,10 @@ class AllWaypointsView(View):
              "address":address,
              "track_form":track_form,
              "wps_form":wps_form,
-             "wps_ids":wps_ids
+             "wps_ids":wps_ids,
+             "initial_lat":initial_lat,
+             "initial_long":initial_long,
+             "initial_address":initial_address,
              },
         )
 

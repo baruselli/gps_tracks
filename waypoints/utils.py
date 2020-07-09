@@ -193,8 +193,11 @@ def filter_waypoints(request, silent=True):
         pass
 
     if year:
-        year=int(year)
-        waypoints = waypoints.filter(time__year=year)
+        if year=="None":
+            waypoints = waypoints.filter(time__isnull=True)
+        else:
+            year=int(year)
+            waypoints = waypoints.filter(time__year=year)
 
     if country=="None":
         waypoints = waypoints.filter(

@@ -180,8 +180,11 @@ def filter_photos(request, silent=True):
         pass
 
     if year:
-        year=int(year)
-        photos = photos.filter(time__year=year)
+        if year=="None":
+            photos = photos.filter(time__isnull=True)
+        else:
+            year=int(year)
+            photos = photos.filter(time__year=year)
 
     if country=="None":
         photos = photos.filter(

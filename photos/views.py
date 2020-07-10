@@ -15,21 +15,6 @@ logger = logging.getLogger("gps_tracks")
 
 
 
-class PhotoListView(View):
-
-    template_name = "photos/photo_index.html"
-
-    def get(self, request, *args, **kwargs):
-        logger.debug("PhotoListView")
-        return render(
-            request,
-            self.template_name,
-            {
-            # "photos": Photo.objects.all().order_by("-time"),
-             "request": request.GET.urlencode()
-             },
-        )
-
 class PhotosShowView(View):
 
     template_name = "photos/photos_show.html"
@@ -57,6 +42,7 @@ class PhotosShowView(View):
         address = request.GET.get('address', "")
         track_ids = request.GET.get('track_ids', None)
         photo_ids = request.GET.get('photo_ids', None)
+        view_type = request.GET.get('view_type', "show")
 
 
         ## option to avoid doing any search (for page initialization)
@@ -128,7 +114,8 @@ class PhotosShowView(View):
              "by_id":by_id,
              "address":address,
              "track_form":track_form,
-             "photo_form":photo_form
+             "photo_form":photo_form,
+             "view_type":view_type,
              },
         )
 
@@ -171,20 +158,6 @@ class PhotoView(View):
             return render(
                 request, self.template_name, {"form": form, "has_error": True}
             )
-
-class AllPhotosView(View):
-
-    template_name = "photos/photo_map.html"
-
-    def get(self, request, *args, **kwargs):
-        logger.debug("AllPhotosView")
-
-        return render(
-            request,
-            self.template_name,
-            {"request": request.GET.urlencode()},
-
-        )
 
 class DeletePhotos(View):
     def get(self, request, *args, **kwargs):

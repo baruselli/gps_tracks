@@ -10,11 +10,9 @@ from django.views.generic import RedirectView
 urlpatterns = [
     #index
     url(r"^main$", views.PhotosListGeneralView.as_view(), name="photo_gen_index"),
-    url(r"^photos_index", views.PhotoListView.as_view(), name="photo_index"),
     url(r"^photos_show", views.PhotosShowView.as_view(), name="photos_show"),
     # url(r"^main", views.PhotoListView.as_view(), name="photo_index"),
     # all photos
-    url(r"^photos_map", views.AllPhotosView.as_view(), name="photos_map"),
     url(r"^delete$", views.DeletePhotos.as_view(), name="delete_photos"),
     # single photo
     url(r"^photo/(?P<photo_id>[0-9]+)/$", views.PhotoView.as_view(), name="photo_detail"),

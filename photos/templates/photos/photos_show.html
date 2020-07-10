@@ -1,4 +1,4 @@
-{% extends "base/base.html" %}
+{% extends "base/base_map.html" %}
 {% load static %}
 {% load mathfilters %}
 {% load leaflet_tags %}
@@ -7,12 +7,21 @@
     <title>Photos</title>
 {%endblock%}
 
+{% block map %}
+    {% if view_type == "map" %}
+        {{block.super}}
+    {% endif %}
+{%endblock%}
 
 {% block stylesheet %}
 {{block.super}}
         body {
             padding: 0;
             margin: 0;
+        }
+        #map {
+            height: 70%;
+            width: 100%;
         }
 {% endblock%}
 
@@ -87,6 +96,11 @@
                             <tr><td>Term</td><td><input class="searchfield" id="searchbox7" name="q" type="text" value="{{q}}" placeholder="Search for info/description"/></td></tr>
                             <tr><td>Max results</td><td><input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/></td></tr>
                             <tr><td>Last photos by ID</td><td><input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="By ID"/></td></tr>
+                            <tr><td>View</td><td><select  id="searchbox21" name="view_type">
+                                    <option value='show'{% if view_type == "show" %} selected {%endif%}>Only photos</option>
+                                    <option value='map'{% if view_type == "map" %} selected {%endif%}>Map</option>
+                                    <option value='table'{% if view_type == "table" %} selected {%endif%}>Table</option>
+                                </select></td></tr>
                         </table>
                     </div>
                 </div>
@@ -101,37 +115,90 @@
 
 
 {%block buttons%}
-    <a href="{% url 'photo_index' %}?{{request}}">Photos List </a>
-    <a href="{% url 'photos_map' %}?{{request}}">Photos Map</a>
 {%endblock%}
 
 
 {% block table %}
 
+    {% if view_type == "table" %}
+        <div id="block_table">
+            <table id="import_table">
+                <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Preview</td>
+                        <td>Name</td>
+                        <td>Time</td>
+                        <td>Country</td>
+                        <td>Region</td>
+                        <td>City</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    {%else %}
       <div  id="photos_div">
       <!-- add photos here by AJAX-->
       </div>
+    {% endif %}
+
+
 
 {%endblock%}
+
 
 
 
 {% block js %}
 <script type="text/javascript">
 
+    {% if view_type == "map" %}
+        function map_init_basic (map, options) {
 
+            init_map_base(map,options,mapBounds=null,add_basemaps=false)
+
+            url='{% url 'allphotos_json'%}?{{request}}'
+            console.log(url)
+
+            $.getJSON(url,function(data){
+                //console.log(data)
+                read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+                //read_data_leaflet_allphotos(data,geojsonMarkerOptions,map,options)
+                add_photos_ajax(data,links=true,request="")
+            })
+        }
+
+    {% else %}
+
+        $( document ).ready(function() {
+            url='{% url 'allphotos_json'%}?{{request}}&do_cluster=0&level=1'
+            console.log(url)
+
+            $.getJSON(url,function(data){
+
+                {% if view_type == "table" %}
+                    var table=create_table_photos('#import_table',data["Photos"],'{% url 'photos_show' %}')
+                {%else%}
+                    add_photos_ajax(data,links=true,request="")
+                {%endif%}
+            })
+        })
+    {% endif %}
 
     $( document ).ready(function() {
-
-        url='{% url 'allphotos_json'%}?{{request}}&do_cluster=0&level=0'
-        console.log(url)
-
-        $.getJSON(url,function(data){
-          add_photos_ajax(data,links=true,request="")
-
-        })
-    })
-
         // pass ids parameters instead of tracks
         $("#submit_button").click(function(){        
             input = $("#id_tracks").val()
@@ -162,6 +229,7 @@
 
 
         });
+    });
 
 </script>
 

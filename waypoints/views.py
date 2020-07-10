@@ -105,7 +105,7 @@ class AllWaypointsView(View):
         no_search = request.GET.get('no_search', "")
         if list(request.GET.keys())==["use_color"] or not request.GET.keys() or no_search:
             from base.utils import get_coords_from_ip
-            initial_lat, initial_long, initial_address = get_coords_from_ip()
+            initial_lat, initial_long, initial_address = get_coords_from_ip(cached=True)
         else:
             initial_lat, initial_long, initial_address  = None, None, None
 

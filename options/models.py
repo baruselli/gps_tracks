@@ -75,6 +75,9 @@ class OptionSet(models.Model):
     BASEMAPS = models.TextField(blank=False, null=False, default="['OpenStreetMap.Mapnik', 'OpenTopoMap', 'Esri.WorldTopoMap', 'Esri.WorldImagery', 'Esri.WorldTerrain', 'MtbMap', 'HikeBike.HikeBike', 'Wikimedia', 'Google.GoogleStreets', 'Google.GoogleHybrid', 'Google.GoogleTerrain']")
     # other
     FREETEXT = models.TextField(blank=True, null=True, default="",verbose_name="<h3>Personal notes</h3>")
+    # centering of maps
+    DEFAULT_LAT = models.FloatField(blank=True, null=True, default=0,verbose_name="<h3>Default centering for maps</h3> Default Latitude")
+    DEFAULT_LNG = models.FloatField(blank=True, null=True, default=0,verbose_name="Default Longitude")
 
     class Meta:
         verbose_name = "OptionSet"

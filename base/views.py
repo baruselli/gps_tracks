@@ -122,7 +122,7 @@ class EmptyMap(View):
             min_lat=max_lat=min_long=max_long=None
             try:
                 from .utils import get_coords_from_ip
-                lat, long , address= get_coords_from_ip()
+                lat, long , address= get_coords_from_ip(cached=False)
             except:
                 lat, long , address= 0,0,""
 

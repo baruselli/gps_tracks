@@ -98,6 +98,7 @@ class AllWaypointsView(View):
         address = request.GET.get('address', "")
         track_ids = request.GET.get('track_ids', None)
         wps_ids = request.GET.get('wps_ids', None)
+        view_type = request.GET.get('view_type', "map_table")
 
 
         ## option to avoid doing any search (for page initialization)
@@ -179,6 +180,7 @@ class AllWaypointsView(View):
              "initial_lat":initial_lat,
              "initial_long":initial_long,
              "initial_address":initial_address,
+             "view_type":view_type
              },
         )
 

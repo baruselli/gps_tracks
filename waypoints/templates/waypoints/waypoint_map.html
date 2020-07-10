@@ -8,6 +8,13 @@
     <button onclick="location.href='{% url 'create_waypoint' %}'" type="button">New waypoint</button>
 {%endblock%}
 
+{% block map %}
+    {% if view_type == "map" or view_type == "map_table" %}
+        {{block.super}}
+    {% endif %}
+{%endblock%}
+
+
 {%block head_title %}
     <title>Waypoints</title>
 {%endblock%}
@@ -82,6 +89,12 @@
                                 <tr><td>Term</td><td><input class="searchfield" id="searchbox7" name="q" type="text" value="{{q}}" placeholder="Search for info/description"/></td></tr>
                                 <tr><td>Max results</td><td><input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/></td></tr>
                                 <tr><td>Last waypoints by ID</td><td><input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="By ID"/></td></tr>
+                                <tr><td>View</td><td><select  id="searchbox21" name="view_type">
+                                    <option value='map_table'{% if view_type == "map_table" %} selected {%endif%}>Map & Table</option>
+                                    <option value='map'{% if view_type == "map" %} selected {%endif%}>Map</option>
+                                    <option value='table'{% if view_type == "table" %} selected {%endif%}>Table</option>
+                                </select></td></tr>
+
                             </table>
                         
                     </div>
@@ -113,8 +126,11 @@
 {% block js %}
 <script type="text/javascript">
 
+url='{% url 'allwps_json'%}?{{request}}'
+console.log(url)
 
 
+{% if view_type == "map" or view_type == "map_table" %}
     function map_init_basic (map, options) {
 
         lat="{{initial_lat}}"
@@ -132,34 +148,50 @@
             }
         }
 
-      init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false)
+        init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false)
 
+        $.getJSON(url,function(data){
 
-    url='{% url 'allwps_json'%}?{{request}}'
-    console.log(url)
+            read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
 
-    $.getJSON(url,function(data){
-        read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
-        //if it comes out clustered, redo the call without clustering
-        if (data ["Waypoints"][0] && data["Waypoints"][0]["elements"]){
-            url='{% url 'allwps_json'%}?{{request}}&do_cluster=0'
-            $.getJSON(url,function(data){
-                console.log("data is clustered, calling", url)
-                var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
-            })
-        //otherwise, use same data
-        }else{
-            console.log("data is not clustered, go on")
-            var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
-        }
-
-    })
-
-
-
+            {% if view_type == "map_table" %}
+                //if it comes out clustered, redo the call without clustering
+                if (data ["Waypoints"][0] && data["Waypoints"][0]["elements"]){
+                    url='{% url 'allwps_json'%}?{{request}}&do_cluster=0'
+                    $.getJSON(url,function(data){
+                        console.log("data is clustered, calling", url)
+                        var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
+                    })
+                //otherwise, use same data
+                }else{
+                    console.log("data is not clustered, go on")
+                    var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
+                }
+            {% endif %}
+        })
     }
+{% endif %}
+
+
 
   $( document ).ready(function() {
+
+    {% if view_type == "table" %}
+
+        $.getJSON(url,function(data){
+            if (data ["Waypoints"][0] && data["Waypoints"][0]["elements"]){
+                url='{% url 'allwps_json'%}?{{request}}&do_cluster=0'
+                $.getJSON(url,function(data){
+                    console.log("data is clustered, calling", url)
+                    var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
+                })
+            //otherwise, use same data
+            }else{
+                console.log("data is not clustered, go on")
+                var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
+            }
+        })
+    {% endif %}
 
         // pass ids parameters instead of tracks
         $("#submit_button").click(function(){        
@@ -203,34 +235,36 @@
 {% endblock %}
 
 {% block table %}
-    <div id="block_table">
-        <table id="import_table">
-            <thead>
-                <tr>
-                    <td>Id</td>
-                    <td>Name</td>
-                    <td>Time</td>
-                    <td>Altitude</td>
-                    <td>Track</td>
-                    <td>Country</td>
-                    <td>Region</td>
-                    <td>City</td>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+    {% if view_type == "table" or view_type == "map_table" %}
+        <div id="block_table">
+            <table id="import_table">
+                <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Name</td>
+                        <td>Time</td>
+                        <td>Altitude</td>
+                        <td>Track</td>
+                        <td>Country</td>
+                        <td>Region</td>
+                        <td>City</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    {%endif%}
 {%endblock%}

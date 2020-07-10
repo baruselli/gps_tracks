@@ -233,8 +233,7 @@
 <h2>
     <a href="{% url 'photos_show' %}?by_id=50">Last Photos</a></div>
 </h2>
-<!-- <div style="float:left"><a href="{% url 'photo_index' %}?n_days= 30 ">Last 30 days</a></div> -->
-<form method="GET" action="{% url 'photo_index' %}" id="searchform_p">
+<form method="GET" action="{% url 'photos_show' %}" id="searchform_p">
 <input class="searchfield" id="searchbox1_p" name="name" type="text" value="" placeholder="Name"/>
 <input type="submit" value="Search">
 </form>

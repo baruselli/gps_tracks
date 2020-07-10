@@ -22,8 +22,6 @@
 <tr>
     <td>All photos: </td>
     <td>{{all_photos}}</td>
-    <td><a href="{% url 'photo_index' %}">List</a></td>
-    <td><a href="{% url 'photos_map' %}">Map</a></td>
     <td><a href="{% url 'photos_show' %}">Photos</a></td>
     </tr>
 </table>
@@ -36,16 +34,12 @@
 <tr>
     <td>Last {{n_days}} days: </td>
     <td>{{n_photos}}</td>
-    <td><a href="{% url 'photo_index' %}?n_days={{n_days}}">List</a></td>
-    <td><a href="{% url 'photos_map' %}?n_days={{n_days}}">Map</a></td>
     <td><a href="{% url 'photos_show' %}?n_days={{n_days}}">Photos</a></td>
 </tr>
 {%endfor%}
 <tr>
     <td>Photos without date: </td>
     <td>{{nulldate_photos}}</td>
-    <td><a href="{% url 'photo_index' %}?n_days=-1">List</a></td>
-    <td><a href="{% url 'photos_map' %}?n_days=-1">Map</a></td>
     <td><a href="{% url 'photos_show' %}?n_days=-1">Photos</a></td>
 </tr>
 </table>
@@ -61,8 +55,6 @@
 <tr>
     <td>{{a.year}}: </td>
     <td>{{a.n_photos}}</td>
-    <td><a href="{% url 'photo_index' %}?year={{a.year}}">List</a></td>
-    <td><a href="{% url 'photos_map' %}?year={{a.year}}">Map</a></td>
     <td><a href="{% url 'photos_show' %}?year={{a.year}}">Photos</a></td>
     {%endif%}
 </tr>
@@ -79,8 +71,6 @@
 <tr>
     <td>{%if c%}{{c}} {%else%} No country {%endif%}: </td>
     <td>{{n_photos}}</td>
-    <td><a href="{% url 'photo_index' %}?country={{c}}">List</a></td>
-    <td><a href="{% url 'photos_map' %}?country={{c}}">Map</a></td>
     <td><a href="{% url 'photos_show' %}?country={{c}}">Photos</a></td>
 </tr>
 {%endfor%}
@@ -89,22 +79,10 @@
 
 
 
-    <h2><a href="{% url 'photo_index' %}?by_id=100">Last photos by ID</a></h2>
+    <h2><a href="{% url 'photos_show' %}?by_id=100">Last photos by ID</a></h2>
 
 <div style="clear: left";></div>
 <div style="float: left";>
-<!-- <h2>Search</h2>
-<form method="GET" action="{% url 'photo_index' %}" id="searchform">
-    <input class="searchfield" id="searchbox1" name="name" type="text" value="" placeholder="Name"/>
-    <input class="searchfield" id="searchbox10" name="q" type="text" value="" placeholder="Infos/Description/Address"/>
-    <input class="searchfield" id="searchbox2" name="n_days" type="text" value="" placeholder="Last n days"/>
-    <input class="searchfield" id="searchbox3" name="year" type="text" value="" placeholder="Year"/>
-    <input class="searchfield" id="searchbox5" name="country" type="text" value="" placeholder="Country"/>
-    <input class="searchfield" id="searchbox8" name="min_date" type="date" value="" placeholder="Min date"/>
-    <input class="searchfield" id="searchbox9" name="max_date" type="date" value="" placeholder="Max date"/>
-    <input type="submit" value="Search">
-</form>
-</div> -->
 {% endblock %}
 
 {% block js %}

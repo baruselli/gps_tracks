@@ -371,21 +371,22 @@ class Group(models.Model):
 
     def add_tracks_from_rules(self):
         tracks_to_add_pk=self.get_infos_on_filtered_tracks()["filtered_tracks_not_in_group_pk"]
-        tracks_pk=[int(a) for a in tracks_to_add_pk.split("_")]
+        if tracks_to_add_pk:
+            tracks_pk=[int(a) for a in tracks_to_add_pk.split("_")]
 
-        from tracks.models import Track
-        tracks=Track.objects.filter(pk__in=tracks_pk)
-        names=[]
-        tracks_list=[]
-        for track in tracks:
-            self.tracks.add(track)
-            logger.info("Added track %s to group %s" %(track,self))
-            names.append(track.name_wo_path_wo_ext)
-            tracks_list.append(track) #set_attributes requires list
+            from tracks.models import Track
+            tracks=Track.objects.filter(pk__in=tracks_pk)
+            names=[]
+            tracks_list=[]
+            for track in tracks:
+                self.tracks.add(track)
+                logger.info("Added track %s to group %s" %(track,self))
+                names.append(track.name_wo_path_wo_ext)
+                tracks_list.append(track) #set_attributes requires list
 
-        self.set_attributes(updated_tracks=tracks_list)
+            self.set_attributes(updated_tracks=tracks_list)
 
-        return names      
+            return names      
 
 class GroupRule(models.Model):
     name = models.CharField(max_length=255, verbose_name="Name", null=False, blank=False,unique=True)

@@ -155,7 +155,7 @@
     {% if 1 %}
         <div id ="div_splits">
             <h2> <a href="{% url 'splits' track_id=track.pk  %}?{{request}}">Splits</a>
-                <button onclick="hide_show('splits_block')">Hide/Show</button>
+                <button class="hide_show_button" onclick="hide_show('splits_block')">Hide/Show</button>
             </h2>
             <div id="splits_block">
 
@@ -252,7 +252,7 @@
 
         <div id="div_laps">
             <h2> <a href="{% url 'find_laps' track_id=track.pk  %}?reduce_points={{reduce_points}}">Laps</a>
-                <button onclick="hide_show('laps_block')">Hide/Show</button>
+                <button class="hide_show_button" onclick="hide_show('laps_block')">Hide/Show</button>
             </h2>
             {% if laps or stats%}
                 <div id="laps_block" >
@@ -354,12 +354,7 @@
 {%block js%}
     <script type="text/javascript">
     function hide_show(id) {
-      var x = document.getElementById(id);
-      if (x.style.display === "block") {
-        x.style.display = "none";
-      } else {
-        x.style.display = "block";
-      }
+        $("#"+id).toggle()
     }
     function hide(id) {
       var x = document.getElementById(id);

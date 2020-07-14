@@ -26,7 +26,7 @@
         
 
         {{track}}
-        <button onclick="hide_show('map_block')">Hide/Show Map</button>
+        <button class="hide_show_button" onclick="hide_show('map_block')">Hide/Show</button>
     </h1>
     </div>
 {%endblock%}
@@ -132,7 +132,7 @@
 {%block plots_title%}
     <h2>
         Plots
-        <button onclick="hide_show('plots_block')">Hide/Show</button>
+        <button class="hide_show_button" onclick="hide_show('plots_block')">Hide/Show</button>
         <button onclick="location.href='{% url 'rolling_track' track_id=track.pk  %}?{{request}}'" type="button">Smooth plots</button>
         <button onclick="location.href='{% url 'track_statistics' track_id=track.pk %}'" type="button">Custom plots</button>
     </h2>
@@ -141,7 +141,7 @@
 {%block table%}
     <div id="div_table">
     <div style = "clear:both;"></div>
-    <h2>Details <button onclick="hide_show('details_block')">Hide/Show</button></h2>
+    <h2>Details <button class="hide_show_button" onclick="hide_show('details_block')">Hide/Show</button></h2>
     <div id="details_block" style="display: none;">
 
 
@@ -255,7 +255,7 @@
 
 
 
-    <h2>Files    <button onclick="hide_show('files_block')">Hide/Show</button>
+    <h2>Files    <button class="hide_show_button" onclick="hide_show('files_block')">Hide/Show</button>
     </h2>
     <div id="files_block" style="display: none;">
         {% if track.is_merged%}
@@ -345,7 +345,7 @@
 
         </div>
     {% if track.groups.all%}
-    <h2> Groups     <button onclick="hide_show('groups_block')">Hide/Show</button></h2>
+    <h2> Groups     <button class="hide_show_button" onclick="hide_show('groups_block')">Hide/Show</button></h2>
     <div id="groups_block" style="display: none;">
       {%for g in  track.groups.all%}
       <a href="{% url 'group_detail' group_id=g.pk %}">{{g.name}}</a><br>
@@ -377,7 +377,7 @@
       <!-- <tr><td>  color  </td> <td>{{track.color}}</td> </tr> -->
     <h2>
         <a href="{% url 'waypoints_map' %}?track_ids={{track.pk}}"> Waypoints  </a>
-        <button onclick="hide_show('wps_block')">Hide/Show</button>
+        <button class="hide_show_button" onclick="hide_show('wps_block')">Hide/Show</button>
     </h2>
     <div id="wps_block" style="display: none;">
         <table id="table_waypoints">
@@ -403,7 +403,7 @@
 
     {% if track.photos.all %}
     <h2><a href="{% url 'track_photos_detail' track_id=track.pk %}?{{request}}">Photos</a>
-    <button onclick="hide_show('photos_block')">Hide/Show</button></h2>
+    <button class="hide_show_button" onclick="hide_show('photos_block')">Hide/Show</button></h2>
     <div id="photos_block" style="display: none;">
         <div  id="photos_div">
         <a style="float:left" href="{% url 'photos_show'%}?track_ids={{track.pk}}">Quick show</a>
@@ -425,7 +425,7 @@
 
     {% if tracks_same_day %}
     <h2><a href="" onclick="plot_all_same_day(); return false;">Tracks same day</a>
-        <button onclick="hide_show('tracks_day_block')">Hide/Show</button></h2></h2>
+        <button class="hide_show_button" onclick="hide_show('tracks_day_block')">Hide/Show</button></h2></h2>
     <div id="tracks_day_block" style="display: none;">
     {% for t in tracks_same_day %}
     <a href="{% url 'track_detail' track_id=t.pk %}">{{t.name_wo_path_wo_ext}}</a><br>
@@ -438,7 +438,7 @@
     <div>
     <h2>
         <a href="{% url 'track_index' %}?special_search=similar_to_track&special_search_pk={{track.pk}}&how_many=20&exclude_excluded_groups=1">Similar tracks</a>
-            {% if similar_tracks %}<button onclick="hide_show('similar_tracks_block')">Hide/Show</button>{% endif %}
+            {% if similar_tracks %}<button class="hide_show_button" onclick="hide_show('similar_tracks_block')">Hide/Show</button>{% endif %}
     </h2>
     <div id="similar_tracks_block" style="display: none;">
         {% if similar_tracks %}
@@ -472,7 +472,7 @@
     <div id ="div_cardio">
         {% if track.has_hr %}
             <h2>Cardio
-             <button onclick="hide_show('cardio_block')">Hide/Show</button>
+             <button class="hide_show_button" onclick="hide_show('cardio_block')">Hide/Show</button>
             </h2>
             <div id="cardio_block"  style="display: none;">
 
@@ -537,7 +537,7 @@
 
 {% block logs %}
     <h2><a href="{% url 'track_log' track_id=track.pk  %}?{{request}}">Logs</a>
-    <button onclick="hide_show('log_block')">Hide/Show</button></h2>
+    <button class="hide_show_button" onclick="hide_show('log_block')">Hide/Show</button></h2>
     <div id="log_block" style="display: none;">
         <h3>Errors</h3>
         {{track.log.errors|linebreaksbr}}
@@ -766,7 +766,7 @@
 
 {% block form %}
     <h2>Edit
-        <button onclick="hide_show('edit_block')">Hide/Show</button>
+        <button class="hide_show_button" onclick="hide_show('edit_block')">Hide/Show</button>
     </h2>
     <div id="edit_block">
         {{ form.media }}

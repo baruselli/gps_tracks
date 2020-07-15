@@ -20,12 +20,6 @@
     <h1>Subtracks for <a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a></h1>
 {% endblock %}
 
-
-{%block plots_title%}
-    <h2>Plots<button class="hide_show_button" onclick="hide_show('plots_block')">Hide/Show</button></h2>
-{%endblock%}
-
-
 {% block mapjs %}
     <script type="text/javascript">
 

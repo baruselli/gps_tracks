@@ -5,15 +5,15 @@
 
 {% block stylesheet %}
     {{block.super}}
+    <style>/*
         .leaflet-popup-content {
              width:auto !important;
              height: auto
         }
-
+        
         body {
             padding: 0;
             margin: 0;
-/*            background-image: url("{{track.photos.first.url_path}}"); this calls the view another time*/
             background-repeat: no-repeat;
             background-size: contain;
             background-color: rgba(238, 238, 238, 0.9);
@@ -65,6 +65,8 @@
                                 no-repeat;
                 }
             {%endif%}
+            */
+    </style>
 {%endblock%}
 
 
@@ -78,11 +80,31 @@
 {% block buttons %}
 {%endblock%}
 
+{% block tab_init %}
 
+    <div class="tab">
+        <button class="tablinks active" id="btn_tab_map" onclick="open_tab(event, 'tab_map')"><h2>Map</h2></a></li>
+        <button class="tablinks" id="btn_tab_details" onclick="open_tab(event, 'tab_details')"><h2>Details</h2></a></li>
+        <button class="tablinks " id="btn_tab_plots" onclick="open_tab(event, 'tab_plots')"><h2>Plots</h2></a></li>
+        <button class="tablinks" id="btn_tab_splits" onclick="open_tab(event, 'tab_splits')"><h2>Splits</h2></a></li>
+        <button class="tablinks" id="btn_tab_laps" onclick="open_tab(event, 'tab_laps')"><h2>Laps</h2></a></li>
+        <button class="tablinks" id="btn_tab_files" onclick="open_tab(event, 'tab_files')"><h2>Files</h2></a></li>
+        <button class="tablinks" id="btn_tab_groups" onclick="open_tab(event, 'tab_groups')"><h2>Groups</h2></a></li>            
+        <button class="tablinks" id="btn_tab_photos" onclick="open_tab(event, 'tab_photos')"><h2>Photos</h2></a></li>
+        <!-- <button class="tablinks" id="btn_tab_other" onclick="open_tab(event, 'tab_other')"><h2>Other</h2></a></li> -->
+        <button class="tablinks" id="btn_tab_cardio" onclick="open_tab(event, 'tab_cardio')"><h2>Cardio</h2></a></li>
+        <button class="tablinks" id="btn_tab_edit" onclick="open_tab(event, 'tab_edit')"><h2>Edit</h2></a></li>
+        <button class="tablinks" id="btn_tab_logs" onclick="open_tab(event, 'tab_logs')"><h2>Logs</h2></a></li>
+    </div>
+
+{%endblock%}
 
 {%block plots_title%}
-<!-- <div class="tab-pane fade  active in" id="tab_plots"> -->
-    <h2>Plots<button class="hide_show_button" onclick="hide_show('plots_block')">Hide/Show</button></h2>
+     <div class="tabcontent" id="tab_plots"> <!--div closed in block plots -->
+        <h2>Plots
+            <!-- <button class="hide_show_button" onclick="hide_show('plots_block')">Hide/Show</button> -->
+        </h2>
+
 {%endblock%}
 
 {%block plots%}
@@ -153,6 +175,7 @@
     </div>
 </div>
         </div>
+     </div> <!--closes the div "tab_plots" -->
 {% endblock %}
 
 {%block table%}
@@ -160,9 +183,11 @@
 
 {% block splits %}
     {% if 1 %}
+    <div class="tabcontent" id="tab_splits">
+
         <div id ="div_splits">
             <h2> <a href="{% url 'splits' track_id=track.pk  %}?{{request}}">Splits</a>
-                <button class="hide_show_button" onclick="hide_show('splits_block')">Hide/Show</button>
+                <!-- <button class="hide_show_button" onclick="hide_show('splits_block')">Hide/Show</button> -->
             </h2>
             <div id="splits_block">
 
@@ -203,6 +228,7 @@
             </div>
         <div style = "clear:both;"></div>
         </div>
+    </div>
     
         <script>
                 //////Splits
@@ -256,10 +282,10 @@
 
 {% block laps %}
     {% if 1%}
-
+    <div class="tabcontent" id="tab_laps">
         <div id="div_laps">
             <h2> <a href="{% url 'find_laps' track_id=track.pk  %}?reduce_points={{reduce_points}}">Laps</a>
-                <button class="hide_show_button" onclick="hide_show('laps_block')">Hide/Show</button>
+                <!-- <button class="hide_show_button" onclick="hide_show('laps_block')">Hide/Show</button> -->
             </h2>
             {% if laps or stats%}
                 <div id="laps_block" >
@@ -298,6 +324,7 @@
         
         <div style = "clear:both;"></div>
         </div>
+    </div>
 
         <script>
         //////////laps
@@ -406,6 +433,29 @@
                         }
     }
 
+
+    function open_tab(evt, tab_name) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        console.log(tab_name)
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(tab_name).style.display = "block";
+        evt.currentTarget.className += " active";
+        } 
+
     </script>
 {% endblock %}
 
@@ -420,3 +470,8 @@
 
 {% block form0 %}{%endblock%}
 
+{%block map %}
+    <div class="tabcontent" id="tab_map" style="display:block">
+        {{block.super}}
+    </div>
+{%endblock%}

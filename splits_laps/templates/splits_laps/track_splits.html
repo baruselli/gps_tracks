@@ -6,13 +6,18 @@
 
 {%block stylesheet%}
     {{block.super}}
+    <style>
         #map {
             height: 50%;
             width: 100%;
         }
-        splits_block{
+        #splits_block{
             display: block;
         }
+        #btn_tab_details, #btn_tab_laps, #btn_tab_cardio,#btn_tab_logs{
+            display: none;
+        }
+    </style>
 {%endblock%}
 
 
@@ -21,6 +26,7 @@
 {% endblock %}
 
 {% block form %}
+<div class="tabcontent" id="tab_edit">
     <div id="div_form">
         {{ form.media }}
 
@@ -35,6 +41,7 @@
         </form>
         <button onclick="location.href='{% url 'delete_splits' track_id=track.pk  %}'" type="button">Delete splits</button>
     </div>
+</div>
 {% endblock %}
 
 

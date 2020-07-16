@@ -6,10 +6,16 @@
 
 {%block stylesheet%}
     {{block.super}}
-        #laps_block{
+    /*    #laps_block{
             display: block;
         }
         #plots_block{
+            display: none;
+        }*/
+        #btn_tab_details{
+            display: none;
+        }
+        #btn_tab_splits{
             display: none;
         }
 {%endblock%}
@@ -141,20 +147,22 @@
 {% endblock %}
 
 {% block form %}
-    <div id="div_form2">
-        <h3>Export Lap to Line</h3>
-          <form method="GET" action="{% url 'lap_to_line' track_id=track.pk %}" id="searchform">
-            Take every <input class="searchfield" id="every_form" name="every" type="number" value="10"
-                              placeholder="Take every x points"/>points
-             <br>Lap:
-         <select name="lap">
-             {% for l in laps %}
-          <option value="{{l.number}}">{{l.name}}</option>
-             {%endfor%}
-        </select>
-              <br>
-            <input type="submit" value="Create Line">
-        </form>
+    <div class="tabcontent" id="tab_edit">
+        <div id="div_form2">
+            <h3>Export Lap to Line</h3>
+            <form method="GET" action="{% url 'lap_to_line' track_id=track.pk %}" id="searchform">
+                Take every <input class="searchfield" id="every_form" name="every" type="number" value="10"
+                                placeholder="Take every x points"/>points
+                <br>Lap:
+            <select name="lap">
+                {% for l in laps %}
+            <option value="{{l.number}}">{{l.name}}</option>
+                {%endfor%}
+            </select>
+                <br>
+                <input type="submit" value="Create Line">
+            </form>
+        </div>
     </div>
 {% endblock %}
 

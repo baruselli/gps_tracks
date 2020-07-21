@@ -57,7 +57,7 @@
 
 <button onclick="location.href='{% url 'tracks_set_all_properties'  %}'" type="button">Refresh properties all tracks</button>
 
-
+<h3> <a href="{% url 'merged_tracks_index' %}">Merged tracks</a></h3>
 
 <h3>Upload file(s) and import</h3>
 <form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">

@@ -228,7 +228,7 @@ function create_table(
         console.log(ids);
         if (ids) {window.location=url_many_tracks_merge+ids}
         }},
-        { text: 'Source',
+        { text: 'Zip',
         action:function ( e, dt, node, config) {
         ids=get_track_ids(e, dt, node, config)
         console.log(ids);

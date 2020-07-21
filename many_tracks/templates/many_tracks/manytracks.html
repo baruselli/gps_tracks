@@ -202,6 +202,7 @@
         url_many_tracks_merge="{% url 'many_tracks_merge'%}?track_ids="
         url_many_tracks_delete="{% url 'many_tracks_delete' %}?track_ids="
         url_many_tracks_plot="{% url 'many_tracks_plots' %}?track_ids="
+        url_many_tracks_source="{% url 'many_tracks_source'%}?track_ids="
 
         ////first, create table from table_data_url (tracks as lines)
         $.getJSON(table_data_url,function(data){

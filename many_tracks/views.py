@@ -164,3 +164,28 @@ class ManyTracksMergeView(View):
             new_merged_track.input_tracks.add(track)
 
         return redirect(reverse("edit_merged_track",  kwargs={'id': new_merged_track.pk}))
+
+class ManyTracksSourceView(View):
+
+    def get(self, request, *args, **kwargs):
+        logger.info("ManyTracksSourceView")
+
+        track_ids = request.GET.get('track_ids',"")
+
+        source_files=[]
+
+        for t_id in track_ids.split("_"):
+            track=Track.objects.get(pk=int(t_id))
+            source_files.extend(track.get_source_files())
+
+        from zipfile import ZipFile
+        from os.path import basename
+
+        # create a ZipFile object
+        file_path=os.path.join(settings.MEDIA_BASE_DIR,"export","tracks.zip")
+        zipObj = ZipFile(file_path, 'w')
+        for f in source_files:
+            zipObj.write(f,basename(f))
+        zipObj.close()
+    
+        return redirect(settings.STATIC_URL+"export/tracks.zip")

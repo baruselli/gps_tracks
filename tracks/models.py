@@ -292,6 +292,23 @@ class Track(models.Model):
             next_track = initial_q.filter(**filter_dict).order_by(feature,"pk").first()
         return next_track
 
+    def get_source_files(self):
+        files=[]
+        if self.gpx_file:
+            files.append(self.gpx_file)
+        if self.csv_file:
+            files.append(self.csv_file)
+        if self.kml_file:
+            files.append(self.kml_file)
+        if self.kmz_file:
+            files.append(self.kmz_file)
+        if self.csv_file:
+            files.append(self.csv_file)
+
+        return files
+
+
+
     def find_file(self,ext):
         """
         try to find the import files, in case it has been moved

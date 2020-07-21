@@ -173,6 +173,7 @@
         url_many_tracks_group="{% url 'create_group'%}?track_ids="
         url_many_tracks_merge="{% url 'many_tracks_merge'%}?track_ids="
         url_many_tracks_delete="{% url 'many_tracks_delete' %}?track_ids="
+        url_many_tracks_source="{% url 'many_tracks_source'%}?track_ids="
 
 
         {% if use_points %}
@@ -213,7 +214,9 @@
                 url_many_tracks_group,
                 url_many_tracks_delete,
                 url_many_tracks_merge,
-                url_many_tracks_plot
+                url_many_tracks_plot,
+                {},
+                url_many_tracks_source
             )
 
             //show table -> copied from base_group

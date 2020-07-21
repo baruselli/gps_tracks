@@ -6,7 +6,8 @@ function create_table(
         url_many_tracks_delete,
         url_many_tracks_merge=null,
         url_many_tracks_plot=null,
-        options={}
+        options={},
+        url_many_tracks_source=null,
     ){
     var columns=[
         { "data": "id" ,
@@ -205,12 +206,12 @@ function create_table(
              reset_point_sizes("leaflet_track_marker")
              reset_point_sizes("leaflet_track_point")
          }},
-        {text: 'Map selected tracks',
+        {text: 'Map tracks',
         action:function ( e, dt, node, config) {
             ids=get_track_ids(e, dt, node, config)
             if(ids){window.location=url_many_tracks+ids+"&reduce_points=every&every=0&do_plots=0"}
         }},
-        {text: 'Map & Plot selected tracks',
+        {text: 'Map & Plot tracks',
         action:function ( e, dt, node, config) {
             ids=get_track_ids(e, dt, node, config)
             if(ids){window.location=url_many_tracks+ids+"&reduce_points=every&every=0&do_plots=1"}
@@ -227,14 +228,20 @@ function create_table(
         console.log(ids);
         if (ids) {window.location=url_many_tracks_merge+ids}
         }},
-         { text: 'Scatter Plot',
+        { text: 'Source',
+        action:function ( e, dt, node, config) {
+        ids=get_track_ids(e, dt, node, config)
+        console.log(ids);
+        if (ids) {window.location=url_many_tracks_source+ids}
+        }},
+         { text: 'Plot',
         action:function ( e, dt, node, config) {
         ids=get_track_ids(e, dt, node, config)
         console.log(ids);
         if (ids) {window.location=url_many_tracks_plot+ids}
         }},
         "excel",
-        { text: 'Delete selected tracks',
+        { text: 'Delete tracks',
         action:function ( e, dt, node, config) {
             ids=get_track_ids(e, dt, node, config)
             if (ids) {

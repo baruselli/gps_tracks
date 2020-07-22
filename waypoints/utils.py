@@ -237,7 +237,8 @@ def filter_waypoints(request, silent=True):
 
     if how_many:
         how_many = int(how_many)
-        waypoints = waypoints[:how_many]
+        if how_many>0:
+            waypoints = waypoints[:how_many]
 
     end = time.time()
     if not silent:

@@ -130,7 +130,7 @@ class AllWaypointsView(View):
         if "" not in timezone_options:
             timezone_options = [""]+timezone_options
 
-        if lat and lng and not dist:
+        if lat and lng and (not dist or float(dist)==0) and not how_many:
             dist=3
 
         from .forms import FindTracksForm

@@ -14,4 +14,5 @@ urlpatterns = [
     url(r"^delete/$" ,views.DeleteManyTracksView.as_view() ,name="many_tracks_delete" ,),
     url(r"^merge/$" ,views.ManyTracksMergeView.as_view() ,name="many_tracks_merge" ,),
     url(r"^plots/$", views.ManyTracksPlotsView.as_view(), name="many_tracks_plots", ),
+    url(r"^many_tracks_source/$" ,views.ManyTracksSourceView.as_view() ,name="many_tracks_source" ,),
 ]

@@ -7,48 +7,47 @@
 {% block stylesheet %}
     {{block.super}}
    <style> 
-    /*#splits_block{
-            display: none;
+        #map {
+            height: 100%;
         }
-        #laps_block{
-            display: none;
-        }
-        #plots_block{
-            display: none;
-        }
-        #edit_block{
-            display: none;
-        }*/
     </style>
 {% endblock %}
 
 {%block title%}
-    <div>
-    <h1>
-        
-
-        {{track}}
-        <!-- <button class="hide_show_button" onclick="hide_show('map_block')">Hide/Show</button> -->
-    </h1>
+    {% if previous_track %}
+    <div style="width:20%; float:left; text-align: left;">
+        <a href="{% url 'track_detail' track_id=previous_track.pk %}">&larr; 
+            <!-- {{previous_track.date}} -  -->
+            {{previous_track.name_wo_path_wo_ext|truncatechars:30}} 
+            <!-- &larr; -->
+        </a>
     </div>
+    {% endif %}
+
+    <div style="width:60%; float:left;  text-align: center; position:relative; top:-25px;height:50px">
+        <h1 ><span style="vertical-align: top;"></span>{{track}}</h1>
+    </div>
+
+    {% if next_track %}
+    <div style="width:20%; float:left; text-align: left;">
+        <a href="{% url 'track_detail' track_id=next_track.pk %}"> 
+            <!-- &rarr;  -->
+            <!-- {{next_track.date}} -  -->
+            {{next_track.name_wo_path_wo_ext|truncatechars:30}}&rarr;</a>
+    </div>
+    {% endif %}
+
+    <div style="clear:both"></div>
+
 {%endblock%}
 
 {% block buttons %}
-    {% if previous_track or next_track %}
-        <br>
-        {% if previous_track %}
-            <a href="{% url 'track_detail' track_id=previous_track.pk %}">&larr; {{previous_track.date}} - {{previous_track.name_wo_path_wo_ext}} &larr;</a>
-        {% endif %}
-        {% if next_track %}
-            <a href="{% url 'track_detail' track_id=next_track.pk %}"> &rarr; {{next_track.date}} - {{next_track.name_wo_path_wo_ext}}&rarr;</a>
-        {% endif %}
-    {% endif %}
 {%endblock%}
 
 {%block map%}
     <div class="tabcontent" id="tab_map" style="display:block">
         <div id="map_block">
-        <div style="height:50%">
+        <div style="height:70%">
 
             <div class="row" id ="table_general_1" style="float:left;width:20%" >
             {% if not track.is_active and track.merged_tracks.all %}
@@ -803,39 +802,45 @@
 
 {% block form %}
     <div class="tabcontent" id="tab_edit">
-        <h2>Actions</h2>
-        <div>
-            <h3>Delete</h3>
-                <button onclick="deletetrack_fct()" type="button">Delete track</button>
-                <button onclick="deletefile_fct()" type="button">Delete track and files</button>
-                <button onclick="deletefile_bl_fct()" type="button">Delete track and blacklist</button>
-            <h3>Export</h3>
-                <button onclick="location.href='{% url 'serialize_track' track_id=track.pk  %}'" type="button">Export json</button>
-                <button onclick="location.href='{% url 'track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
-                <button onclick="location.href='{% url 'track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
-            <!-- <button onclick="location.href='{% url 'find_laps' track_id=track.pk  %}?{{request}}'" type="button">Find Laps</button> -->
-            <!-- <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button> -->
-            <h3>Other</h3>
-                <button onclick="location.href='{% url 'geopy_track' track_id=track.pk  %}'" type="button">Get infos on endpoints</button>
-                <button onclick="location.href='{% url 'track_set_all_properties' track_id=track.pk  %}'" type="button">Refresh properties</button>
-            <!-- <button onclick="test_fct()" type="button">Test</button> -->
-        </div>
 
-        <h2>Edit
-            <!-- <button class="hide_show_button" onclick="hide_show('edit_block')">Hide/Show</button> -->
-        </h2>
-        <div id="edit_block">
-            {{ form.media }}
-            {{ form.non_field_errors }}
-            {{ form.errors }}
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <input type="submit" value="OK">
-            </form>
-        </div>
+            <div style="width:50%; float:left">
+                <h2>Edit
+                    <!-- <button class="hide_show_button" onclick="hide_show('edit_block')">Hide/Show</button> -->
+                </h2>
+                <div id="edit_block">
+                    {{ form.media }}
+                    {{ form.non_field_errors }}
+                    {{ form.errors }}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <input type="submit" value="OK">
+                    </form>
+                </div>
+            </div>
+    
 
+            <div style="width:50%; float:left">
+                <h2>Actions</h2>
+                <div>
+                    <h3>Delete</h3>
+                        <button onclick="deletetrack_fct()" type="button">Delete track</button>
+                        <button onclick="deletefile_fct()" type="button">Delete track and files</button>
+                        <button onclick="deletefile_bl_fct()" type="button">Delete track and blacklist</button>
+                    <h3>Export</h3>
+                        <button onclick="location.href='{% url 'serialize_track' track_id=track.pk  %}'" type="button">Export json</button>
+                        <button onclick="location.href='{% url 'track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
+                        <button onclick="location.href='{% url 'track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
+                    <!-- <button onclick="location.href='{% url 'find_laps' track_id=track.pk  %}?{{request}}'" type="button">Find Laps</button> -->
+                    <!-- <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button> -->
+                    <h3>Other</h3>
+                        <button onclick="location.href='{% url 'geopy_track' track_id=track.pk  %}'" type="button">Get infos on endpoints</button>
+                        <button onclick="location.href='{% url 'track_set_all_properties' track_id=track.pk  %}'" type="button">Refresh properties</button>
+                    <!-- <button onclick="test_fct()" type="button">Test</button> -->
+                </div>
+            </div>
 
+        <div style="clear:both">
 
     </div>
 {% endblock%}

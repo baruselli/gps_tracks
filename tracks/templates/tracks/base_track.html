@@ -66,6 +66,15 @@
                 }
             {%endif%}
             */
+        #tab_plots{
+            display: none;
+        }
+        {% if not track.has_hr%}
+            #btn_tab_cardio{
+                display: none;
+            }
+        {% endif%}
+        
     </style>
 {%endblock%}
 
@@ -86,13 +95,13 @@
         <button class="tablinks active" id="btn_tab_map" onclick="open_tab(event, 'tab_map')"><h2>Map</h2></a></li>
         <button class="tablinks" id="btn_tab_details" onclick="open_tab(event, 'tab_details')"><h2>Details</h2></a></li>
         <button class="tablinks " id="btn_tab_plots" onclick="open_tab(event, 'tab_plots')"><h2>Plots</h2></a></li>
-        <button class="tablinks" id="btn_tab_splits" onclick="open_tab(event, 'tab_splits')"><h2>Splits</h2></a></li>
-        <button class="tablinks" id="btn_tab_laps" onclick="open_tab(event, 'tab_laps')"><h2>Laps</h2></a></li>
         <button class="tablinks" id="btn_tab_files" onclick="open_tab(event, 'tab_files')"><h2>Files</h2></a></li>
         <button class="tablinks" id="btn_tab_groups" onclick="open_tab(event, 'tab_groups')"><h2>Groups</h2></a></li>            
         <button class="tablinks" id="btn_tab_photos" onclick="open_tab(event, 'tab_photos')"><h2>Photos</h2></a></li>
         <!-- <button class="tablinks" id="btn_tab_other" onclick="open_tab(event, 'tab_other')"><h2>Other</h2></a></li> -->
         <button class="tablinks" id="btn_tab_cardio" onclick="open_tab(event, 'tab_cardio')"><h2>Cardio</h2></a></li>
+        <button class="tablinks" id="btn_tab_splits" onclick="open_tab(event, 'tab_splits')"><h2>Splits</h2></a></li>
+        <button class="tablinks" id="btn_tab_laps" onclick="open_tab(event, 'tab_laps')"><h2>Laps</h2></a></li>
         <button class="tablinks" id="btn_tab_edit" onclick="open_tab(event, 'tab_edit')"><h2>Edit</h2></a></li>
         <button class="tablinks" id="btn_tab_logs" onclick="open_tab(event, 'tab_logs')"><h2>Logs</h2></a></li>
     </div>

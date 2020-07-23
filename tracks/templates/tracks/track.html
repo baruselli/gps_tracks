@@ -50,67 +50,65 @@
         <div style="height:70%">
 
             <div class="row" id ="table_general_1" style="float:left;width:20%" >
-            {% if not track.is_active and track.merged_tracks.all %}
-                <b>Part of</b>
-                {% for t in track.merged_tracks.all %}
-                    <a href="{% url 'track_detail' track_id=t.pk %}">{{t.pk}} - {{t.name_wo_path_wo_ext}}</a><br>
-                {% endfor %}
-            {% endif %}
+                {% if not track.is_active and track.merged_tracks.all %}
+                    <b>Part of</b>
+                    {% for t in track.merged_tracks.all %}
+                        <a href="{% url 'track_detail' track_id=t.pk %}">{{t.pk}} - {{t.name_wo_path_wo_ext}}</a><br>
+                    {% endfor %}
+                {% endif %}
 
-            <table>
-                <thead>
-                </thead>
+                <table>
+                    <thead>
+                    </thead>
 
-                        <tbody>
-                            <tr><td> Duration  </td> <td><b>{{track.duration_string2}}</b></td> </tr>
-                            <tr><td> Length </td> <td><b>{{track.length_3d|div:1000|floatformat:-2}}km</b></td> </tr>
-                            {% if track.has_times %}<tr><td> Speed</td><td><b>{% if track.avg_speed %}{{track.avg_speed|mul:3.6|floatformat:-1}}km/h{%endif%} - {{track.pace_string}}</b></td></tr>{%endif %}
-                            <tr><td> Time  </td> <td><b>{{track.beginning}}</b></td> </tr>
-                            {% if track.has_alts %}<tr><td> Altitude  </td> <td><b>{{track.min_alt|floatformat:0}}m - {{track.max_alt|floatformat:0}}m</b></td> </tr>{%endif%}
-                            {% if track.n_laps > 0 %}<tr><td> Laps  </td> <td>{{track.n_laps}}</td> </tr>{%endif%}
-                            {% if track.has_freq%}<tr><td> Frequency</td><td>{{track.total_frequency|floatformat:0}}steps/min</td></tr>{%endif%}
-                            {% if track.total_calories%}<tr><td> Calories</td><td>{{track.total_calories|floatformat:0}}</td></tr>{%endif%}
-                            {% if track.has_hr%}<tr><td> Heartrate</td><td>{{track.total_heartbeat|floatformat:0}}bpm</td></tr>{%endif%}
-                            <tr><td> Points</td> <td id="n_points">{{track.n_points}}
-                            {% if track.n_points != track.n_points_original %}<tr><td> Original Points</td><td>{{track.n_points_original}}</td></tr>{%endif%}
-                            {% if track.total_step_length%}<tr><td> Step Length</td><td>{{track.total_step_length|floatformat:-2}}m</td></tr>{%endif%}
-                            {% if track.total_steps%}<tr><td> Total Steps</td><td>{{track.total_steps}}</td></tr>{%endif%}
-                            {% if track.end_country%}<tr><td> Country</td><td>{{track.end_country}}</td></tr>{%endif%}
-                            {% if track.end_city%}<tr><td> City</td><td>{{track.end_city}}</td></tr>{%endif%}
-                            <tr><td> Photos</td><td>{{track.photos.count}}</td></tr>
-                            <tr><td> Waypoints</td><td>{{track.waypoints_all.count}}</td></tr>
-                            {% if track.description%}<tr><td> Notes</td><td>{{track.description|safe}}</td></tr>{%endif%}
-                            {% if track.is_merged %}
-                                <tr><td> Merged from tracks </td><td>{{merged_tracks.count}}</td></tr>
-                            {% endif %}
+                    <tbody>
+                        <tr><td> Duration  </td> <td><b>{{track.duration_string2}}</b></td> </tr>
+                        <tr><td> Length </td> <td><b>{{track.length_3d|div:1000|floatformat:-2}}km</b></td> </tr>
+                        {% if track.has_times %}<tr><td> Speed</td><td><b>{% if track.avg_speed %}{{track.avg_speed|mul:3.6|floatformat:-1}}km/h{%endif%} - {{track.pace_string}}</b></td></tr>{%endif %}
+                        <tr><td> Time  </td> <td><b>{{track.beginning}}</b></td> </tr>
+                        {% if track.has_alts %}<tr><td> Altitude  </td> <td><b>{{track.min_alt|floatformat:0}}m - {{track.max_alt|floatformat:0}}m</b></td> </tr>{%endif%}
+                        {% if track.n_laps > 0 %}<tr><td> Laps  </td> <td>{{track.n_laps}}</td> </tr>{%endif%}
+                        {% if track.has_freq%}<tr><td> Frequency</td><td>{{track.total_frequency|floatformat:0}}steps/min</td></tr>{%endif%}
+                        {% if track.total_calories%}<tr><td> Calories</td><td>{{track.total_calories|floatformat:0}}</td></tr>{%endif%}
+                        {% if track.has_hr%}<tr><td> Heartrate</td><td>{{track.total_heartbeat|floatformat:0}}bpm</td></tr>{%endif%}
+                        <tr><td> Points</td> <td id="n_points">{{track.n_points}}
+                        {% if track.n_points != track.n_points_original %}<tr><td> Original Points</td><td>{{track.n_points_original}}</td></tr>{%endif%}
+                        {% if track.total_step_length%}<tr><td> Step Length</td><td>{{track.total_step_length|floatformat:-2}}m</td></tr>{%endif%}
+                        {% if track.total_steps%}<tr><td> Total Steps</td><td>{{track.total_steps}}</td></tr>{%endif%}
+                        {% if track.end_country%}<tr><td> Country</td><td>{{track.end_country}}</td></tr>{%endif%}
+                        {% if track.end_city%}<tr><td> City</td><td>{{track.end_city}}</td></tr>{%endif%}
+                        <tr><td> Photos</td><td>{{track.photos.count}}</td></tr>
+                        <tr><td> Waypoints</td><td>{{track.waypoints_all.count}}</td></tr>
+                        {% if track.description%}<tr><td> Notes</td><td>{{track.description|safe}}</td></tr>{%endif%}
+                        {% if track.is_merged %}
+                            <tr><td> Merged from tracks </td><td>{{merged_tracks.count}}</td></tr>
+                        {% endif %}
                     </tbody>
 
-                    </table>
-                    <br>
-                    <form method="GET" action="{% url 'track_detail' track_id=track.pk %}" id="searchform">
-                        Show points:<select name="reduce_points">
-                            {% if every > 1 %}
-                            <option value="every" {%if reduce_points == "every"%} selected="selected" {%endif%}>Every {{every}}</option>
-                            {% endif %}
-                            <option value="all" {%if reduce_points == "all"%} selected="selected" {%endif%}>All</option>
-                            {% if track.td.smooth_indices %}  <option value="smooth1" {%if reduce_points == "smooth1"%} selected="selected" {%endif%}>Ramer-Douglas-Peucker 10m</option>{%endif%}
-                            {% if track.td.smooth2_indices %}  <option value="smooth2" {%if reduce_points == "smooth2"%} selected="selected" {%endif%}>Less than 100</option>{%endif%}
-                            {% if track.td.smooth3_indices %}  <option value="smooth3" {%if reduce_points == "smooth3"%} selected="selected" {%endif%}>Custom</option>{%endif%}
-                        </select>
-                        <input type="submit" value="Refresh">
-                        <button onclick="location.href='{% url 'track_smooth' track_id=track.pk  %}'" type="button">Custom choice</button>
-                    </form>
+                </table>
+                <br>
+                
+                <form method="GET" action="{% url 'track_detail' track_id=track.pk %}" id="searchform">
+                    Show points:<select name="reduce_points">
+                        {% if every > 1 %}
+                        <option value="every" {%if reduce_points == "every"%} selected="selected" {%endif%}>Every {{every}}</option>
+                        {% endif %}
+                        <option value="all" {%if reduce_points == "all"%} selected="selected" {%endif%}>All</option>
+                        {% if track.td.smooth_indices %}  <option value="smooth1" {%if reduce_points == "smooth1"%} selected="selected" {%endif%}>Ramer-Douglas-Peucker 10m</option>{%endif%}
+                        {% if track.td.smooth2_indices %}  <option value="smooth2" {%if reduce_points == "smooth2"%} selected="selected" {%endif%}>Less than 100</option>{%endif%}
+                        {% if track.td.smooth3_indices %}  <option value="smooth3" {%if reduce_points == "smooth3"%} selected="selected" {%endif%}>Custom</option>{%endif%}
+                    </select>
+                    <input type="submit" value="Refresh">
+                    <button onclick="location.href='{% url 'track_smooth' track_id=track.pk  %}'" type="button">Custom choice</button>
+                </form>
 
-                    </form>
             </div>
 
 
-            <div style="position: relative;">
-            <div id="map">
-                {%leaflet_map "map" callback="window.map_init_basic"%}
-                <div class="modal"></div>
-            </div>
-            </div>
+                <div id="map">
+                    {%leaflet_map "map" callback="window.map_init_basic"%}
+                    <div class="modal"></div>
+                </div>
 
         </div>
         </div>

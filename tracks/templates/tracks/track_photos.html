@@ -7,10 +7,17 @@
 
 {%block stylesheet%}
     {{block.super}}
-        #map {
-            height: 60%;
-            width: 100%;
-        }
+        <style>
+            #btn_tab_details,#btn_tab_laps,#btn_tab_cardio,#btn_tab_logs,#btn_tab_files,#btn_tab_groups{
+                display: none;
+            }
+            #btn_tab_splits,#btn_tab_plots,#btn_tab_edit{
+                display: none;
+            }
+            #btn_tab_photos{
+                
+            }
+        </style>
 {%endblock%}
 
 
@@ -64,8 +71,7 @@
 
 
 {% block content %}
-    <div>
-        <div><h2>Photos</h2></div>
+    <div class="tabcontent" id="tab_photos">
         {%for photo in track.photos.all %}
             <div style="width:48%;float:left; margin-left: 1%;margin-top: 1%">
             <div max-width: 100%;></div>

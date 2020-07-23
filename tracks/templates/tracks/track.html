@@ -9,6 +9,7 @@
    <style> 
         #map {
             height: 100%;
+            width: 80%;
         }
     </style>
 {% endblock %}
@@ -480,15 +481,16 @@
 
         <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button>
 
+        {% if track.photos.all %}
+            <h2><a href="{% url 'track_photos_detail' track_id=track.pk %}?{{request}}">Photos ({{track.photos.count}})</a></h2>
+            <h3><a style="float:left" href="{% url 'photos_show'%}?track_ids={{track.pk}}">Quick show </a></h3><br>
+        {% endif %}
+
         {% if track.date %}
-            <h2><a href="{% url 'photos_show' %}?min_date={{track.date|date:'Y-m-d'}}&max_date={{track.date|date:'Y-m-d'}}">Photos same day ({{n_photos_same_day}})</a></h2>
+            <h3><a href="{% url 'photos_show' %}?min_date={{track.date|date:'Y-m-d'}}&max_date={{track.date|date:'Y-m-d'}}">Photos same day ({{n_photos_same_day}})</a></h3>
         {% endif %}
 
         {% if track.photos.all %}
-        <h2><a style="float:left" href="{% url 'photos_show'%}?track_ids={{track.pk}}">Quick show </a></h2><br>
-
-        <h2><a href="{% url 'track_photos_detail' track_id=track.pk %}?{{request}}">Photos ({{track.photos.count}})</a></h2>
-        <!-- <button class="hide_show_button" onclick="hide_show('photos_block')">Hide/Show</button> -->
 
         <div id="photos_block">
             <div  id="photos_div">

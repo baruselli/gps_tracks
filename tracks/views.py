@@ -99,8 +99,10 @@ class TrackView(View):
         ## tracks same day
         if track.date:
             tracks_same_day=Track.all_objects.filter(date=track.date).exclude(pk=track.pk).exclude(date__isnull=True)
+            n_photos_same_day=Photo.objects.filter(time__date=track.date).count()
         else:
             tracks_same_day=[]
+            n_photos_same_day = 0
 
 
         # find rank in groups -> this could be improved
@@ -164,7 +166,8 @@ class TrackView(View):
                 "form":form,
                 "form_group":form_group,
                 "merged_tracks": merged_tracks,
-                "unused_input_files":unused_input_files
+                "unused_input_files":unused_input_files,
+                "n_photos_same_day": n_photos_same_day,
             },
         )
     def post(self, request, *args, **kwargs):

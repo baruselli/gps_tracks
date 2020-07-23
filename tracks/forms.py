@@ -13,10 +13,15 @@ class SmoothTrackForm(forms.Form):
     parameter = forms.FloatField(label='Parameter')
 
 
+class TrackEditForm(forms.ModelForm):
+    class Meta:
+        model = Track
+        fields = ["description","user","time_zone","starting_index","ending_index", "is_active"]
+
 class TrackGroupForm(forms.ModelForm):
     class Meta:
         model = Track
-        fields = ["description","groups","user","time_zone","starting_index","ending_index", "is_active"]
+        fields = ["groups",]
         widgets = {'groups': forms.widgets.CheckboxSelectMultiple() }
 
     def __init__(self, *args, **kwargs):
@@ -24,7 +29,6 @@ class TrackGroupForm(forms.ModelForm):
         from groups.models import Group
         # exclude auto generated groups
         self.fields["groups"].queryset = Group.objects.exclude(is_path_group=True).exclude(hide_in_forms=True)
-
 
 
 class FindGroupForm(forms.Form):

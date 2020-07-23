@@ -33,8 +33,9 @@ class TrackView(View):
         track=Track.all_objects.get(pk=track_id)
         every=track.get_every()
 
-        from .forms import TrackGroupForm
-        form = TrackGroupForm(instance=track)
+        from .forms import TrackGroupForm, TrackEditForm
+        form = TrackEditForm(instance=track)
+        form_group = TrackGroupForm(instance=track)
 
         # tracks with no date can be ordered by pk, but it is slow
         if track.beginning:
@@ -161,72 +162,82 @@ class TrackView(View):
                 "previous_track":previous_track,
                 "next_track": next_track,
                 "form":form,
+                "form_group":form_group,
                 "merged_tracks": merged_tracks,
                 "unused_input_files":unused_input_files
             },
         )
     def post(self, request, *args, **kwargs):
-        from .forms import TrackGroupForm
+        from .forms import TrackGroupForm, TrackEditForm
+
 
         track_id = kwargs.get("track_id", None)
         logger.info("TrackView post %s" %track_id)
         track = get_object_or_404(Track.all_objects, pk=track_id)
         instance = get_object_or_404(Track.all_objects, pk=track_id)
-        form = TrackGroupForm(request.POST or None, instance=instance)
 
-        old_set=set(track.groups.filter(auto_update_properties=True))
-        # these are not shown in the from, I add them by hand later
-        old_set_path = [g for g in track.groups.all() if g.is_path_group or g.hide_in_forms]
-
-        old_timezone = track.time_zone
-        old_starting_index = track.starting_index
-        old_ending_index = track.ending_index
-
-        if form.is_valid():
-            track = form.save()
-
-            for g in old_set_path:
-                track.groups.add(g)
-            track.save()
-
-            new_timezone = track.time_zone
-
-            if old_timezone!=new_timezone:
-                old_offset = track.get_timezone_offset(timezone=old_timezone)
-                new_offset = track.get_timezone_offset(timezone=new_timezone)
-                track.info("OLd timezone: %s Old offset: %s New timezone: %s New Offset: %s" %(old_timezone, old_offset, new_timezone, new_offset))
-                track.fix_times(offset=new_offset-old_offset, force=True)
-
-            if old_starting_index!=track.starting_index or old_ending_index!=track.ending_index:
-                track.starting_index = max(track.starting_index,0)
-                track.ending_index = max(track.ending_index,0)
+        # edit groups
+        if "edit_group" in request.POST:
+            form = TrackGroupForm(request.POST or None, instance=instance)
+            old_set=set(track.groups.filter(auto_update_properties=True))
+            # these are not shown in the from, I add them by hand later
+            old_set_path = [g for g in track.groups.all() if g.is_path_group or g.hide_in_forms]
+            if form.is_valid():
+                track = form.save()
+                for g in old_set_path:
+                    track.groups.add(g)
                 track.save()
-                track.set_all_properties(direct_call=True)
+                new_set = set(track.groups.filter(auto_update_properties=True))
 
-
-            new_set = set(track.groups.filter(auto_update_properties=True))
-
-            # logger.info(new_set)
-            # logger.info(old_set)
-
-            for g in list(new_set-old_set)+list(old_set-new_set):
                 import threading
-                track.info("Setting attributes for group %s" %g)
-                t = threading.Thread(
-                    target=g.set_attributes
+                for g in list(new_set-old_set)+list(old_set-new_set):
+                    track.info("Setting attributes for group %s" %g)
+                    t = threading.Thread(
+                        target=g.set_attributes
+                    )
+                    t.start()
+
+                return HttpResponseRedirect(
+                    reverse("track_detail", kwargs={"track_id": track_id})
                 )
-                t.start()
 
-            track.info("Track modified by form")
-
-            return HttpResponseRedirect(
-                reverse("track_detail", kwargs={"track_id": track_id})
-            )
+            else:
+                return render(
+                    request, self.template_name, {"form": form, "has_error": True}
+                )
+            
+        # edit all the rest
         else:
-            return render(
-                request, self.template_name, {"form": form, "has_error": True}
-            )
+            form = TrackEditForm(request.POST or None, instance=instance)
+            old_timezone = track.time_zone
+            old_starting_index = track.starting_index
+            old_ending_index = track.ending_index
 
+            if form.is_valid():
+                track = form.save()
+                new_timezone = track.time_zone
+
+                if old_timezone!=new_timezone:
+                    old_offset = track.get_timezone_offset(timezone=old_timezone)
+                    new_offset = track.get_timezone_offset(timezone=new_timezone)
+                    track.info("OLd timezone: %s Old offset: %s New timezone: %s New Offset: %s" %(old_timezone, old_offset, new_timezone, new_offset))
+                    track.fix_times(offset=new_offset-old_offset, force=True)
+
+                if old_starting_index!=track.starting_index or old_ending_index!=track.ending_index:
+                    track.starting_index = max(track.starting_index,0)
+                    track.ending_index = max(track.ending_index,0)
+                    track.save()
+                    track.set_all_properties(direct_call=True)
+
+                track.info("Track modified by form")
+
+                return HttpResponseRedirect(
+                    reverse("track_detail", kwargs={"track_id": track_id})
+                )
+            else:
+                return render(
+                    request, self.template_name, {"form": form, "has_error": True}
+                )
 
 
 ### only track(s)

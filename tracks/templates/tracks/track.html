@@ -396,27 +396,47 @@
             <!-- <button class="hide_show_button" onclick="hide_show('groups_block')">Hide/Show</button> -->
         </h2>
         <div id="groups_block">
-        {%for g in  track.groups.all%}
-        <a href="{% url 'group_detail' group_id=g.pk %}">{{g.name}}</a><br>
-        {%endfor%}
+            <div style="width:70%; float:left">
 
-            {% for k,v in groups_dict.items %}
-                <div style="width:25% ;float: left">
-                    <h4>{{k}} - {{k.tracks.count}} tracks</h4>
-                    <table class="table_track_rank" id="table_track_rank_{{k}}"  >
-                        <thead><th>Feature</th><th>Rank</th></thead>
-                        {% for k2,v2 in v.items %}
-                            <tr>
-                                <td><font color="{{v2.2}}">{{k2}}</font></td>
-                                    <!--<a target="_blank" href="{% url 'group_plots' group_id=v2.1 %}?color=Speed&r=Uniform&h={{track.name_wo_path_wo_ext}}&x={{k2}}&y={{k2}}&by_rank=on">-->
-                                <td>
-                                    <a target="_blank" href="{% url 'group_plots' group_id=v2.1 %}?color=Speed&r=Uniform&h={{track.name_wo_path_wo_ext}}&x=Ordinal+number&y={{k2}}">
-                                        {{v2.0}}</a><br></td></tr>
-                        {% endfor %}
-                    </table>
+            {%for g in  track.groups.all%}
+            <a href="{% url 'group_detail' group_id=g.pk %}">{{g.name}}</a><br>
+            {%endfor%}
+
+                {% for k,v in groups_dict.items %}
+                    <div style="width:33% ;float: left">
+                        <h4>{{k}} - {{k.tracks.count}} tracks</h4>
+                        <table class="table_track_rank" id="table_track_rank_{{k}}"  >
+                            <thead><th>Feature</th><th>Rank</th></thead>
+                            {% for k2,v2 in v.items %}
+                                <tr>
+                                    <td><font color="{{v2.2}}">{{k2}}</font></td>
+                                        <!--<a target="_blank" href="{% url 'group_plots' group_id=v2.1 %}?color=Speed&r=Uniform&h={{track.name_wo_path_wo_ext}}&x={{k2}}&y={{k2}}&by_rank=on">-->
+                                    <td>
+                                        <a target="_blank" href="{% url 'group_plots' group_id=v2.1 %}?color=Speed&r=Uniform&h={{track.name_wo_path_wo_ext}}&x=Ordinal+number&y={{k2}}">
+                                            {{v2.0}}</a><br></td></tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div style="width:30%; float:left">
+                <h2>Edit
+                    <!-- <button class="hide_show_button" onclick="hide_show('edit_block')">Hide/Show</button> -->
+                </h2>
+                <div id="edit_block">
+                    {{ form_group.media }}
+                    {{ form_group.non_field_errors }}
+                    {{ form_group.errors }}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form_group|crispy }}
+                        <input type="submit" name="edit_group" value="OK">
+                    </form>
                 </div>
-            {% endfor %}
+            </div>
         </div>
+
         <div style="clear:left"></div>
 
         <script>simple_table('.table_track_rank',{"order_opt":[1,"asc"]})</script>

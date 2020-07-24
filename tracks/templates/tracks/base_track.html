@@ -74,6 +74,11 @@
                 display: none;
             }
         {% endif%}
+        {% if not track.waypoints_all %}
+        #btn_tab_waypoints{
+                display: none;
+            }
+        {%endif%}
         #map {
             height: 70%;
             width: 100%;
@@ -101,7 +106,7 @@
         <button class="tablinks" id="btn_tab_files" onclick="open_tab(event, 'tab_files')"><h2>Files</h2></a></li>
         <button class="tablinks" id="btn_tab_groups" onclick="open_tab(event, 'tab_groups')"><h2>Groups</h2></a></li>            
         <button class="tablinks" id="btn_tab_photos" onclick="open_tab(event, 'tab_photos')"><h2>Photos</h2></a></li>
-        <!-- <button class="tablinks" id="btn_tab_other" onclick="open_tab(event, 'tab_other')"><h2>Other</h2></a></li> -->
+        <button class="tablinks" id="btn_tab_waypoints" onclick="open_tab(event, 'tab_waypoints')"><h2>Waypoints</h2></a></li>
         <button class="tablinks" id="btn_tab_cardio" onclick="open_tab(event, 'tab_cardio')"><h2>Cardio</h2></a></li>
         <button class="tablinks" id="btn_tab_splits" onclick="open_tab(event, 'tab_splits')"><h2>Splits</h2></a></li>
         <button class="tablinks" id="btn_tab_laps" onclick="open_tab(event, 'tab_laps')"><h2>Laps</h2></a></li>

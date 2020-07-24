@@ -479,6 +479,7 @@
 
     <div class="tabcontent" id="tab_photos">
 
+        {{track.photos_details}}
         <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button>
 
         {% if track.photos.all %}

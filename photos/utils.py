@@ -263,7 +263,11 @@ def associate_photos_to_tracks(photo_list=None, track_list=None):
     how = OptionSet.get_option("LINK_PHOTOS_TO_TRACKS")
 
     for track in track_list:
+        counter_track=0
+        counter_track_new=0
         if not track.beginning or not track.end:
+            track.photos_details="No linking performed because beginning and/or end are missing"
+            track.save()
             continue
 
         if how=="same_day":
@@ -274,17 +278,18 @@ def associate_photos_to_tracks(photo_list=None, track_list=None):
             photo_list_track=photo_list.filter(time__date=track.beginning.date())|photo_list.filter(time__date=track.end.date())
 
         for photo in photo_list_track:
-        # time = photo.time
-        # for track, beginning, end, lat, long in zip(
-        #         track_list, beginning_list, end_list, lat_list, long_list
-        # ):
-        #     if how=="same_day":
-        #         condition = (time.date() == beginning.date()) or (time.date() == end.date())
-        #     elif how=="beginning_end":
-        #         condition = time > beginning and time < end
-        #     if condition:
+            # time = photo.time
+            # for track, beginning, end, lat, long in zip(
+            #         track_list, beginning_list, end_list, lat_list, long_list
+            # ):
+            #     if how=="same_day":
+            #         condition = (time.date() == beginning.date()) or (time.date() == end.date())
+            #     elif how=="beginning_end":
+            #         condition = time > beginning and time < end
+            #     if condition:
             if not track in photo.tracks.all():
                 counter_new+=1
+                counter_track_new+=1
             photo.tracks.add(track)
             photo.track_pk = track.id
             photo.track_name = track.name_wo_path_wo_ext
@@ -293,10 +298,15 @@ def associate_photos_to_tracks(photo_list=None, track_list=None):
             deduce_lat_long(photo, track)
             deduce_city(photo, track)
             photo.save()
-            track.save()
             counter += 1
-            logger.info("Added photo %s - %s to track %s" % (photo.pk, photo.name, track.name_wo_path_wo_ext))
+            counter_track += 1
+            track.info("Added photo %s - %s to track %s" % (photo.pk, photo.name, track.name_wo_path_wo_ext))
             # photo_list.remove(photo)
+
+        from datetime import datetime
+        track.photos_details="Found %s photos, of which %s new, as of %s" %(counter_track, counter_track_new,datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        track.save()
+
     message="Associations found %s: %s; new : %s" % (how,counter,counter_new)
     logger.info(message)
     return message

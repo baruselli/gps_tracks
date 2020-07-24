@@ -7,6 +7,23 @@
 {%block buttons %}
 {%endblock%}
 
+{% block stylesheet %}
+    {{block.super}}
+   <style> 
+        .tab {
+            display:none;
+        }
+        #tab_plots{
+            display:block;
+            padding:0;
+            border:0;
+        }
+        #plots_title{
+            display:none;
+        } 
+    </style>
+{% endblock %}
+
 {%block title%}
     <h1>Scatter Plots for <a href="{% url 'track_detail' track_id=track.pk %}?reduce_points={{reduce_points}}">{{track.name_wo_path_wo_ext}}</a></h1>
 {%endblock%}

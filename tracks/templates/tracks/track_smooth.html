@@ -6,30 +6,58 @@
 
 {%block stylesheet%}
     {{block.super}}
-        #map {
-            height: 60%;
-            width: 70%;
+    <style>
+        #btn_tab_details,#btn_tab_laps,#btn_tab_cardio,#btn_tab_logs,#btn_tab_files,#btn_tab_groups{
+            display: none;
         }
-        #plots_block {
-            display: block;
+        #btn_tab_splits,#btn_tab_photos{
+            display: none;
         }
+
+    </style>
 {%endblock%}
 
 
 
 {%block title %}
-    <h1><a href="{% url 'track_detail' track_id=track.pk %}?reduce_points=smooth3">{{track.name_wo_path_wo_ext}}</a></h1>
+    <h1>Reduce points for <a href="{% url 'track_detail' track_id=track.pk %}?reduce_points=smooth3">{{track.name_wo_path_wo_ext}}</a></h1>
 {%endblock %}
 
 
 {%block buttons %}
-    <button onclick="location.href='{% url 'smoothed_track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
-    <button onclick="location.href='{% url 'smoothed_track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
-    <button onclick="location.href='{% url 'track_to_line' track_id=track.pk  %}'" type="button">Create Line</button>
 {%endblock%}
 
 {% block form %}
-    <div>
+    <div class="tabcontent" id="tab_edit">
+        <h4>Results</h4>
+        <div class="row" id ="table" width=100%>
+           <table>
+                <tbody>
+                    <tr><td>Points</td> <td>{{track.n_points}}
+                            {%if track.n_points_smooth3%}-> {{track.n_points_smooth3}} <div id="n_points"> - </div>{%endif%}   </td></tr>
+                    <tr><td> Length  </td> <td>{{track.length_3d|div:1000|floatformat:-2}}km
+                    {% if track.length_3d_smooth3 %}-> {{track.length_3d_smooth3|div:1000|floatformat:-2}}km{%endif%}
+                    <tr><td> Length(csv)  </td> <td>{{track.total_dist_csv|div:1000|floatformat:-2}}km</td></tr>
+
+                    <tr><td> Speed  </td> <td> </td></tr>
+
+                <tr><td>Points smoothed</td> <td>
+                        {%if track.n_points_smooth%} {{track.n_points_smooth}}{%endif%}
+                        {%if track.n_points_smooth2%}, {{track.n_points_smooth2}}{%endif%}
+                </td></tr>
+                <tr><td> Length smoothed </td> <td>
+                {% if track.length_3d_smooth %} {{track.length_3d_smooth|div:1000|floatformat:-2}}km{%endif%}
+                {% if track.length_3d_smooth2 %}, {{track.length_3d_smooth2|div:1000|floatformat:-2}}km{%endif%}
+                <tr><td>
+
+                </tbody>
+
+            </table>
+        </div>
+
+
+    <h4>Edit</h4>
+
     {{ form.media }}
     {{ form.non_field_errors }}
     {{ form.errors }}
@@ -42,39 +70,20 @@
         {{ form|crispy }}
         <input type="submit" value="Submit">
     </form>
+
+    <h4>Export</h4>
+
+    <button onclick="location.href='{% url 'smoothed_track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
+    <button onclick="location.href='{% url 'smoothed_track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
+    <button onclick="location.href='{% url 'track_to_line' track_id=track.pk  %}'" type="button">Create Line</button>
+
     </div>
 {%endblock%}
 
 
 {% block table0 %}
     <div>
-    <h4>Results</h4>
-    <div class="row" id ="table" width=100%>
-       <table>
-                    <tbody>
-                        <tr><td>Points</td> <td>{{track.n_points}}
-                                {%if track.n_points_smooth3%}-> {{track.n_points_smooth3}} <div id="n_points"> - </div>{%endif%}   </td></tr>
-                        <tr><td> Length  </td> <td>{{track.length_3d|div:1000|floatformat:-2}}km
-                        {% if track.length_3d_smooth3 %}-> {{track.length_3d_smooth3|div:1000|floatformat:-2}}km{%endif%}
-                        <tr><td> Length(csv)  </td> <td>{{track.total_dist_csv|div:1000|floatformat:-2}}km</td></tr>
 
-                        <tr><td> Speed  </td> <td> </td></tr>
-
-                    <tr><td>Points smoothed</td> <td>
-                            {%if track.n_points_smooth%} {{track.n_points_smooth}}{%endif%}
-                            {%if track.n_points_smooth2%}, {{track.n_points_smooth2}}{%endif%}
-                    </td></tr>
-                    <tr><td> Length smoothed </td> <td>
-                    {% if track.length_3d_smooth %} {{track.length_3d_smooth|div:1000|floatformat:-2}}km{%endif%}
-                    {% if track.length_3d_smooth2 %}, {{track.length_3d_smooth2|div:1000|floatformat:-2}}km{%endif%}
-                    <tr><td>
-
-                    </tbody>
-
-                </table>
-            </div>
-        </div>
-    <div style = "clear:both;"></div>
 {%endblock%}
 
 
@@ -138,11 +147,8 @@
             read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
             ////C3, use the same data as leaflet
             console.log(data)
-            var width=600
-            var height=200
-            //speed
             height=200
-         width=600
+             width=550
 
         options1={
                     "type":"scatter",

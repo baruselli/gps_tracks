@@ -614,7 +614,7 @@ class TrackJsonSubtracksView(View):
 
         track_json=track.get_json_LD(reduce_points=reduce_points)
         from .utils import track_json_to_splits
-        track_json_ok=track_json_to_splits(track_json, feature="subtrack")
+        track_json_ok=track_json_to_splits(track_json, feature="Subtrack")
 
         # add waypoints and photos
 

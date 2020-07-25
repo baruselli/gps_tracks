@@ -265,7 +265,15 @@ class Track(models.Model):
         return l
 
     def get_previous(self,feature="beginning"):
-        initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
+        # if it is a timeline track, only search within those tracks!
+        if self.groups.filter(name="Google timeline"):
+            initial_q = Track.objects.exclude(pk=self.pk).filter(groups__name="Google timeline")    
+        # if it is excluded, only search within excluded groups
+        elif self.groups.filter(exclude_from_search=True):
+            initial_q = Track.objects.exclude(pk=self.pk).filter(groups__exclude_from_search=True)
+        # otherwise, search only within not excluded groups
+        else:
+            initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
         previous_track=None
         # first check for tracks with the same feature
         filter_dict_0 = {feature:getattr(self,feature)}
@@ -280,7 +288,15 @@ class Track(models.Model):
         return previous_track
 
     def get_next(self,feature="beginning"):
-        initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
+        # if it is a timeline track, only search within those tracks!
+        if self.groups.filter(name="Google timeline"):
+            initial_q = Track.objects.exclude(pk=self.pk).filter(groups__name="Google timeline")    
+        # if it is excluded, only search within excluded groups
+        elif self.groups.filter(exclude_from_search=True):
+            initial_q = Track.objects.exclude(pk=self.pk).filter(groups__exclude_from_search=True)
+        # otherwise, search only within not excluded groups
+        else:
+            initial_q = Track.objects.exclude(pk=self.pk).exclude(groups__exclude_from_search=True)
         next_track=None
         # first check for tracks with the same feature
         filter_dict_0 = {feature:getattr(self,feature)}

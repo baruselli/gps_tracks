@@ -8,23 +8,24 @@
 
 {% block stylesheet %}
     {{block.super}}
-    #photo_form{
-        display: none;
-    }
-    body {
-        padding: 0;
-        margin: 0;
-    }
-     #map {
-        height: 500;
-        width: 100%;
-        float: left;
-    }
+    <style>
+        #photo_form{
+            display: none;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        #map {
+            height: 500;
+            width: 100%;
+            float: left;
+        }
 
         #svg_plot {
-        height: 80%;
-        width: 50%;
-    }
+            height: 80%;
+            width: 50%;
+        }
 
         #table{
             float:left;
@@ -45,6 +46,7 @@
         cirasse:hover{
             fill:orange
         }
+    </style>
 {% endblock %}
 
 

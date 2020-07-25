@@ -111,14 +111,16 @@
 
 {% block stylesheet %}
   {{block.super}}
-    body {
-      padding: 0;
-      margin: 0;
-    }
-    html, body, #map {
-      height: 80%;
-      width: 100%;
-    }
+  <style>
+        body {
+        padding: 0;
+        margin: 0;
+        }
+        html, body, #map {
+        height: 80%;
+        width: 100%;
+        }
+    </style>
 {% endblock%}
 
 

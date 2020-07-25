@@ -7,10 +7,16 @@
         {% load mathfilters %}
 
 {%block stylesheet %}
-             #map {
-                height: 80%;
-                width: 100%;
-            }
+    <style>
+            #map {
+            height: 80%;
+            width: 100%;
+        }
+        #hide_map_button {
+            display: none;
+        }
+    </style>
+    
 {% endblock %}
 
 {% block head_title %}

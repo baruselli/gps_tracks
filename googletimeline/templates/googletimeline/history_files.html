@@ -6,10 +6,11 @@
 {% block stylesheet %}
     {{block.super}}
 
-    #history_table tr td {
-        height: 0px;
-    }
-
+    <style>
+        #history_table tr td {
+            height: 0px;
+        }
+    </style>
 {% endblock %}
 
 {% block buttons %}

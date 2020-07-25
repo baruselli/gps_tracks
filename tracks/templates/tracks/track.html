@@ -11,6 +11,23 @@
             height: 100%;
             width: 80%;
         }
+    {% if not splits and not stats_splits %}
+        #btn_tab_splits{
+            display:none;
+        }
+    {% endif %}
+    {% if not laps and not stats %}
+        #btn_tab_laps{
+            display:none;
+        }
+    {% endif %}
+    {%  if not track.has_alts and not track.has_hr and not track.has_freq and not track.has_times %}
+        #btn_tab_plots,#btn_tab_splits,#btn_tab_laps{
+            display:none;
+        }
+    {% endif %}
+    }
+}
     </style>
 {% endblock %}
 

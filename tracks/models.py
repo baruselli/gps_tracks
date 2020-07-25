@@ -1117,7 +1117,7 @@ class Track(models.Model):
         import time
         start = time.time()
 
-        self.info("get_json_LD, do_waypoints %s" %do_waypoints)
+        logger.debug("get_json_LD, do_waypoints %s" %do_waypoints)
 
         ## read json_LD
         #if not self.json_LD:

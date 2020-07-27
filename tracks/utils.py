@@ -786,8 +786,23 @@ def filter_tracks(request,silent=True,initial_queryset=None):
             dict_pk_sim[t_pk]=sim
         tracks_pk=dict_pk_sim.keys()
         tracks=tracks.filter(pk__in=tracks_pk)
-        for t in tracks:
-            t.similarity=dict_pk_sim[t.pk]
+        # for t in tracks:
+        #     t.similarity=dict_pk_sim[t.pk]
+
+        from django.db.models import When, F, Q, Value, Case
+        whens = [
+            When(pk=k, then=v) for k, v in dict_pk_sim.items()
+        ]
+
+        from django.db import models
+        tracks = tracks.annotate(
+            similarity=Case(
+                *whens,
+                default=0,
+                output_field=models.FloatField()
+            )
+        )
+
 
     if how_many:
         how_many = int(how_many)

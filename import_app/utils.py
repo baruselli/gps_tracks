@@ -342,9 +342,12 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
     logger.info("***************************************")
     return generated_tracks
 
-def find_files_in_dir(dir_, extensions):
+def find_files_in_dir(dir_=None, extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
     """Automatically finds file in dir and its subdirs"""
     import os
+
+    if dir_ is None:
+        dir_ = settings.TRACKS_DIR
 
     files = []
     logger.info("find_files_in_dir")
@@ -602,6 +605,46 @@ def reimport_failed_tracks():
 
     for t in tracks:
         t.reimport()
+
+
+def find_imported_and_existing_files(dir_=None,extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
+    """find all existing files and compare to what is in the database"""
+
+    if dir_ is None:
+        dir_ = settings.TRACKS_DIR
+
+    #1) existing files
+    files=find_files_in_dir(dir_=dir_, extensions=extensions)
+    dict_name_files={}
+
+    for file in files:
+        base_name=name_wo_path_wo_ext(file)
+        if base_name in dict_name_files:
+            dict_name_files[base_name].append(file)
+        else:
+            dict_name_files[base_name]=[file]
+    #2) blacklisted files
+    blacklisted_tracks = set(Blacklist.test_files(files)["blacklisted_files_wo_path"])
+    #3) existing tracks
+    tracks = set(Track.all_objects.all().values_list("name_wo_path_wo_ext",flat=True))
+
+    imported_tracks_existing_files=tracks.intersection(dict_name_files.keys())
+
+    imported_tracks_missing_files=tracks-dict_name_files.keys()
+
+    missing_tracks_existing_files=dict_name_files.keys()-tracks-blacklisted_tracks
+
+    
+
+    return{
+        "imported_tracks_existing_files":imported_tracks_existing_files,
+        "imported_tracks_missing_files":imported_tracks_missing_files,
+        "missing_tracks_existing_files":missing_tracks_existing_files,
+        "blacklisted_tracks":blacklisted_tracks,
+    }
+
+    
+
 
 def find_duplicated_files(dir_, extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
     """

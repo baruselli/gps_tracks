@@ -23,6 +23,7 @@
             <thead>
             <tr>
                 <td>File</td>
+                <td>Number of entries</td>
                 <td>Blacklist entries</td>
 
             </tr>
@@ -31,10 +32,11 @@
             <tbody>
                 {% for file, objs in result.dict_paths_objs.items %}
                 <tr>
-                    <td>{{file}}</td>
+                    <td title="{{file}}">{{file|truncatechars:100}}</td>
+                    <td>{{objs|length}}</td>
                     <td>
                         {% for blo in objs %}
-                            <a title="{{blo.file_name}} - {{blo.number_matched_files}} - {{blo.files|truncatechars:300}}" 
+                            <a title="{{blo.number_matched_files}} - {{blo.files|truncatechars:300}}" 
                             href="{% url 'blacklist_obj' blo_id=blo.pk %}">{{blo.file_name}} - {{blo.method}}</a> <br>
                         {%endfor%}
                     </td>

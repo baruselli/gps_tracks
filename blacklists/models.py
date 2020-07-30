@@ -63,11 +63,12 @@ class Blacklist(models.Model):
 
         super(Blacklist, self).save(*args, **kwargs)
 
-    def test_files(self,files=None):
+    def test_files(self,files=None, save_cache=False):
         """given a list of files, returns those which pass the test of the blacklist object"""
         import os
         if files is None:
             from import_app.utils import find_files_in_dir
+            save_cache=True
             files=find_files_in_dir()
 
         logger.info("%s test_files" %self)
@@ -89,7 +90,7 @@ class Blacklist(models.Model):
                     regex=self.file_name.replace(self.reserved_code_all_tracks,existing_name)
                     import re
                     r = re.compile(regex)
-                    filtered_file_names.extend(list(filter(r.match, file_names)))
+                    filtered_file_names.extend(list(filter(r.search, file_names)))
                 filtered_file_names=list(set(filtered_file_names))
             elif self.method=="Exact":
                 filtered_file_names=[]
@@ -115,7 +116,7 @@ class Blacklist(models.Model):
             if self.method=="Regex":
                 import re
                 r = re.compile(self.file_name)
-                filtered_file_names = list(filter(r.match, file_names))
+                filtered_file_names = list(filter(r.search, file_names))
             elif self.method=="Exact":
                 filtered_file_names = [n for n in file_names if self.file_name == n]
             else: # existing track name contains this object name
@@ -123,13 +124,14 @@ class Blacklist(models.Model):
 
         paths=[f for f in files if os.path.splitext(os.path.split(f)[-1])[0] in filtered_file_names]
 
-        # caches results
-        self.files = ""
-        self.number_matched_files=0
-        for f in paths:
-            self.number_matched_files+=1
-            self.files += str(f) + "\n"
-        self.save(cascade=False) #otherwise it relaunches this method
+        # caches results (only when tested on all files)
+        if save_cache:
+            self.files = ""
+            self.number_matched_files=0
+            for f in paths:
+                self.number_matched_files+=1
+                self.files += str(f) + "\n"
+            self.save(cascade=False) #otherwise it relaunches this method
 
         # returns the full path, if the name wo path wo ext is in the filtered list
         return {
@@ -145,8 +147,10 @@ class Blacklist(models.Model):
     def all_test_files(cls,files=None,full_report=False):
         logger.info("Blacklist all_test_files")
 
+        save_cahce=False
         if files is None:
             from import_app.utils import find_files_in_dir
+            save_cache=True
             files=find_files_in_dir()
 
 
@@ -158,7 +162,7 @@ class Blacklist(models.Model):
         dict_paths_objs={}
 
         for obj in cls.objects.filter(active=True):
-            result=obj.test_files(files)
+            result=obj.test_files(files,save_cache=save_cache) # I can save in cache if i am passing all files
             paths=result["paths"]
             names=result["names"]
             all_paths.extend(paths)
@@ -175,6 +179,7 @@ class Blacklist(models.Model):
                     else:
                         dict_paths_objs[path]=[obj]
 
+        logger.info("End Blacklist all_test_files")
 
         return{
             "paths":all_paths,

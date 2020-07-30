@@ -12,12 +12,14 @@ class Blacklist(models.Model):
     ]
 
     file_name=models.CharField(max_length=512, verbose_name="File name", null=False, blank=False, unique=False)
-    comment=models.CharField(max_length=512, verbose_name="Comment", null=True, blank=True, unique=False)
+    comment=models.TextField(max_length=512, verbose_name="Comment", null=True, blank=True, unique=False)
     modified = models.DateTimeField(auto_now=True, verbose_name="Date of modification", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name="Date of creation", null=True, blank=True)
     files = models.TextField(verbose_name="Associated files", null=True, blank=True, unique=False)
     interpret_regex = models.BooleanField(blank=True, default=False)
     method = models.CharField(max_length=15, verbose_name="Method of comparison", null=False, blank=False, default="Exact",choices=METHOD_CHOICES)
+    number_matched_files = models.IntegerField(blank=True, default=0)
+    active = models.BooleanField(blank=True, default=True)
     
     reserved_code_all_tracks = "/*track*/" # code for all names of existing tracks
 
@@ -30,32 +32,34 @@ class Blacklist(models.Model):
         return "Blacklist" + str(self.pk)
 
     def __repr__(self):
-        return "Blacklist"
+        return "Blacklist %s - %s" %(file_name,method)
 
     def __str__(self):
         return str(self.file_name)
 
-    def save(self, *args, **kwargs):
+    def save(self, cascade=True, *args, **kwargs):
         ## find associated blacklisted files
-        from import_app.utils import find_files_in_dir_by_prefix, find_allfiles_in_dir
-        self.files = ""
-        # without regex
-        if not self.interpret_regex:
-            for f in find_files_in_dir_by_prefix(settings.TRACKS_DIR, self.file_name):
-                logger.info(f)
-                self.files += str(f) + "\n"
-        # with regex
-        else: #contains
-            import re
-            import os
-            all_files = find_allfiles_in_dir(settings.TRACKS_DIR)
-            all_files_plus_simple_name = {f: os.path.splitext(os.path.basename(f))[0] for f in all_files}
+        # from import_app.utils import find_files_in_dir_by_prefix, find_allfiles_in_dir
+        # self.files = ""
+        # # without regex
+        # if not self.interpret_regex:
+        #     for f in find_files_in_dir_by_prefix(settings.TRACKS_DIR, self.file_name):
+        #         logger.info(f)
+        #         self.files += str(f) + "\n"
+        # # with regex
+        # else: #contains
+        #     import re
+        #     import os
+        #     all_files = find_allfiles_in_dir(settings.TRACKS_DIR)
+        #     all_files_plus_simple_name = {f: os.path.splitext(os.path.basename(f))[0] for f in all_files}
 
-            r = re.compile(self.file_name)
-            ok_files = [f for f, name_simple in all_files_plus_simple_name.items() if r.search(name_simple)]
-            for f in ok_files:
-                logger.info(f)
-                self.files += str(f) + "\n"
+        #     r = re.compile(self.file_name)
+        #     ok_files = [f for f, name_simple in all_files_plus_simple_name.items() if r.search(name_simple)]
+        #     for f in ok_files:
+        #         logger.info(f)
+
+        if cascade:
+            self.test_files()
 
         super(Blacklist, self).save(*args, **kwargs)
 
@@ -66,6 +70,8 @@ class Blacklist(models.Model):
             from import_app.utils import find_files_in_dir
             files=find_files_in_dir()
 
+        logger.info("%s test_files" %self)
+
         #extract names without path and extensions
         file_names = [os.path.splitext(os.path.split(f)[-1])[0] for f in files]
 
@@ -74,9 +80,18 @@ class Blacklist(models.Model):
             from tracks.models import Track
             existing_tracks= Track.all_objects.all().values_list("name_wo_path_wo_ext",flat=True)
             if self.method=="Regex":
-                pass
+                # se il nome del file corrisponde ad almeno una regex della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
+                # per esempio ho trackabc in db, la regola è /*tracks*/_[0-9]+$ e il file è trackabc_567890
+                # la regex matching sarebbe trackabc_[0-9]+ perchè il nome del file trackabc_567890 
+                # soddisfa la regex trackabc_[0-9]+
+                filtered_file_names=[]
+                for existing_name in existing_tracks:
+                    regex=self.file_name.replace(self.reserved_code_all_tracks,existing_name)
+                    import re
+                    r = re.compile(regex)
+                    filtered_file_names.extend(list(filter(r.match, file_names)))
+                filtered_file_names=list(set(filtered_file_names))
             elif self.method=="Exact":
-                print("Exact")
                 filtered_file_names=[]
                 #sostituisco al codice i nomi di tutte le track
                 modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
@@ -86,12 +101,11 @@ class Blacklist(models.Model):
                     if n in modified_names:
                         filtered_file_names.append(n)
             else: #contains
-                print("Contains")
                 filtered_file_names=[]
                 #sostituisco al codice i nomi di tutte le track
                 modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
                 for n in file_names:
-                    # se il nome del file è contiene almeno una stringa della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
+                    # se il nome del file contiene almeno una stringa della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
                     # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_567890
                     # il modified_name matching sarebbe trackabc_5678 perchè il nome del file trackabc_567890 
                     # contiene trackabc_5678
@@ -107,41 +121,65 @@ class Blacklist(models.Model):
             else: # existing track name contains this object name
                 filtered_file_names = [n for n in file_names if self.file_name in n]
 
-        return filtered_file_names
+        paths=[f for f in files if os.path.splitext(os.path.split(f)[-1])[0] in filtered_file_names]
+
+        # caches results
+        self.files = ""
+        self.number_matched_files=0
+        for f in paths:
+            self.number_matched_files+=1
+            self.files += str(f) + "\n"
+        self.save(cascade=False) #otherwise it relaunches this method
+
+        # returns the full path, if the name wo path wo ext is in the filtered list
+        return {
+            "paths":paths,
+            "names":filtered_file_names
+        }
+
+        #return filtered_file_names
 
 
 
     @classmethod
-    def all_test_files(cls,files):
-        blacklisted_files=[]
-        blacklisted_files_wo_path=[]
-        import os
-        import re
+    def all_test_files(cls,files=None,full_report=False):
+        logger.info("Blacklist all_test_files")
 
-        existing_files= Track.all_objects.all().values_list("name_wo_path_wo_ext")
+        if files is None:
+            from import_app.utils import find_files_in_dir
+            files=find_files_in_dir()
 
-        for file in files:
 
-            name_simple = os.path.splitext(os.path.split(file)[-1])[0]
-            extension = os.path.splitext(file)[1]
+        all_paths=[]
+        all_names=[]
 
-            ##Blacklist
-            # first check non regex names
-            non_regex_names=cls.objects.all().filter(interpret_regex=False).values_list("file_name",flat=True)
-            file_is_blacklisted=name_simple in non_regex_names
-            # then regex ones
-            if not file_is_blacklisted:
-                regex_names = Blacklist.objects.all().filter(interpret_regex=True).values_list("file_name", flat=True)
-                for regex_name in regex_names:
-                    if re.search(regex_name,name_simple):
-                        file_is_blacklisted=True
-                        break
-            if file_is_blacklisted:
-                blacklisted_files.append(file)
-                blacklisted_files_wo_path.append(name_simple)
+        # per ogni file (con o senza path) in blacklist, dà lista degli oggetti che lo bloccano
+        dict_names_objs={}
+        dict_paths_objs={}
 
-        return {
-            "blacklisted_files":blacklisted_files,
-            "blacklisted_files_wo_path":blacklisted_files_wo_path,
-        }   
+        for obj in cls.objects.filter(active=True):
+            result=obj.test_files(files)
+            paths=result["paths"]
+            names=result["names"]
+            all_paths.extend(paths)
+            all_names.extend(names)
+            if full_report:
+                for name in names:
+                    if name in dict_names_objs:
+                        dict_names_objs[name].append(obj)
+                    else:
+                        dict_names_objs[name]=[obj]
+                for path in paths:
+                    if path in dict_paths_objs:
+                        dict_paths_objs[path].append(obj)
+                    else:
+                        dict_paths_objs[path]=[obj]
+
+
+        return{
+            "paths":all_paths,
+            "names":all_names,
+            "dict_names_objs":dict_names_objs,
+            "dict_paths_objs":dict_paths_objs
+        }
         

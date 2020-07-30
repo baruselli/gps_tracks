@@ -1,0 +1,71 @@
+{% extends "base/base.html" %}
+
+{% load leaflet_tags %}
+{% load mathfilters %}
+{% load static %}
+
+{%block title%}
+<h1>All files in Blacklist</h1>
+{%endblock%}
+
+{% block buttons %}
+<button onclick="location.href='{% url 'index_blacklist' %}'" type="button">Blacklist index</button>
+{%endblock%}
+
+
+{%block table%}
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table table-bordered table-hover" id="import_table">
+
+            <thead>
+            <tr>
+                <td>File</td>
+                <td>Blacklist entries</td>
+
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for file, objs in result.dict_paths_objs.items %}
+                <tr>
+                    <td>{{file}}</td>
+                    <td>
+                        {% for blo in objs %}
+                            <a title="{{blo.file_name}} - {{blo.number_matched_files}} - {{blo.files|truncatechars:300}}" 
+                            href="{% url 'blacklist_obj' blo_id=blo.pk %}">{{blo.file_name}} - {{blo.method}}</a> <br>
+                        {%endfor%}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+{%endblock%}
+
+
+{%block js%}
+<script>
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('#import_table')
+        .DataTable({
+            paging: false,
+            "order": [[ 0, "asc" ]],
+            dom: 'Bfrtip',
+            select: false,
+            searching: false, 
+            info: false,
+            buttons:[],
+            });
+    } );
+</script>
+{%endblock%}
+
+
+{% block map%}{%endblock%}

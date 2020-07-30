@@ -9,12 +9,18 @@
 {%endblock%}
 
 {% block buttons %}
-<button onclick="location.href='{% url 'new_blo' %}'" type="button">Create blacklisted file</button>
+<button onclick="location.href='{% url 'new_blo' %}'" type="button">Create blacklist entry</button>
+<button onclick="location.href='{% url 'blacklist_all' %}'" type="button">All blacklisted files</button>
 {%endblock%}
 
 
 {%block table%}
-<p>Files in the blacklist are not imported.</p>
+<p>
+    If the name of a file satisfies one or more blacklist entries, it will not be imported (unless imported by manual upload).<br>
+    Only the name of the file without the path and its extension is used for the check.<br>
+    In the name of a blacklist entry, /*track*/ can be used as a wildcard to match the name of any track already imported in database
+</p>
+
 <div class="row">
     <div class="col-xs-12">
         <table class="table table-bordered table-hover" id="import_table">
@@ -23,8 +29,11 @@
             <tr>
                 <td>Id</td>
                 <td>Name</td>
-                <td>Regex</td>
+                <td>Active</td>
+                <td>Method</td>
                 <td>Comment</td>
+                <td>Updated at</td>
+                <td>Number of files</td>
                 <td>Files</td>
 
             </tr>
@@ -34,10 +43,13 @@
                 {% for blo in blacklist_objs %}
                 <tr>
                     <td>{{blo.pk}}</td>
-                    <td><a href="{% url 'blacklist_obj' blo_id=blo.pk %}">{{blo.file_name}}</a> </td>
-                    <td>{%if blo.interpret_regex%}Yes{%endif%}</td>
-                    <td>{%if blo.comment%}{{blo.comment}}{%endif%}</td>
-                    <td>{%if blo.files%}{{blo.files|linebreaksbr}}{%endif%}</td>
+                    <td><a title={{blo.file_name}} href="{% url 'blacklist_obj' blo_id=blo.pk %}">{{blo.file_name|truncatechars:30}}</a> </td>
+                    <td>{%if blo.active%}Yes{%else%}No{%endif%}</td>
+                    <td>{{ blo.method }}</td>
+                    <td {%if blo.comment%}title="{{blo.comment}}"{%endif%}>{%if blo.comment%}{{blo.comment|truncatechars:100}}{%endif%}</td>
+                    <td  data-sort={{blo.modified|date:"YmdHis"}}>{{ blo.modified }}</td>
+                    <td>{{blo.number_matched_files}}</td>
+                    <td>{%if blo.files%}{{blo.files|linebreaksbr|truncatechars:500}}{%endif%}</td>
                 </tr>
                 {% endfor %}
             </tbody>

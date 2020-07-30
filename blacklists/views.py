@@ -146,3 +146,13 @@ class DeleteTrackAndBlacklist(View):
 
         #return redirect(reverse("track_index"))
         return redirect(reverse("blacklist_obj",args=(blacklist.pk,)))
+
+class BlacklistAllFilesView(View):
+    template_name = "blacklists/blacklist_all.html"
+    def get(self, request, *args, **kwargs):
+
+        result=Blacklist.all_test_files(full_report=True)
+
+        return render(
+                request, self.template_name, {"result": result}
+            )

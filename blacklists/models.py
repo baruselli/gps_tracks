@@ -69,6 +69,7 @@ class Blacklist(models.Model):
             from import_app.utils import find_files_in_dir
             save_cache=True
             files=find_files_in_dir()
+        
 
         logger.info("%s test_files" %self)
 
@@ -81,17 +82,21 @@ class Blacklist(models.Model):
                 from tracks.models import Track
                 existing_tracks= Track.all_objects.all().values_list("name_wo_path_wo_ext",flat=True)
                 if self.method=="Regex":
+                    import time
+                    start=time.time()
                     # se il nome del file corrisponde ad almeno una regex della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
                     # per esempio ho trackabc in db, la regola è /*tracks*/_[0-9]+$ e il file è trackabc_567890
                     # la regex matching sarebbe trackabc_[0-9]+ perchè il nome del file trackabc_567890 
                     # soddisfa la regex trackabc_[0-9]+
                     filtered_file_names=[]
-                    for existing_name in existing_tracks:
-                        regex=self.file_name.replace(self.reserved_code_all_tracks,existing_name)
-                        import re
-                        r = re.compile(regex)
-                        filtered_file_names.extend(list(filter(r.search, file_names)))
-                    filtered_file_names=list(set(filtered_file_names))
+                    all_tracks_string="("+"|".join(existing_tracks)+")"
+
+                    regex=self.file_name.replace(self.reserved_code_all_tracks,all_tracks_string)
+                    import re
+                    r = re.compile(regex)
+                    filtered_file_names=list(filter(r.search, file_names))
+                    end=time.time()
+                    logger.info("Regex time: %s" %(end-start))
                 elif self.method=="Exact":
                     filtered_file_names=[]
                     #sostituisco al codice i nomi di tutte le track

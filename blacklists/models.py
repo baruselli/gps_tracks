@@ -76,51 +76,54 @@ class Blacklist(models.Model):
         #extract names without path and extensions
         file_names = [os.path.splitext(os.path.split(f)[-1])[0] for f in files]
 
-        # here I have to compare with all existing tracks in db, so it is a bit complicated
-        if self.reserved_code_all_tracks in self.file_name:
-            from tracks.models import Track
-            existing_tracks= Track.all_objects.all().values_list("name_wo_path_wo_ext",flat=True)
-            if self.method=="Regex":
-                # se il nome del file corrisponde ad almeno una regex della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
-                # per esempio ho trackabc in db, la regola è /*tracks*/_[0-9]+$ e il file è trackabc_567890
-                # la regex matching sarebbe trackabc_[0-9]+ perchè il nome del file trackabc_567890 
-                # soddisfa la regex trackabc_[0-9]+
-                filtered_file_names=[]
-                for existing_name in existing_tracks:
-                    regex=self.file_name.replace(self.reserved_code_all_tracks,existing_name)
+        if self.active:
+            # here I have to compare with all existing tracks in db, so it is a bit complicated
+            if self.reserved_code_all_tracks in self.file_name:
+                from tracks.models import Track
+                existing_tracks= Track.all_objects.all().values_list("name_wo_path_wo_ext",flat=True)
+                if self.method=="Regex":
+                    # se il nome del file corrisponde ad almeno una regex della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
+                    # per esempio ho trackabc in db, la regola è /*tracks*/_[0-9]+$ e il file è trackabc_567890
+                    # la regex matching sarebbe trackabc_[0-9]+ perchè il nome del file trackabc_567890 
+                    # soddisfa la regex trackabc_[0-9]+
+                    filtered_file_names=[]
+                    for existing_name in existing_tracks:
+                        regex=self.file_name.replace(self.reserved_code_all_tracks,existing_name)
+                        import re
+                        r = re.compile(regex)
+                        filtered_file_names.extend(list(filter(r.search, file_names)))
+                    filtered_file_names=list(set(filtered_file_names))
+                elif self.method=="Exact":
+                    filtered_file_names=[]
+                    #sostituisco al codice i nomi di tutte le track
+                    modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
+                    for n in file_names:
+                        # se il nome del file è contenuto nella lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
+                        # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_5678
+                        if n in modified_names:
+                            filtered_file_names.append(n)
+                else: #contains
+                    filtered_file_names=[]
+                    #sostituisco al codice i nomi di tutte le track
+                    modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
+                    for n in file_names:
+                        # se il nome del file contiene almeno una stringa della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
+                        # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_567890
+                        # il modified_name matching sarebbe trackabc_5678 perchè il nome del file trackabc_567890 
+                        # contiene trackabc_5678
+                        if any(modified_name in n for modified_name in modified_names):
+                            filtered_file_names.append(n)
+            else:
+                if self.method=="Regex":
                     import re
-                    r = re.compile(regex)
-                    filtered_file_names.extend(list(filter(r.search, file_names)))
-                filtered_file_names=list(set(filtered_file_names))
-            elif self.method=="Exact":
-                filtered_file_names=[]
-                #sostituisco al codice i nomi di tutte le track
-                modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
-                for n in file_names:
-                    # se il nome del file è contenuto nella lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
-                    # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_5678
-                    if n in modified_names:
-                        filtered_file_names.append(n)
-            else: #contains
-                filtered_file_names=[]
-                #sostituisco al codice i nomi di tutte le track
-                modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
-                for n in file_names:
-                    # se il nome del file contiene almeno una stringa della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
-                    # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_567890
-                    # il modified_name matching sarebbe trackabc_5678 perchè il nome del file trackabc_567890 
-                    # contiene trackabc_5678
-                    if any(modified_name in n for modified_name in modified_names):
-                        filtered_file_names.append(n)
+                    r = re.compile(self.file_name)
+                    filtered_file_names = list(filter(r.search, file_names))
+                elif self.method=="Exact":
+                    filtered_file_names = [n for n in file_names if self.file_name == n]
+                else: # existing track name contains this object name
+                    filtered_file_names = [n for n in file_names if self.file_name in n]
         else:
-            if self.method=="Regex":
-                import re
-                r = re.compile(self.file_name)
-                filtered_file_names = list(filter(r.search, file_names))
-            elif self.method=="Exact":
-                filtered_file_names = [n for n in file_names if self.file_name == n]
-            else: # existing track name contains this object name
-                filtered_file_names = [n for n in file_names if self.file_name in n]
+            filtered_file_names=[]
 
         paths=[f for f in files if os.path.splitext(os.path.split(f)[-1])[0] in filtered_file_names]
 

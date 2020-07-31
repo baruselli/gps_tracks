@@ -15,7 +15,6 @@ from waypoints.models import Waypoint
 from tracks.models import Track
 from photos.models import Photo
 from groups.models import Group
-from blacklists.models import Blacklist
 from django.shortcuts import render
 
 # Create your views here.

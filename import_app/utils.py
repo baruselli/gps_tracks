@@ -69,16 +69,18 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
 
         ##Blacklist
         # first check non regex names
-        non_regex_names=Blacklist.objects.all().filter(interpret_regex=False).values_list("file_name",flat=True)
-        file_is_blacklisted=name_simple in non_regex_names
-        # then regex ones
-        if not file_is_blacklisted:
-            import re
-            regex_names = Blacklist.objects.all().filter(interpret_regex=True).values_list("file_name", flat=True)
-            for regex_name in regex_names:
-                if re.search(regex_name,name_simple):
-                    file_is_blacklisted=True
-                    break
+        result = Blacklist.all_test_files(files=[file])
+        file_is_blacklisted = file in result["paths"]
+        # non_regex_names=Blacklist.objects.all().filter(interpret_regex=False).values_list("file_name",flat=True)
+        # file_is_blacklisted=name_simple in non_regex_names
+        # # then regex ones
+        # if not file_is_blacklisted:
+        #     import re
+        #     regex_names = Blacklist.objects.all().filter(interpret_regex=True).values_list("file_name", flat=True)
+        #     for regex_name in regex_names:
+        #         if re.search(regex_name,name_simple):
+        #             file_is_blacklisted=True
+        #             break
 
         if not ignore_blacklist and file_is_blacklisted:
             logger.debug("File %s is blacklisted. Stop here" %file)
@@ -106,50 +108,50 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
         else:
             file_exists=True
 
-        # try more advanced way to compare names
-        fpar = False
-        if not file_exists:
-            if len(name_simple) > 10 and name_simple.endswith(
-                ("_1", "_2", "_3", "_4", "_5", "_6","_7","_8","_9",)
-            ):
-                name2 = name_simple[:-2]
-                if name2 in existing_files.keys():
-                    file_probably_exists.append([file])
-                    logger.debug("file %s probably_exists as %s" % (file, name2))
-                    fpar = True
-                if len(name_simple) > 10 and name_simple.endswith(
-                    ("__1", "__2", "__3", "__4", "__5", "__6", "__7", "__8", "__9",
-                     "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)",)
-                ):
-                    name3 = name_simple[:-3].strip()
-                    if name3 in existing_files.keys():
-                        file_probably_exists.append([file])
-                        logger.debug("file %s probably_exists as %s" % (file, name3))
-                        fpar = True
-                # fix for Feb_10,_2018_11_37_27_rakov_neve_1577980160410
-                # find if exists file ending with _ and 13 numbers
-            import re
-            existing_blacklist=Blacklist.objects.all().values_list("file_name")
-            r = re.compile(r"_[0-9]{12}$")
-            if r.search(name_simple):
-                logger.info("Name %s has 12 numbers at the end: checking if it has to be ignored" % (name_simple))
-                name3 = name_simple[:-13]
-                if name3 in existing_files.keys() or name3 in existing_blacklist:
-                    file_probably_exists.append([file])
-                    logger.info("File %s probably_exists as %s" %(file, name3))
-                    fpar = True
-            r = re.compile(r"_[0-9]{13}$")
-            if r.search(name_simple):
-                logger.info("Name %s has 13 numbers at the end: checking if it has to be ignored" % (name_simple))
-                name3 = name_simple[:-14]
-                if name3 in existing_files.keys()  or name3 in existing_blacklist:
-                    file_probably_exists.append([file])
-                    logger.info("File %s probably_exists as %s" %(file, name3))
-                    fpar = True
+        # try more advanced way to compare names --> now in blacklists
+        # fpar = False
+        # if not file_exists:
+        #     if len(name_simple) > 10 and name_simple.endswith(
+        #         ("_1", "_2", "_3", "_4", "_5", "_6","_7","_8","_9",)
+        #     ):
+        #         name2 = name_simple[:-2]
+        #         if name2 in existing_files.keys():
+        #             file_probably_exists.append([file])
+        #             logger.debug("file %s probably_exists as %s" % (file, name2))
+        #             fpar = True
+        #         if len(name_simple) > 10 and name_simple.endswith(
+        #             ("__1", "__2", "__3", "__4", "__5", "__6", "__7", "__8", "__9",
+        #              "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)",)
+        #         ):
+        #             name3 = name_simple[:-3].strip()
+        #             if name3 in existing_files.keys():
+        #                 file_probably_exists.append([file])
+        #                 logger.debug("file %s probably_exists as %s" % (file, name3))
+        #                 fpar = True
+        #         # fix for Feb_10,_2018_11_37_27_rakov_neve_1577980160410
+        #         # find if exists file ending with _ and 13 numbers
+        #     import re
+        #     existing_blacklist=Blacklist.objects.all().values_list("file_name")
+        #     r = re.compile(r"_[0-9]{12}$")
+        #     if r.search(name_simple):
+        #         logger.info("Name %s has 12 numbers at the end: checking if it has to be ignored" % (name_simple))
+        #         name3 = name_simple[:-13]
+        #         if name3 in existing_files.keys() or name3 in existing_blacklist:
+        #             file_probably_exists.append([file])
+        #             logger.info("File %s probably_exists as %s" %(file, name3))
+        #             fpar = True
+        #     r = re.compile(r"_[0-9]{13}$")
+        #     if r.search(name_simple):
+        #         logger.info("Name %s has 13 numbers at the end: checking if it has to be ignored" % (name_simple))
+        #         name3 = name_simple[:-14]
+        #         if name3 in existing_files.keys()  or name3 in existing_blacklist:
+        #             file_probably_exists.append([file])
+        #             logger.info("File %s probably_exists as %s" %(file, name3))
+        #             fpar = True
 
-        if fpar:
-            continue
-        ####
+        # if fpar:
+        #     continue
+        # ####
 
 
         # # try more advanced way to compare names
@@ -624,7 +626,7 @@ def find_imported_and_existing_files(dir_=None,extensions=[".kmz", ".kml", ".gpx
         else:
             dict_name_files[base_name]=[file]
     #2) blacklisted files
-    blacklisted_tracks = set(Blacklist.test_files(files)["blacklisted_files_wo_path"])
+    blacklisted_tracks = set(Blacklist.all_test_files(files)["names"])
     #3) existing tracks
     tracks = set(Track.all_objects.all().values_list("name_wo_path_wo_ext",flat=True))
 

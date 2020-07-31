@@ -26,6 +26,7 @@ urlpatterns = [
     url(r"^track_import/(?P<track_id>[0-9]+)/other_extensions/$", views.OtherExtensionsTrackView.as_view(),name="track_other_extensions", ),
     url(r"^track_reimport/(?P<track_id>[0-9]+)/(?P<ext>[a-z]+)/$", views.ReimportTrackView.as_view(),name="reimport_track", ),
     url(r"^upload$", views.UploadTrackView.as_view(), name="upload_track"),
+    url(r"^all_files_report$", views.AllFilesReportView.as_view(), name="all_files_report"),
     # photos
     url(r"^photos/import$", views.ImportPhotos.as_view(), name="import_photos"),
     url(r"^photos/update$", views.UpdatePhotos.as_view(), name="update_photos"),

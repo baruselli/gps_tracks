@@ -22,6 +22,8 @@
 
 
 <h1>Tracks</h1>
+<button onclick="location.href='{% url 'all_files_report'  %}'" type="button">See all files</button>
+
 <h3>Download</h3>
 <button title="Requires TomTom username and password set in Options" onclick="location.href='{% url 'download_tomtom'  %}'" type="button">Download from TomTom</button>
 <button title="Requires Google Tracks directory names set in Options"onclick="location.href='{% url 'google_drive_tracks'  %}'" type="button">Download from Google Drive</button>

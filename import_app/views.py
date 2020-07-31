@@ -225,3 +225,13 @@ class DownloadFileView(View):
             messages.success(message)
             logger.warning(message)
             return redirect(reverse("track", track_id=track_id))
+
+class AllFilesReportView(View):
+    template_name = "import_app/all_files_report.html"
+    def get(self, request, *args, **kwargs):
+
+        logger.info("AllFilesReportView Track")
+        from .utils import find_imported_and_existing_files
+        all_files=find_imported_and_existing_files()
+
+        return render(request, self.template_name, {"all_files":all_files})

@@ -50,8 +50,11 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
     # for logging
     generated_tracks_names = []
     updated_tracks_names = []
-    file_probably_exists = []
-    blacklisted_files = []
+    not_updated_tracks_names_ext = []
+    # file_probably_exists = []
+
+    # it is faster to check for blacklists for all files at once
+    blacklisted_files = Blacklist.all_test_files(files=files)["paths"]
 
     reimport_single_track = len(files)==1 and update==True and ignore_blacklist==True and manual_upload==False
 
@@ -69,8 +72,7 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
 
         ##Blacklist
         # first check non regex names
-        result = Blacklist.all_test_files(files=[file])
-        file_is_blacklisted = file in result["paths"]
+        file_is_blacklisted = file in blacklisted_files
         # non_regex_names=Blacklist.objects.all().filter(interpret_regex=False).values_list("file_name",flat=True)
         # file_is_blacklisted=name_simple in non_regex_names
         # # then regex ones
@@ -105,6 +107,8 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
                 ext_exists = extension in existing_files[name_simple]
                 if not ext_exists:
                     logger.info("File %s exists, but not with given extension" %file)
+                    if not import_new_extensions:
+                        not_updated_tracks_names_ext.append(file)
         else:
             file_exists=True
 
@@ -310,11 +314,14 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
     end = time.time()
 
     logger.info("***************************************")
-    logger.debug("File probably already existing")
+    # logger.debug("File probably already existing")
+    # logger.debug(pformat(file_probably_exists))
     from pprint import pprint, pformat
-    logger.debug(pformat(file_probably_exists))
-    logger.debug("Blacklisted files")
-    logger.debug(pformat(blacklisted_files))
+    logger.info("Blacklisted files")
+    logger.info(pformat(blacklisted_files))
+
+    logger.info("Files existing but not with given extension, not updated")
+    logger.info(pformat(not_updated_tracks_names_ext))
 
     logger.info("Created tracks:")
     logger.info(pformat(generated_tracks_names))

@@ -16,7 +16,6 @@ class Blacklist(models.Model):
     modified = models.DateTimeField(auto_now=True, verbose_name="Date of modification", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name="Date of creation", null=True, blank=True)
     files = models.TextField(verbose_name="Associated files", null=True, blank=True, unique=False)
-    interpret_regex = models.BooleanField(blank=True, default=False)
     method = models.CharField(max_length=15, verbose_name="Method of comparison", null=False, blank=False, default="Exact",choices=METHOD_CHOICES)
     number_matched_files = models.IntegerField(blank=True, default=0)
     active = models.BooleanField(blank=True, default=True)
@@ -150,7 +149,7 @@ class Blacklist(models.Model):
     def all_test_files(cls,files=None,full_report=False):
         logger.info("Blacklist all_test_files")
 
-        save_cahce=False
+        save_cache=False
         if files is None:
             from import_app.utils import find_files_in_dir
             save_cache=True

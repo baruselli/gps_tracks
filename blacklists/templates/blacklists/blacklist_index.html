@@ -16,7 +16,7 @@
 
 {%block table%}
 <p>
-    If the name of a file satisfies one or more blacklist entries, it will not be imported (unless imported by manual upload).<br>
+    If the name of a file satisfies one or more blacklist entries, it will not be imported (unless imported by manual upload in the index page).<br>
     Only the name of the file without the path and its extension is used for the check.<br>
     In the name of a blacklist entry, /*track*/ can be used as a wildcard to match the name of any track already imported in database
 </p>
@@ -25,20 +25,35 @@
     <div class="col-xs-12">
         <table class="table table-bordered table-hover" id="import_table">
 
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+
             <thead>
             <tr>
-                <td>Id</td>
-                <td>Name</td>
-                <td>Active</td>
-                <td>Method</td>
-                <td>Comment</td>
-                <td>Updated at</td>
-                <td>Number of files</td>
-                <td>Files</td>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Active</th>
+                <th>Method</th>
+                <th>Track wildcard</th>
+                <th>Comment</th>
+                <th>Updated at</th>
+                <th>Number of files</th>
+                <th>Files</th>
 
             </tr>
             </thead>
-
+    
             <tbody>
                 {% for blo in blacklist_objs %}
                 <tr>
@@ -46,6 +61,7 @@
                     <td><a title={{blo.file_name}} href="{% url 'blacklist_obj' blo_id=blo.pk %}">{{blo.file_name|truncatechars:30}}</a> </td>
                     <td>{%if blo.active%}Yes{%else%}No{%endif%}</td>
                     <td>{{ blo.method }}</td>
+                    <td>{%if blo.has_track_wildcard%}Yes{%else%}No{%endif%}</td>
                     <td {%if blo.comment%}title="{{blo.comment}}"{%endif%}>{%if blo.comment%}{{blo.comment|truncatechars:100}}{%endif%}</td>
                     <td  data-sort={{blo.modified|date:"YmdHis"}}>{{ blo.modified }}</td>
                     <td>{{blo.number_matched_files}}</td>
@@ -67,13 +83,35 @@
         var events = $('#events');
         var table =    $('#import_table')
         .DataTable({
-            paging: false,
+            paging: true,
             "order": [[ 1, "asc" ]],
             dom: 'Bfrtip',
             select: false,
-            searching: false, 
+            searching: true, 
             info: false,
             buttons:[],
+            initComplete: function () {
+                this.api().columns([2,3,4]).every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()).empty() )
+                .on( 'change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                if(true){
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                }
+            } );
+
+                    })
+            }
             });
     } );
 </script>

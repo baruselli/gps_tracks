@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 import logging
+import os
+from django.db.models import Q
 logger = logging.getLogger("gps_tracks")
 # Create your models here.
 
@@ -35,6 +37,9 @@ class Blacklist(models.Model):
 
     def __str__(self):
         return str(self.file_name)
+
+    def has_track_wildcard(self):
+        return self.reserved_code_all_tracks in self.file_name
 
     def save(self, cascade=True, *args, **kwargs):
         ## find associated blacklisted files
@@ -97,19 +102,27 @@ class Blacklist(models.Model):
                     filtered_file_names=list(filter(r.search, file_names))
                     end=time.time()
                     logger.info("Regex time: %s" %(end-start))
-                elif self.method=="Exact":
+                elif self.method=="Exact": #TODO:make faster
+                    import time
+                    start=time.time()
                     filtered_file_names=[]
                     #sostituisco al codice i nomi di tutte le track
                     modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
-                    for n in file_names:
-                        # se il nome del file è contenuto nella lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
-                        # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_5678
-                        if n in modified_names:
-                            filtered_file_names.append(n)
-                else: #contains
+                    # se il nome del file è contenuto nella lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
+                    # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_5678
+                    # filtered_file_names=[f for f in file_names if f in modified_names]
+                    # same as the list comprehension, but much faster
+                    filtered_file_names = list(set(file_names) & set(modified_names)) 
+                    end=time.time()
+                    logger.info("Exact time: %s" %(end-start))
+                else: #contains TODO:make faster
+                    import time
+                    start=time.time()
                     filtered_file_names=[]
                     #sostituisco al codice i nomi di tutte le track
                     modified_names = [self.file_name.replace(self.reserved_code_all_tracks,existing_name) for existing_name in existing_tracks]
+                    # a bit slower than the double loop below
+                    # filtered_file_names = [f for f in file_names if any(modified_name in f for modified_name in modified_names)]
                     for n in file_names:
                         # se il nome del file contiene almeno una stringa della lista ottenuta sostituendo a /*track*/ il nome di ogni track esistente
                         # per esempio ho trackabc in db, la regola è /*tracks*/_5678 e il file è trackabc_567890
@@ -117,6 +130,8 @@ class Blacklist(models.Model):
                         # contiene trackabc_5678
                         if any(modified_name in n for modified_name in modified_names):
                             filtered_file_names.append(n)
+                    end=time.time()
+                    logger.info("Contains time: %s" %(end-start))
             else:
                 if self.method=="Regex":
                     import re
@@ -172,30 +187,45 @@ class Blacklist(models.Model):
         dict_names_objs={}
         dict_paths_objs={}
 
-        for obj in cls.objects.filter(active=True):
-            result=obj.test_files(files,save_cache=save_cache) # I can save in cache if i am passing all files
-            paths=result["paths"]
-            names=result["names"]
-            all_paths.extend(paths)
-            all_names.extend(names)
-            if full_report:
-                for name in names:
-                    if name in dict_names_objs:
-                        dict_names_objs[name].append(obj)
-                    else:
-                        dict_names_objs[name]=[obj]
-                for path in paths:
-                    if path in dict_paths_objs:
-                        dict_paths_objs[path].append(obj)
-                    else:
-                        dict_paths_objs[path]=[obj]
+        if not full_report:
+            #collect rules that just have "Exact" and no wildcard, and do them altogether
+            # this works if i dont need to know exactly which rules block which files, but just which files are blocked
+            blacklisted_names = cls.objects.filter(active=True,method="Exact").exclude(file_name__contains=cls.reserved_code_all_tracks).values_list("file_name",flat=True)
+            file_names = [os.path.splitext(os.path.split(f)[-1])[0] for f in files]
+            all_names = list(set(file_names) & set(blacklisted_names))
+            all_paths = [f for f in files if os.path.splitext(os.path.split(f)[-1])[0] in all_names]
+            #then do the rest
+            for obj in cls.objects.filter(active=True).filter(~Q(method="Exact")|Q(file_name__contains=cls.reserved_code_all_tracks)):
+                result=obj.test_files(files,save_cache=save_cache) # I can save in cache if i am passing all files
+                paths=result["paths"]
+                names=result["names"]
+                all_paths.extend(paths)
+                all_names.extend(names)
+        else:
+            for obj in cls.objects.filter(active=True):
+                result=obj.test_files(files,save_cache=save_cache) # I can save in cache if i am passing all files
+                paths=result["paths"]
+                names=result["names"]
+                all_paths.extend(paths)
+                all_names.extend(names)
+                if full_report:
+                    for name in names:
+                        if name in dict_names_objs:
+                            dict_names_objs[name].append(obj)
+                        else:
+                            dict_names_objs[name]=[obj]
+                    for path in paths:
+                        if path in dict_paths_objs:
+                            dict_paths_objs[path].append(obj)
+                        else:
+                            dict_paths_objs[path]=[obj]
 
         end=time.time()
         logger.info("End Blacklist all_test_files, time %s" %(end-start))
 
         return{
-            "paths":all_paths,
-            "names":all_names,
+            "paths":list(set(all_paths)),
+            "names":list(set(all_names)),
             "dict_names_objs":dict_names_objs,
             "dict_paths_objs":dict_paths_objs
         }

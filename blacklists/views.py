@@ -57,12 +57,7 @@ class BlacklistObjView(View):
                 {"blo": blo_, "blo_id": blo_id, "form": form},
             )
         else:
-            form = BlacklistForm(
-                {
-                    "name": "",
-                    "comment":""
-                }
-            )
+            form = BlacklistForm()
             form.created_by_hand = True
             return render(
                 request, self.template_name, {"form": form, "blo_id": blo_id}

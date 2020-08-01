@@ -8,92 +8,104 @@
     <h1>All files</h1>
 {%endblock%}
 
-{% block buttons %}
-    <button onclick="location.href='{% url 'import' %}'" type="button">Import Index</button>
+{% block stylesheet %}
+<style>
+    #files_to_import.tabcontent{
+        display:block;
+    }
+</style>
 {%endblock%}
-
 
 {%block table%}
 
-<h2>Imported Files</h2>
-
-<div class="row">
-        <table class="table table-bordered table-hover" id="import_table1">
-        <thead>
-        <tr>
-            <td>File</td>
-        </tr>
-        </thead>
-        <tbody>
-            {% for file in all_files.imported_tracks_existing_files %}
-            <tr>
-                <td>{{file}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-
-    </table>
+<div class="tab">
+    <button class="tablinks active" id="btn_tab_files_to_import" onclick="open_tab(event, 'files_to_import')"><h2>Files to be imported</h2></a></li>
+    <button class="tablinks " id="btn_tab_imported_files" onclick="open_tab(event, 'imported_files')"><h2>Imported Files</h2></a></li>
+    <button class="tablinks" id="btn_tab_missing_files" onclick="open_tab(event, 'missing_files')"><h2>Tracks without import files</h2></a></li>
+    <button class="tablinks" id="btn_tab_blacklisted_files" onclick="open_tab(event, 'blacklisted_files')"><h2>Blacklisted Files</h2></a></li>
 </div>
 
-<h2>Tracks without import files</h2>
+<div class="tabcontent" id="files_to_import">
 
-<div class="row">
-        <table class="table table-bordered table-hover" id="import_table2">
-        <thead>
-        <tr>
-            <td>File</td>
-        </tr>
-        </thead>
-        <tbody>
-            {% for file in all_files.imported_tracks_missing_files %}
+    <div class="row">
+            <table class="table table-bordered table-hover" id="import_table2">
+            <thead>
             <tr>
-                <td>{{file}}</td>
+                <td>File</td>
             </tr>
-            {% endfor %}
-        </tbody>
+            </thead>
+            <tbody>
+                {% for file in all_files.missing_tracks_existing_files %}
+                <tr>
+                    <td>{{file}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
 
-    </table>
+        </table>
+    </div>
 </div>
 
-<h2>Files to be imported</h2>
+<div class="tabcontent" id="imported_files">
 
-<div class="row">
-        <table class="table table-bordered table-hover" id="import_table3">
-        <thead>
-        <tr>
-            <td>File</td>
-        </tr>
-        </thead>
-        <tbody>
-            {% for file in all_files.missing_tracks_existing_files %}
+    <div class="row">
+            <table class="table table-bordered table-hover" id="import_table1">
+            <thead>
             <tr>
-                <td>{{file}}</td>
+                <td>File</td>
             </tr>
-            {% endfor %}
-        </tbody>
+            </thead>
+            <tbody>
+                {% for file in all_files.imported_tracks_existing_files %}
+                <tr>
+                    <td>{{file}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
 
-    </table>
+        </table>
+    </div>
 </div>
 
+<div class="tabcontent" id="missing_files">
 
-<h2>Blacklisted Files</h2>
-
-<div class="row">
-        <table class="table table-bordered table-hover" id="import_table4">
-        <thead>
-        <tr>
-            <td>File</td>
-        </tr>
-        </thead>
-        <tbody>
-            {% for file in all_files.blacklisted_tracks %}
+    <div class="row">
+            <table class="table table-bordered table-hover" id="import_table3">
+            <thead>
             <tr>
-                <td>{{file}}</td>
+                <td>File</td>
             </tr>
-            {% endfor %}
-        </tbody>
+            </thead>
+            <tbody>
+                {% for file in all_files.imported_tracks_missing_files %}
+                <tr>
+                    <td>{{file}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
 
-    </table>
+        </table>
+    </div>
+</div>
+
+<div class="tabcontent" id="blacklisted_files">
+    <div class="row">
+            <table class="table table-bordered table-hover" id="import_table4">
+            <thead>
+            <tr>
+                <td>File</td>
+            </tr>
+            </thead>
+            <tbody>
+                {% for file in all_files.blacklisted_tracks %}
+                <tr>
+                    <td>{{file}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
 </div>
 {%endblock%}
 

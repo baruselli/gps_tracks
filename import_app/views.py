@@ -8,6 +8,13 @@ from django.urls import reverse
 from pprint import pprint
 import logging
 import traceback
+from waypoints.models import Waypoint
+from tracks.models import Track
+from photos.models import Photo
+from groups.models import Group
+from lines.models import Line
+from geojson_obj.models import GeoJsonObject
+from users.models import User
 
 logger = logging.getLogger("gps_tracks")
 from tracks.models import *
@@ -23,7 +30,32 @@ class Import(View):
 
         show_timeline=settings.SHOW_GOOGLE_TIMELINE
 
-        return render(request, self.template_name, {"show_timeline":show_timeline})
+        n_tracks = Track.objects.count()
+        first_track = Track.objects.filter(beginning__isnull=False).order_by("beginning").first()
+        last_track = Track.objects.filter(beginning__isnull=False).order_by("beginning").last()
+        n_photos = Photo.objects.count()
+        first_photo = Photo.objects.filter(time__isnull=False).order_by("time").first()
+        last_photo = Photo.objects.filter(time__isnull=False).order_by("time").last()
+        n_waypoints = Waypoint.objects.count()
+        n_groups = Group.objects.count()
+        n_lines = Line.objects.count()
+        n_geojson = GeoJsonObject.objects.count()
+        n_users = User.objects.count()
+
+        return render(request, self.template_name, {
+            "show_timeline":show_timeline,
+            "n_tracks": n_tracks,
+            "first_track":first_track,
+            "last_track":last_track,
+            "n_photos": n_photos,
+            "first_photo":first_photo,
+            "last_photo": last_photo,
+            "n_waypoints":n_waypoints,
+            "n_groups":n_groups,
+            "n_lines": n_lines,
+            "n_geojson": n_geojson,
+            "n_users": n_users
+        })
 
 class ImportUpdate(View):
     def get(self, request, *args, **kwargs):

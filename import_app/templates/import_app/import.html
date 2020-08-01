@@ -3,121 +3,138 @@
 {% block map %}
 {% endblock %}
 
+{% load leaflet_tags %}
+{% load static %}
+{% load mathfilters %}
+
+{%block stylesheet%}
+<style>
+    #tab_tracks{
+        display: block;
+    }
+</style>
+
+{%endblock%}
+
 {% block content %}
+<h1>Import</h1>
+
+    <div class="tab">
+        <button class="tablinks active" id="btn_tab_tracks" onclick="open_tab(event, 'tab_tracks')"><h2>Tracks</h2></a></li>
+        <button class="tablinks " id="btn_tab_photos" onclick="open_tab(event, 'tab_photos')"><h2>Photos</h2></a></li>
+        <button class="tablinks" id="btn_tab_delete" onclick="open_tab(event, 'tab_delete')"><h2>Delete</h2></a></li>
+        <button class="tablinks" id="btn_tab_statistics" onclick="open_tab(event, 'tab_statistics')"><h2>Statistics</h2></a></li>
+    </div>
+        
 
 
-<html>
-  <head>
-        {% load leaflet_tags %}
-        {% load static %}
-        {% load mathfilters %}
+<div class="tabcontent" id="tab_tracks">
 
-
-</head>
-
-
-<body>
-
-<h1><a href="{% url 'statistics' %}">Statistics</a></h1>
-
-
-<h1>Tracks</h1>
-<button onclick="location.href='{% url 'all_files_report'  %}'" type="button">See all files</button>
-
-<h3>Download</h3>
-<button title="Requires TomTom username and password set in Options" onclick="location.href='{% url 'download_tomtom'  %}'" type="button">Download from TomTom</button>
-<button title="Requires Google Tracks directory names set in Options"onclick="location.href='{% url 'google_drive_tracks'  %}'" type="button">Download from Google Drive</button>
-<button onclick="location.href='{% url 'download_googlehistory'  %}'" type="button">Download Google history tracks (experimental, needs chromium drivers)</button>
-
-
-{%if show_timeline %}
-    <a href="{% url 'history_files'%}">Google Timeline</a>
-{%endif%}
-
-<h3>Import</h3>
-{%comment %}
-<button onclick="location.href='{% url 'import_gpx'  %}'" type="button">Import gpx</button>
-<button onclick="location.href='{% url 'import_kmz'  %}'" type="button">Import kmz</button>
-<button onclick="location.href='{% url 'import_kml'  %}'" type="button">Import kml</button>
-<button onclick="location.href='{% url 'import_csv'  %}'" type="button">Import csv</button>
-<button onclick="location.href='{% url 'import_tcx'  %}'" type="button">Import tcx</button>
-{%endcomment %}
-
-<form method="GET" action="{% url 'import_update_tracks' %}" id="import_upload_tracks_form">
-    Extensions
-    <select name="ext" size="5" multiple>
-        <option value=".gpx">GPX</option>
-        <option value=".kml">KML</option>
-        <option value=".kmz">KMZ</option>
-        <option value=".csv">CSV</option>
-        <option value=".tcx">TCX</option>
-      </select> 
-    <input type="checkbox" name="update" value=1>Update existing tracks
-    <input type="checkbox" name="import_new_extensions" value=1>Update existing tracks if extension is new
-    <input type="submit" value="Submit" id ="submit_button_tracks">
-</form>
-
-<button onclick="location.href='{% url 'tracks_set_all_properties'  %}'" type="button">Refresh properties all tracks</button>
-
-<h3> <a href="{% url 'merged_tracks_index' %}">Merged tracks</a></h3>
-
-<h3>Upload file(s) and import</h3>
-<form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">
-    {% csrf_token %}
-    <input type="file" name="file" multiple />
-    <br />
-    <input title="Manually upload one or more GPS files" type="submit" value="Upload File" />
-
-  </form>
-
-  <h3> <a href="{% url 'duplicated_files' %}">Duplicated files </a></h3>
+    <!-- <h1>Tracks</h1> -->
+    <h3>Download</h3>
+    <button title="Requires TomTom username and password set in Options" onclick="location.href='{% url 'download_tomtom'  %}'" type="button">Download from TomTom</button>
+    <button title="Requires Google Tracks directory names set in Options"onclick="location.href='{% url 'google_drive_tracks'  %}'" type="button">Download from Google Drive</button><br>
 
 
 
-  {%comment %}
-  <h3>Update tracks</h3>
-<button onclick="location.href='{% url 'update_gpx'  %}'" type="button">Update gpx</button>
-<button onclick="location.href='{% url 'update_kml'  %}'" type="button">Update kml</button>
-<button onclick="location.href='{% url 'update_kmz'  %}'" type="button">Update kmz</button>
-<button onclick="location.href='{% url 'update_csv'  %}'" type="button">Update csv</button>
-<button onclick="location.href='{% url 'update_tcx'  %}'" type="button">Update tcx</button>
-{%endcomment%}
-
-<!-- <button onclick="location.href='{% url 'geopy_tracks'  %}'" type="button">Get infos on endpoints</button> -->
-
-
-
-<!-- <h3>Export tracks</h3>
-<button onclick="location.href='{% url 'serialize_tracks'  %}'" type="button">Export as JSON</button> -->
-
-
-<!-- <h1>Waypoints</h1>
-<button onclick="location.href='{% url 'geopy_waypoints'  %}'" type="button">Get infos on waypoints</button>
-<button onclick="location.href='{% url 'serialize_waypoints'  %}'" type="button">Export as JSON</button> -->
-
+    <h3>Import     <button onclick="location.href='{% url 'all_files_report'  %}'" type="button">See all files</button>
+    </h3>
+        <form method="GET" action="{% url 'import_update_tracks' %}" id="import_upload_tracks_form">
+            Extensions
+            <select name="ext" size="5" multiple>
+                <option value=".gpx">GPX</option>
+                <option value=".kml">KML</option>
+                <option value=".kmz">KMZ</option>
+                <option value=".csv">CSV</option>
+                <option value=".tcx">TCX</option>
+            </select> 
+            <input type="checkbox" name="update" value=1>Update existing tracks
+            <input type="checkbox" name="import_new_extensions" value=1>Update existing tracks if extension is new
+            <input type="submit" value="Submit" id ="submit_button_tracks">
+        </form>
+        <h3>Other</h3>
+        <h4> <a href="{% url 'index_blacklist' %}">Blacklist</a></h4>
+        <h4> <a href="{% url 'merged_tracks_index' %}">Merged tracks</a></h4>
+        <h4> <a href="{% url 'duplicated_files' %}">Duplicated files </a></h4>
 
 
-<h1>Photos</h1>
-<h3>Download</h3>
-<button title="Requires Google Drive photos directories set in Options" onclick="location.href='{% url 'google_drive_photos'  %}'" type="button">Download Photos from Google Drive</button>
-<button title="Look for all photos in Google Photos startin from the initial year set in Options" onclick="location.href='{% url 'google_photos'  %}'" type="button">Download Photos from Google Photos</button>
-<h3>Import</h3>
-<button onclick="location.href='{% url 'import_photos'  %}'" type="button">Import photos</button>
-<button onclick="location.href='{% url 'update_photos'  %}'" type="button">Update photos</button>
-<button onclick="location.href='{% url 'link_photos'  %}'" type="button">Link photos to tracks</button>
-<!-- <button onclick="location.href='{% url 'geopy_photos'  %}'" type="button">Get infos on photo locations</button> -->
-<!-- <button onclick="location.href='{% url 'serialize_photos'  %}'" type="button">Export as JSON</button> -->
 
-<h1>Delete</h3>
-    <button onclick="deleteemptytracks_fct()" type="button">Delete empty tracks</button>
-    <button onclick="deletetracks_fct()" type="button">Delete all tracks</button>
-    <a href="{% url 'index_blacklist' %}">Blacklist</a>
+    <button onclick="location.href='{% url 'tracks_set_all_properties'  %}'" type="button">Refresh properties all tracks</button>
+
+    {%if show_timeline %}
+    <h3><a href="{% url 'history_files'%}">Google Timeline</a></h3>
+        <button onclick="location.href='{% url 'download_googlehistory'  %}'" type="button">Download Google history tracks (experimental, needs chromium drivers)</button><br>
+    {%endif%}
+
+
+    <!-- <h3>Upload file(s) and import</h3>
+    <form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">
+        {% csrf_token %}
+        <input type="file" name="file" multiple />
+        <br />
+        <input title="Manually upload one or more GPS files" type="submit" value="Upload File" />
+
+    </form> -->
+
+
+    <!-- <button onclick="location.href='{% url 'geopy_tracks'  %}'" type="button">Get infos on endpoints</button> -->
+
+
+
+    <!-- <h3>Export tracks</h3>
+    <button onclick="location.href='{% url 'serialize_tracks'  %}'" type="button">Export as JSON</button> -->
+
+
+    <!-- <h1>Waypoints</h1>
+    <button onclick="location.href='{% url 'geopy_waypoints'  %}'" type="button">Get infos on waypoints</button>
+    <button onclick="location.href='{% url 'serialize_waypoints'  %}'" type="button">Export as JSON</button> -->
+</div>
+
+<div class="tabcontent" id="tab_photos">
+    <!-- <h1>Photos</h1> -->
+    <h3>Download</h3>
+    <button title="Requires Google Drive photos directories set in Options" onclick="location.href='{% url 'google_drive_photos'  %}'" type="button">Download Photos from Google Drive</button><br>
+    <button title="Look for all photos in Google Photos startin from the initial year set in Options" onclick="location.href='{% url 'google_photos'  %}'" type="button">Download Photos from Google Photos</button>
+    <h3>Import</h3>
+    <button onclick="location.href='{% url 'import_photos'  %}'" type="button">Import photos</button><br>
+    <button onclick="location.href='{% url 'update_photos'  %}'" type="button">Update photos</button><br>
+    <button onclick="location.href='{% url 'link_photos'  %}'" type="button">Link photos to tracks</button>
+    <!-- <button onclick="location.href='{% url 'geopy_photos'  %}'" type="button">Get infos on photo locations</button> -->
+    <!-- <button onclick="location.href='{% url 'serialize_photos'  %}'" type="button">Export as JSON</button> -->
+
+</div>
+
+<div class="tabcontent" id="tab_delete">
+    <!-- <h1>Delete</h3> -->
+    <h3>Tracks</h3>
+    <button onclick="deleteemptytracks_fct()" type="button">Delete empty tracks</button><br>
+    <button onclick="deletetracks_fct()" type="button">Delete all tracks</button><br>
+    <h3>Waypoints</h3>
     <button onclick="deletewps_fct()" type="button">Delete all waypoints</button>
+    <h3>Lines</h3>
     <button onclick="deletelines_fct()" type="button">Delete all lines</button>
+    <h3>Groups</h3>
     <button onclick="deletegroups_fct()" type="button">Delete all groups</button>
+    <h3>Photos</h3>
     <button onclick="deletephotos_fct()" type="button">Delete all photos</button>
+</div>    
+    
+
+<div class="tabcontent" id="tab_statistics">
+    <table>
+        <thead><td></td><td><b>#</b></td><td><b>First</b></td><td><b>Last</b></td></thead>
+        <tr><td><b>Tracks</b></td><td>{{n_tracks}}</td><td>{{first_track.date|date:'Y-m-d'}}</td><td>{{last_track.date|date:'Y-m-d'}}</td></tr>
+        <tr><td><b>Photos</b></td><td>{{n_photos}}</td><td>{{first_photo.time|date:'Y-m-d'}}</td><td>{{last_photo.time|date:'Y-m-d'}}</td></tr>
+        <tr><td><b>Waypoints</b></td><td>{{n_waypoints}}</td><td></td><td></td></tr>
+        <tr><td><b>Groups</b></td><td>{{n_groups}}</td><td></td><td></td></tr>
+        <tr><td><b>Lines</b></td><td>{{n_lines}}</td><td></td><td></td></tr>
+        <tr><td><b>GeoJSON</b></td><td>{{n_geojson}}</td><td></td><td></td></tr>
+        <tr><td><b>Users</b></td><td>{{n_users}}</td><td></td><td></td></tr>
+    </table>
     
     
+</div>
+
 
 <!-- <h1>Lines</h1>
 <button onclick="location.href='{% url 'geopy_lines'  %}'" type="button">Get infos on endpoints</button> -->

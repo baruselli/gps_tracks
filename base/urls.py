@@ -9,6 +9,6 @@ urlpatterns = [
     url(r"^base/emptymap/$", views.EmptyMap.as_view(), name="emptymap"),
     url(r"^base/todo/$", views.Todo.as_view(), name="todo"),
     url(r"^base/test$", views.TestView.as_view(), name="test"),
-    url(r"^base/statistics/$", views.Statistics.as_view(), name="statistics"),
+    # url(r"^base/statistics/$", views.Statistics.as_view(), name="statistics"),
     url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
 ]

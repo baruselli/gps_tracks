@@ -131,56 +131,56 @@ class EmptyMap(View):
             "min_lat": min_lat, "max_lat": max_lat,"min_long": min_long, "max_long": max_long,
             "location_name":location_name})
 
-class Statistics(View):
-    template_name = "base/statistics.html"
+# class Statistics(View):
+#     template_name = "base/statistics.html"
 
-    def get(self, request, *args, **kwargs):
-        from tracks.models import Track
-        from django_pandas.io import read_frame
+#     def get(self, request, *args, **kwargs):
+#         from tracks.models import Track
+#         from django_pandas.io import read_frame
 
-        logger.debug("Statistics")
-        #tracks = Track.objects.all()
-        #df = read_frame(tracks)  # read_frame(tracks)
+#         logger.debug("Statistics")
+#         #tracks = Track.objects.all()
+#         #df = read_frame(tracks)  # read_frame(tracks)
 
-        # results = {}
-        # results["files_per_year"] = df.groupby(df.beginning.dt.year).size().to_json()
-        # results["km_per_year"] = (
-        #     df.groupby(df.beginning.dt.year)["length_3d"].sum().to_json()
-        # )
+#         # results = {}
+#         # results["files_per_year"] = df.groupby(df.beginning.dt.year).size().to_json()
+#         # results["km_per_year"] = (
+#         #     df.groupby(df.beginning.dt.year)["length_3d"].sum().to_json()
+#         # )
 
-        n_tracks = Track.objects.count()
-        first_track = Track.objects.filter(beginning__isnull=False).order_by("beginning").first()
-        last_track = Track.objects.filter(beginning__isnull=False).order_by("beginning").last()
-        n_photos = Photo.objects.count()
-        first_photo = Photo.objects.filter(time__isnull=False).order_by("time").first()
-        last_photo = Photo.objects.filter(time__isnull=False).order_by("time").last()
-        n_waypoints = Waypoint.objects.count()
-        n_groups = Group.objects.count()
-        n_lines = Line.objects.count()
-        n_geojson = GeoJsonObject.objects.count()
-        n_users = User.objects.count()
+#         n_tracks = Track.objects.count()
+#         first_track = Track.objects.filter(beginning__isnull=False).order_by("beginning").first()
+#         last_track = Track.objects.filter(beginning__isnull=False).order_by("beginning").last()
+#         n_photos = Photo.objects.count()
+#         first_photo = Photo.objects.filter(time__isnull=False).order_by("time").first()
+#         last_photo = Photo.objects.filter(time__isnull=False).order_by("time").last()
+#         n_waypoints = Waypoint.objects.count()
+#         n_groups = Group.objects.count()
+#         n_lines = Line.objects.count()
+#         n_geojson = GeoJsonObject.objects.count()
+#         n_users = User.objects.count()
 
 
 
-        # return render(request, self.template_name, {"all_tracks":Track.objects.all().order_by('date')})
-        return render(
-            request,
-            self.template_name,
-            {
-                # "all_tracks":tracks,
-                "n_tracks": n_tracks,
-                "first_track":first_track,
-                "last_track":last_track,
-                "n_photos": n_photos,
-                "first_photo":first_photo,
-                "last_photo": last_photo,
-                "n_waypoints":n_waypoints,
-                "n_groups":n_groups,
-                "n_lines": n_lines,
-                "n_geojson": n_geojson,
-                "n_users": n_users
-            },
-        )
+#         # return render(request, self.template_name, {"all_tracks":Track.objects.all().order_by('date')})
+#         return render(
+#             request,
+#             self.template_name,
+#             {
+#                 # "all_tracks":tracks,
+#                 "n_tracks": n_tracks,
+#                 "first_track":first_track,
+#                 "last_track":last_track,
+#                 "n_photos": n_photos,
+#                 "first_photo":first_photo,
+#                 "last_photo": last_photo,
+#                 "n_waypoints":n_waypoints,
+#                 "n_groups":n_groups,
+#                 "n_lines": n_lines,
+#                 "n_geojson": n_geojson,
+#                 "n_users": n_users
+#             },
+#         )
 
 ###test
 class TestView(View):

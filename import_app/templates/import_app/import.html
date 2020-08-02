@@ -12,6 +12,7 @@
     #tab_tracks{
         display: block;
     }
+    img {height: 1em;}
 </style>
 
 {%endblock%}
@@ -30,15 +31,19 @@
 
 <div class="tabcontent" id="tab_tracks">
 
-    <!-- <h1>Tracks</h1> -->
-    <h3>Download</h3>
-    <button title="Requires TomTom username and password set in Options" onclick="location.href='{% url 'download_tomtom'  %}'" type="button">Download from TomTom</button>
-    <button title="Requires Google Tracks directory names set in Options"onclick="location.href='{% url 'google_drive_tracks'  %}'" type="button">Download from Google Drive</button><br>
+    <p>Put files in <b>{{tracks_dir}}</b>, they will be automatically recognized for import. <br>
+        IMPORTANT: the system gives a track its name by taking the name of each file without its path and extension.
+    If more files have the same name without path and extension, they will be mapped to the same track!</p>
 
+    <table>
+        <tr><td><b>Files ready to be imported</b></td><td id="id_tobeimported_files"><img src="/static/gif/FhHRx.gif"></td></tr>
+        <tr><td>Total files</td><td id="id_total_files"><img src="/static/gif/FhHRx.gif"></td></tr>
+        <tr><td>Corresponding to imported tracks</td><td id="id_imported_files"><img src="/static/gif/FhHRx.gif"></td></tr>
+        <tr><td>Blacklisted</td><td id="id_blacklisted_files"><img src="/static/gif/FhHRx.gif"></td></tr>
+    </table>
+    <button onclick="location.href='{% url 'all_files_report'  %}'" type="button">See details</button>
 
-
-    <h3>Import     <button onclick="location.href='{% url 'all_files_report'  %}'" type="button">See all files</button>
-    </h3>
+    <h3>Import</h3>
         <form method="GET" action="{% url 'import_update_tracks' %}" id="import_upload_tracks_form">
             Extensions
             <select name="ext" size="5" multiple>
@@ -52,10 +57,20 @@
             <input type="checkbox" name="import_new_extensions" value=1>Update existing tracks if extension is new
             <input type="submit" value="Submit" id ="submit_button_tracks">
         </form>
-        <h3>Other</h3>
-        <h4> <a href="{% url 'index_blacklist' %}">Blacklist</a></h4>
-        <h4> <a href="{% url 'merged_tracks_index' %}">Merged tracks</a></h4>
-        <h4> <a href="{% url 'duplicated_files' %}">Duplicated files </a></h4>
+
+
+
+    <!-- <h1>Tracks</h1> -->
+    <h3>Download</h3>
+    <p>You can configure for automatic download from Google Drive and TomTom.</p>
+    <button {% if not ok_tomtom %}disabled {%endif%} title="Requires TomTom username and password set in Options" onclick="location.href='{% url 'download_tomtom'  %}'" type="button">Download from TomTom</button>
+    <button {% if not ok_google %}disabled {%endif%} title="Requires Google Tracks directory names set in Options. An interactive login page will be shown."onclick="location.href='{% url 'google_drive_tracks'  %}'" type="button">Download from Google Drive</button><br>
+
+    <h3>Other</h3>
+    <h4> <a href="{% url 'index_blacklist' %}">Blacklist</a></h4>
+    <h4> <a href="{% url 'merged_tracks_index' %}">Merged tracks</a></h4>
+    <h4> <a href="{% url 'duplicated_files' %}">Duplicated files </a></h4>
+
 
 
 
@@ -92,6 +107,19 @@
 
 <div class="tabcontent" id="tab_photos">
     <!-- <h1>Photos</h1> -->
+    <p>Put files in <b>{{photos_dir}}</b>, they will be automatically recognized for import. <br>
+        IMPORTANT: the system gives a photo its name by taking the name of each file without its path and extension.
+    If more files have the same name without path and extension, they will be mapped to the same photo!</p>
+
+
+    <table>
+        <tr><td><b>Files ready to be imported</b></td><td id="id_tobeimported_photos"><img src="/static/gif/FhHRx.gif"></td></tr>
+        <tr><td>Total files</td><td id="id_total_photos"><img src="/static/gif/FhHRx.gif"></td></tr>
+        <tr><td>Corresponding to imported photos</td><td id="id_imported_photos"><img src="/static/gif/FhHRx.gif"></td></tr>
+    </table>
+
+
+
     <h3>Download</h3>
     <button title="Requires Google Drive photos directories set in Options" onclick="location.href='{% url 'google_drive_photos'  %}'" type="button">Download Photos from Google Drive</button><br>
     <button title="Look for all photos in Google Photos startin from the initial year set in Options" onclick="location.href='{% url 'google_photos'  %}'" type="button">Download Photos from Google Photos</button>
@@ -201,8 +229,52 @@ function deletelines_fct() {
         location.href='{% url 'delete_lines'  %}'
 }
 }
+
+
+$(document).ready( function () {
+    url='{% url 'all_files_report_json'  %}'
+    $.getJSON(url,function(data){
+        files_toimport=data["missing_tracks_existing_paths"]
+        var n_files_to_import=files_toimport.length
+        var text_tobeimported="<b>"+n_files_to_import+"</b>"
+
+        if (n_files_to_import>0){
+            text_tobeimported+= " ("+files_toimport[0]
+        }
+        if (n_files_to_import>1){
+            text_tobeimported+= ", "+files_toimport[1]
+        }
+        if (n_files_to_import>2){
+            text_tobeimported+= ", "+files_toimport[2]
+        }
+        if (n_files_to_import>3){
+            text_tobeimported+= ", "+ (n_files_to_import-3) + " more"
+        }
+        if (n_files_to_import>0){
+            text_tobeimported+= ")"
+        }
+
+        //TODO: add button to import these files
+        $("#id_tobeimported_files").html(text_tobeimported)
+        $("#id_imported_files").html(data["imported_tracks_existing_paths"].length)
+
+        var text_blacklisted = data["blacklisted_paths"].length
+        if (data["existing_blacklisted_paths"].length){
+            text_blacklisted+=(" (out of which " + data["existing_blacklisted_paths"].length +" corresponding to existing tracks)" )
+        }
+        $("#id_blacklisted_files").html(text_blacklisted)
+        $("#id_total_files").html(data["n_files_total"])
+             
+        //read_data_leaflet_alltracks(data,geojsonMarkerOptions,map,options)
+
+    })
+})
+
+
 </script>
 
 </html>
 
 {%endblock%}
+
+

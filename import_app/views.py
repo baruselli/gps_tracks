@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 import json
@@ -42,6 +42,9 @@ class Import(View):
         n_geojson = GeoJsonObject.objects.count()
         n_users = User.objects.count()
 
+        ok_tomtom =  OptionSet.get_option("TOMTOM_USER") and OptionSet.get_option("TOMTOM_PASSWORD")
+        ok_google =  bool(OptionSet.get_option("GOOGLE_TRACKS_DIRS"))
+
         return render(request, self.template_name, {
             "show_timeline":show_timeline,
             "n_tracks": n_tracks,
@@ -54,7 +57,11 @@ class Import(View):
             "n_groups":n_groups,
             "n_lines": n_lines,
             "n_geojson": n_geojson,
-            "n_users": n_users
+            "n_users": n_users,
+            "tracks_dir":settings.TRACKS_DIR,
+            "photos_dir": settings.PHOTOS_DIR,
+            "ok_tomtom":ok_tomtom,
+            "ok_google": ok_google
         })
 
 class ImportUpdate(View):
@@ -267,3 +274,9 @@ class AllFilesReportView(View):
         all_files=find_imported_and_existing_files()
 
         return render(request, self.template_name, {"all_files":all_files})
+
+class AllFilesReportJsonView(View):
+
+    def get(self, request, *args, **kwargs):
+        from .utils import find_imported_and_existing_files
+        return JsonResponse(find_imported_and_existing_files())

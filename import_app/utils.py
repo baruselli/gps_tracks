@@ -633,23 +633,37 @@ def find_imported_and_existing_files(dir_=None,extensions=[".kmz", ".kml", ".gpx
         else:
             dict_name_files[base_name]=[file]
     #2) blacklisted files
-    blacklisted_tracks = set(Blacklist.all_test_files(files)["names"])
+    blacklisted_files = set(Blacklist.all_test_files(files)["names"])
     #3) existing tracks
     tracks = set(Track.all_objects.all().values_list("name_wo_path_wo_ext",flat=True))
+    #3) existing but blacklisted
+    existing_blacklisted_files =  blacklisted_files.intersection(tracks)
+
 
     imported_tracks_existing_files=tracks.intersection(dict_name_files.keys())
 
     imported_tracks_missing_files=tracks-dict_name_files.keys()
 
-    missing_tracks_existing_files=dict_name_files.keys()-tracks-blacklisted_tracks
+    missing_tracks_existing_files=dict_name_files.keys()-tracks-blacklisted_files
 
-    
+    imported_tracks_existing_paths = [f for f in files if name_wo_path_wo_ext(f) in  imported_tracks_existing_files]
+    missing_tracks_existing_paths = [f for f in files if name_wo_path_wo_ext(f) in  missing_tracks_existing_files]
+    blacklisted_paths = [f for f in files if name_wo_path_wo_ext(f) in  blacklisted_files]
+    existing_blacklisted_paths = [f for f in files if name_wo_path_wo_ext(f) in  existing_blacklisted_files]
+
+
 
     return{
-        "imported_tracks_existing_files":imported_tracks_existing_files,
-        "imported_tracks_missing_files":imported_tracks_missing_files,
-        "missing_tracks_existing_files":missing_tracks_existing_files,
-        "blacklisted_tracks":blacklisted_tracks,
+        "imported_tracks_existing_files":list(imported_tracks_existing_files),
+        "imported_tracks_missing_files":list(imported_tracks_missing_files),
+        "missing_tracks_existing_files":list(missing_tracks_existing_files),
+        "blacklisted_files":list(blacklisted_files),
+        "existing_blacklisted_files": list(existing_blacklisted_files),
+        "n_files_total":len(files),
+        "imported_tracks_existing_paths":imported_tracks_existing_paths,
+        "missing_tracks_existing_paths":missing_tracks_existing_paths,
+        "blacklisted_paths":blacklisted_paths,
+        "existing_blacklisted_paths":existing_blacklisted_paths,
     }
 
     

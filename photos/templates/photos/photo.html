@@ -123,6 +123,12 @@
 
         
         }
+
+    function deletephoto_fct() {
+        var r=confirm("Really delete photo?");
+        if (r == true) {
+            location.href='{% url 'delete_photo' photo_id=photo.pk  %}'
+    }}
     </script>
  {% endblock%}
 
@@ -173,6 +179,8 @@
 {% block form%}
     <br><br>
     <br><br>
+        <button onclick="deletephoto_fct()" type="button">Delete photo</button><br>
+
         <button onclick="$('#photo_form').toggle()">Edit</button>
     <div id="photo_form">
         {{ form.media }}
@@ -186,3 +194,4 @@
         <input type="submit" value="OK">
     </div>
 {% endblock%}
+

@@ -275,8 +275,59 @@ class AllFilesReportView(View):
 
         return render(request, self.template_name, {"all_files":all_files})
 
+class AllPhotosReportView(View):
+    template_name = "import_app/all_photos_report.html"
+    def get(self, request, *args, **kwargs):
+
+        logger.info("AllPhotosReportView Track")
+        from .utils import find_imported_and_existing_photos
+        all_files=find_imported_and_existing_photos()
+
+        return render(request, self.template_name, {"all_files":all_files})
+
+
 class AllFilesReportJsonView(View):
 
     def get(self, request, *args, **kwargs):
         from .utils import find_imported_and_existing_files
         return JsonResponse(find_imported_and_existing_files())
+
+class AllPhotosReportJsonView(View):
+
+    def get(self, request, *args, **kwargs):
+        from .utils import find_imported_and_existing_photos
+        return JsonResponse(find_imported_and_existing_photos())
+
+class ImportNewTracksView(View):
+    def get(self, request, *args, **kwargs):
+        from .utils import import_new_tracks
+
+        import threading
+        from django.contrib import messages
+
+        logger.info("ImportNewTracks")
+        logger.info(settings.PHOTOS_DIR)
+        t = threading.Thread(target=import_new_tracks, args=(str(settings.TRACKS_DIR),))
+        t.start()
+
+        message = "Started import in a parallel thread, check logs for details"
+        messages.success(request, message)
+
+        return redirect(request.META.get('HTTP_REFERER'))
+
+class ImportNewPhotosView(View):
+    def get(self, request, *args, **kwargs):
+        from .utils import import_new_photos
+
+        import threading
+        from django.contrib import messages
+
+        logger.info("ImportNewPhotos")
+        logger.info(settings.PHOTOS_DIR)
+        t = threading.Thread(target=import_new_photos, args=(str(settings.PHOTOS_DIR),))
+        t.start()
+
+        message = "Started import in a parallel thread, check logs for details"
+        messages.success(request, message)
+
+        return redirect(request.META.get('HTTP_REFERER'))

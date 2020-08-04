@@ -16,6 +16,7 @@ urlpatterns = [
     url(r"^delete$", views.DeletePhotos.as_view(), name="delete_photos"),
     # single photo
     url(r"^photo/(?P<photo_id>[0-9]+)/$", views.PhotoView.as_view(), name="photo_detail"),
+    url(r"^delete_photo/(?P<photo_id>[0-9]+)/$", views.DeletePhotoView.as_view(), name="delete_photo"),
     # url(r"^photo/modify/(?P<id>[0-9]+)/$", views.EditPhotoView.as_view(), name="edit_photo", ),
     # link photos to tracks
     url(r"^link$", views.LinkPhotos.as_view(), name="link_photos"),

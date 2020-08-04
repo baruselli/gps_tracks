@@ -359,7 +359,7 @@ def find_files_in_dir(dir_=None, extensions=[".kmz", ".kml", ".gpx", ".csv", ".t
         dir_ = settings.TRACKS_DIR
 
     files = []
-    logger.info("find_files_in_dir")
+    logger.info("find_files_in_dir: %s, ext: %s" %(dir_, str(extensions)))
     for root, dirs, filess in os.walk(dir_):
         for file in filess:
             for extension in extensions:
@@ -616,6 +616,36 @@ def reimport_failed_tracks():
         t.reimport()
 
 
+def find_imported_and_existing_photos(dir_=None,extensions=[".jpg",]):
+
+    if dir_ is None:
+        dir_ = settings.PHOTOS_DIR
+
+    files = find_files_in_dir(dir_=dir_, extensions=extensions)
+    thumbnail_dir = os.path.join(settings.PHOTOS_DIR, "thumbnails")
+    files=[f for f in files if thumbnail_dir not in f]
+    file_names=[name_wo_path_wo_ext(f) for f in files]
+
+    all_photos=Photo.objects.all().values_list('name', flat=True)
+
+    imported_photos_existing_files = set(all_photos).intersection(set(file_names))
+    missing_photos_existing_files = set(file_names) - set(all_photos)
+    imported_photos_missing_files = set(all_photos) - set(file_names)
+    
+    imported_photos_existing_paths = [f for f in files if name_wo_path_wo_ext(f) in imported_photos_existing_files]
+    missing_photos_existing_paths = [f for f in files if name_wo_path_wo_ext(f) in missing_photos_existing_files]
+
+
+    return{
+        "imported_photos_existing_files":list(imported_photos_existing_files),
+        "imported_photos_missing_files":list(imported_photos_missing_files),
+        "missing_photos_existing_files":list(missing_photos_existing_files),
+        "n_files_total":len(files),
+        "imported_photos_existing_paths":imported_photos_existing_paths,
+        "missing_photos_existing_paths":missing_photos_existing_paths,
+    }
+
+
 def find_imported_and_existing_files(dir_=None,extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
     """find all existing files and compare to what is in the database"""
 
@@ -725,3 +755,13 @@ def name_wo_path_wo_ext(file):
     "file name wo path wo extension"
     base=os.path.basename(file)
     return os.path.splitext(base)[0]
+
+def import_new_tracks(dir_=None,extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
+    """find and import new tracks"""
+    files = find_imported_and_existing_files(dir_=dir_, extensions=extensions)["missing_tracks_existing_paths"]
+    from_files_to_tracks(files, update=False ,ignore_blacklist=False,import_new_extensions=False)
+
+def import_new_photos(dir_=None,extensions=[".jpg"]):
+    """find and import new photos"""
+    files = find_imported_and_existing_photos(dir_=dir_, extensions=extensions)["missing_photos_existing_paths"]
+    import_photos(files=files, update=False)

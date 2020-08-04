@@ -28,7 +28,11 @@ urlpatterns = [
     url(r"^upload$", views.UploadTrackView.as_view(), name="upload_track"),
     url(r"^all_files_report$", views.AllFilesReportView.as_view(), name="all_files_report"),
     url(r"^all_files_report_json$", views.AllFilesReportJsonView.as_view(), name="all_files_report_json"),
+    url(r"^import_new_tracks$", views.ImportNewTracksView.as_view(), name="import_new_tracks"),
     # photos
     url(r"^photos/import$", views.ImportPhotos.as_view(), name="import_photos"),
     url(r"^photos/update$", views.UpdatePhotos.as_view(), name="update_photos"),
+    url(r"^all_photos_report$", views.AllPhotosReportView.as_view(), name="all_photos_report"),
+    url(r"^all_photos_report_json$", views.AllPhotosReportJsonView.as_view(), name="all_photos_report_json"),
+    url(r"^import_new_photos$", views.ImportNewPhotosView.as_view(), name="import_new_photos"),
 ]

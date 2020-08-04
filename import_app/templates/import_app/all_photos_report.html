@@ -1,0 +1,112 @@
+{% extends "base/base.html" %}
+
+{% load leaflet_tags %}
+{% load mathfilters %}
+{% load static %}
+
+{%block title%}
+    <h1>All photo files</h1>
+{%endblock%}
+
+{% block stylesheet %}
+<style>
+    #files_to_import.tabcontent{
+        display:block;
+    }
+</style>
+{%endblock%}
+
+{%block table%}
+
+<div class="tab">
+    <button class="tablinks active" id="btn_tab_files_to_import" onclick="open_tab(event, 'files_to_import')"><h2>Files to be imported</h2></a></li>
+    <button class="tablinks " id="btn_tab_imported_files" onclick="open_tab(event, 'imported_files')"><h2>Imported files</h2></a></li>
+    <button class="tablinks" id="btn_tab_missing_files" onclick="open_tab(event, 'missing_files')"><h2>Photos without files</h2></a></li>
+</div>
+
+<div class="tabcontent" id="files_to_import">
+
+    <div class="row">
+            <table class="table table-bordered table-hover" id="import_table2">
+            <thead>
+            <tr>
+                <td>File</td>
+            </tr>
+            </thead>
+            <tbody>
+                {% for file in all_files.missing_photos_existing_paths %}
+                <tr>
+                    <td>{{file}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<div class="tabcontent" id="imported_files">
+
+    <div class="row">
+            <table class="table table-bordered table-hover" id="import_table1">
+            <thead>
+            <tr>
+                <td>File</td>
+            </tr>
+            </thead>
+            <tbody>
+                {% for file in all_files.imported_photos_existing_paths %}
+                <tr>
+                    <td>{{file}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<div class="tabcontent" id="missing_files">
+
+    <div class="row">
+            <table class="table table-bordered table-hover" id="import_table3">
+            <thead>
+            <tr>
+                <td>File</td>
+            </tr>
+            </thead>
+            <tbody>
+                {% for file in all_files.imported_photos_missing_files %}
+                <tr>
+                    <td>{{file}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+{%endblock%}
+
+
+{%block js%}
+<script>
+    $(document).ready( function () {
+        var events = $('#events');
+        var table =    $('.table')
+        .DataTable({
+            paging: false,
+            "order": [[ 0, "asc" ]],
+            dom: 'Bfrtip',
+            select: false,
+            searching: false, 
+            info: false,
+            buttons:[],
+            });
+    } );
+</script>
+{%endblock%}
+
+
+{% block map%}{%endblock%}

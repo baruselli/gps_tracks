@@ -159,6 +159,22 @@ class PhotoView(View):
                 request, self.template_name, {"form": form, "has_error": True}
             )
 
+class DeletePhotoView(View):
+    def get(self, request, *args, **kwargs):
+        from django.contrib import messages
+        from .models import Photo
+
+        photo_id = kwargs.get("photo_id", None)
+        photo = get_object_or_404(Photo, pk=photo_id)
+        photo.delete()
+
+        message = "Photo %s deleted" %(photo)
+        messages.success(request, message)
+        logger.info(message)
+
+        return redirect(reverse("import"))
+
+
 class DeletePhotos(View):
     def get(self, request, *args, **kwargs):
         from django.contrib import messages

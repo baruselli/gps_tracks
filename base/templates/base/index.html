@@ -20,8 +20,8 @@
 
 
 {% block content %}
-<div>
-    <div style="float:left; margin-left: 3%;width:47%;">
+<div style="position:relative;top:-25px">
+    <div style="float:left; margin-left: 0%;width:33%;">
         <h2>Quick Import Tracks</h2>
 
         <button {% if not ok_tomtom %}disabled {%endif%} 
@@ -31,106 +31,111 @@ Requires TomTom username and password set in Options."
         <button {% if not ok_google %}disabled {%endif%} 
         title="Download and import tracks from TomTom. 
 Requires Google Tracks directory names set in Options" onclick="location.href='{% url 'quick_import_tomtom'  %}'" type="button">Quick Import TomTom</button>
+    </div>
+
+    <div style="float:left; margin-left: 0%;width:33%;">
+        <h2>Upload files</h2>
 
         <form method="post" enctype="multipart/form-data"  action="{% url 'upload_track'%}">
             {% csrf_token %}
-            <input type="file" name="file" multiple title="Upload GPS tracks"/>
+            <input type="file" name="file" multiple title="Upload track or photo files"/>
             <input type="submit" value="Upload File" />
         </form>
     </div>
-    <div style="float:left; margin-left: 3%;width:47%;">
 
-    <h2>Files ready to be imported</h2>
-    <table>
-        <tr>
-            <td>Tracks ready to be imported</td>
-            <td id="id_tobeimported_files"><img class="waiting_gif" src="/static/gif/FhHRx.gif"></td>
-            <td> <button id="id_tobeimported_files_button" disabled onclick="location.href='{% url 'import_new_tracks'  %}'" type="button">Import</button></td>
-        </tr>
-        <tr>
-            <td>Photos ready to be imported</td>
-            <td id="id_tobeimported_photos"><img class="waiting_gif"  src="/static/gif/FhHRx.gif"></td>
-            <td> <button id="id_tobeimported_photos_button" disabled onclick="location.href='{% url 'import_new_photos'  %}'" type="button">Import</button></td>
-        </tr>
-    </table>
+    <div style="float:left; margin-left: 0%;width:33%;">
+
+        <h2>Files ready to be imported</h2>
+        <table>
+            <tr>
+                <td>Tracks ready to be imported</td>
+                <td id="id_tobeimported_files"><img class="waiting_gif" src="/static/gif/FhHRx.gif"></td>
+                <td> <button id="id_tobeimported_files_button" disabled onclick="location.href='{% url 'import_new_tracks'  %}'" type="button">Import</button></td>
+            </tr>
+            <tr>
+                <td>Photos ready to be imported</td>
+                <td id="id_tobeimported_photos"><img class="waiting_gif"  src="/static/gif/FhHRx.gif"></td>
+                <td> <button id="id_tobeimported_photos_button" disabled onclick="location.href='{% url 'import_new_photos'  %}'" type="button">Import</button></td>
+            </tr>
+        </table>
 
     </div>
 </div>
 
 <div style = "clear:both;"></div>
 
+<div style="position:relative;top:-25px">
+    <h2>
+        <a href="{% url 'track_index' %}?how_many=10">Last Tracks</a>
+    </h2>
+        <!-- - <a href="{% url 'track_index' %}?no_search=1">Search</a> -->
+        <!-- -         <div style="float:left"></div><a href="{% url 'track_index' %}?n_days=30 ">Last 30 days</a></div> -->
+    <!-- <div style="float:left"><form method="GET" action="{% url 'track_index' %}" id="searchform">
+    <input class="searchfield" id="searchbox1" name="name" type="text" value="" placeholder="Name"/>
+    <input type="submit" value="Search">
+    </form></div> -->
 
-<h2>
-    </div><a href="{% url 'track_index' %}?how_many=10">Last Tracks</a></div>
-</h2>
-     <!-- - <a href="{% url 'track_index' %}?no_search=1">Search</a> -->
-    <!-- -         <div style="float:left"></div><a href="{% url 'track_index' %}?n_days=30 ">Last 30 days</a></div> -->
-<!-- <div style="float:left"><form method="GET" action="{% url 'track_index' %}" id="searchform">
-<input class="searchfield" id="searchbox1" name="name" type="text" value="" placeholder="Name"/>
-<input type="submit" value="Search">
-</form></div> -->
+    {{ track_form.media }}
+    {{ track_form.non_field_errors }}
+    {{ track_form.errors }}
 
-{{ track_form.media }}
-{{ track_form.non_field_errors }}
-{{ track_form.errors }}
-
-<form method="POST" action=""" id="searchform">
-    {% csrf_token %}
-    {{ track_form}}
-    <input type="submit"  name="track_form" value="Submit">
-</form>
+    <form method="POST" action=""" id="searchform">
+        {% csrf_token %}
+        {{ track_form}}
+        <input type="submit"  name="track_form" value="Submit">
+    </form>
 
 
-<div class="row">
-    <div class="col-xs-12">
-        <table class="table table-bordered table-hover" id="tracks_table">
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-bordered table-hover" id="tracks_table">
 
-            <thead>
-            <tr>
-                <td></td>
-                <td>Name</td>
-                <td>Date</td>
-                <td>Country</td>
-                <td>City</td>
-                <td>Duration</td>
-                <!--<td>Frequency</td>-->
-                <td>Length</td>
-                <td>Pace</td>
-                <td>Photos</td>
-            </tr>
-            </thead>
-
-            <tbody>
-                {% for track in tracks %}
+                <thead>
                 <tr>
-                    <td>
-                        <a href="{% url 'track_detail' track_id=track.pk %}"><img src="{{track.png_file}}" style="max-height:40px;
-                            max-width:60px;
-                            height:auto;
-                            width:auto;"></a>
-                    </td>
-                    <td>
-                        <a href="{% url 'track_detail' track_id=track.pk %}"> {{track.name_wo_path_wo_ext|truncatechars:30}}</a>
-                    </td>
-
-                    <td>{% if track.date%}{{track.date|date:"Y/m/d"}}{% endif %}</td>
-                    <td>{% if track.end_country%}{{track.end_country}}{% endif %}</td>
-                    <td>{% if track.end_city%}{{track.end_city}}{% endif %}</td>
-                    
-                    <td>{% if track.duration_string%}{{track.duration_string}}{%endif%}</td>
-                    <!--<td data-sort={{track.total_frequency|stringformat:"05.3f"}}>{% if track.total_frequency%}{{track.total_frequency|floatformat:-1}}steps/min{%endif%}</td>-->
-                    <td data-sort={{track.length_3d|stringformat:"09d"}}>{% if track.length_3d %}{{track.length_3d|div:1000|floatformat:-2}}km{%endif%}</td>
-                    <td data-sort={{track.pace|stringformat:"09.3f"}}>{% if track.pace_string %}{{track.pace_string}}{%endif%}</td>
-                    <td>{{track.photos.count}}</td>
+                    <td></td>
+                    <td>Name</td>
+                    <td>Date</td>
+                    <td>Country</td>
+                    <td>City</td>
+                    <td>Duration</td>
+                    <!--<td>Frequency</td>-->
+                    <td>Length</td>
+                    <td>Pace</td>
+                    <td>Photos</td>
                 </tr>
-                {% endfor %}
-            </tbody>
+                </thead>
 
-        </table>
-        <br>
+                <tbody>
+                    {% for track in tracks %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'track_detail' track_id=track.pk %}"><img src="{{track.png_file}}" style="max-height:40px;
+                                max-width:60px;
+                                height:auto;
+                                width:auto;"></a>
+                        </td>
+                        <td>
+                            <a href="{% url 'track_detail' track_id=track.pk %}"> {{track.name_wo_path_wo_ext|truncatechars:30}}</a>
+                        </td>
+
+                        <td>{% if track.date%}{{track.date|date:"Y/m/d"}}{% endif %}</td>
+                        <td>{% if track.end_country%}{{track.end_country}}{% endif %}</td>
+                        <td>{% if track.end_city%}{{track.end_city}}{% endif %}</td>
+                        
+                        <td>{% if track.duration_string%}{{track.duration_string}}{%endif%}</td>
+                        <!--<td data-sort={{track.total_frequency|stringformat:"05.3f"}}>{% if track.total_frequency%}{{track.total_frequency|floatformat:-1}}steps/min{%endif%}</td>-->
+                        <td data-sort={{track.length_3d|stringformat:"09d"}}>{% if track.length_3d %}{{track.length_3d|div:1000|floatformat:-2}}km{%endif%}</td>
+                        <td data-sort={{track.pace|stringformat:"09.3f"}}>{% if track.pace_string %}{{track.pace_string}}{%endif%}</td>
+                        <td>{{track.photos.count}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+            <br>
+        </div>
     </div>
 </div>
-
 {% if year_track_dates %}
     <h2>Timeline</h2>
     {% for ytd in year_track_dates %}

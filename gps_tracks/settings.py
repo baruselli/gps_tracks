@@ -251,7 +251,8 @@ LOGS_DIR= os.path.join(BASE_DIR, "media","logs")
 # GEOS_LIBRARY_PATH='C:\Program Files\PostgreSQL\10\bin'
 
 
-
+TRACK_EXTENSIONS=[".gpx", ".csv", ".kml", ".kmz", ".tcx"]
+PHOTO_EXTENSIONS=[".jpg"]
 
 INTERNAL_IPS = ["127.0.0.1"]
 

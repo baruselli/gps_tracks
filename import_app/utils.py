@@ -453,7 +453,9 @@ def import_photos(path=None, update=False, files=None):
             else:
                 logger.info("create photo %s" % file)
 
-            photo.url_path = "/static/camera/" + os.path.split(file)[-1]
+            rel_path_name = os.path.relpath(file,settings.MEDIA_BASE_DIR).replace("\\","/")
+
+            photo.url_path = "/static/" + rel_path_name
             photo.name = name_simple
             photo.path = file
             photo.save()
@@ -583,26 +585,36 @@ def import_photos(path=None, update=False, files=None):
 
 
 
-def handle_uploaded_file(files, update=True):
+def handle_uploaded_files(files, update=True):
+    """given file paths (i.e. strings), import files """
     from tracks.models import Track
     from django.core.files.base import ContentFile
     from django.core.files.storage import default_storage
 
+    logger.info("handle_uploaded_files %s" %files)
 
-    logger.info("handle_uploaded_file")
-    for f in files:
-        file_name = os.path.join(settings.MEDIA_ROOT, (str(f.name)))
-        from_files_to_tracks([file_name], update=update, ignore_blacklist=True, manual_upload=True)
-        name_simple = os.path.splitext(os.path.split(file_name)[-1])[0]
-        logger.info("name simple %s" %name_simple)
-        track = Track.all_objects.filter(name_wo_path_wo_ext=name_simple).first()
-        if track.log:
-            track.info("Handle uploaded file")
-        else:
-            logger.info("Handle uploaded file")
-        logger.info(track.pk)
-    return track.pk
+    track_files = [f for f in files if os.path.splitext(f)[1] in settings.TRACK_EXTENSIONS]
+    photo_files = [f for f in files if os.path.splitext(f)[1] in settings.PHOTO_EXTENSIONS]
+    obj_pk=None
 
+    if track_files:
+        generated_tracks = from_files_to_tracks(track_files, update=update, ignore_blacklist=True, manual_upload=True)
+        # extract pk of the first track (needed when I upload a single track)
+        if generated_tracks:
+            obj_pk=generated_tracks[0].pk
+    if photo_files:
+        generated_photos = import_photos(files=photo_files, update=update)
+        # extract pk of the first photo (needed when I upload a single photo)
+        if generated_photos:
+            obj_pk=generated_photos[0].pk
+
+    if track_files and photo_files:
+        from photos.utils import associate_photos_to_tracks
+        associate_photos_to_tracks(photo_list=generated_photos, track_list=generated_tracks)
+
+    logger.info("End handle_uploaded_files")
+
+    return obj_pk
 
 
 def reimport_failed_tracks():
@@ -765,3 +777,39 @@ def import_new_photos(dir_=None,extensions=[".jpg"]):
     """find and import new photos"""
     files = find_imported_and_existing_photos(dir_=dir_, extensions=extensions)["missing_photos_existing_paths"]
     import_photos(files=files, update=False)
+
+def save_uploaded_files(files):
+    """save uploaded files, and return list of paths where they are saved"""
+    from django.core.files.storage import FileSystemStorage
+    paths=[]
+    for f in files:
+        extension = os.path.splitext(f.name)[1]
+        if extension in [".gpx", ".csv", ".kml", ".kmz", ".tcx"]:
+            path=os.path.join(settings.MEDIA_BASE_DIR,"input_files","upload")
+            type_="track"
+        elif extension in [".jpg"]:
+            path=os.path.join(settings.MEDIA_BASE_DIR,"Camera","upload")
+            type_="photo"
+        else:
+            # skip unknown extension
+            message="Unknown extension %s" %extension
+            logger.info(message)
+            continue
+        try:
+            os.mkdir(path)
+        except:
+            pass
+        
+        # se esiste n file con lo stesso nome, lo cancello, se no non va in update ma cambia il nome
+        file_path = os.path.join(path,f.name)
+        if os.path.isfile(file_path):
+            logger.info("Remove old file %s" %file_path)
+            os.remove(file_path)
+        fs = FileSystemStorage(location=path)
+        filename = fs.save(f.name, f)
+
+        # actual file_path could be different from f.name if it finds a file with the same name 
+        # (I try to avoid this, but u can never know)!
+        file_path = os.path.join(path,filename) 
+        paths.append(file_path)
+    return paths

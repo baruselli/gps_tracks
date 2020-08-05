@@ -136,9 +136,8 @@ class UploadTrackView(View):
     #     return render(request, self.template_name, {"form":form})
 
     def post(self, request, *args, **kwargs):
-        from .utils import handle_uploaded_file
+        from .utils import handle_uploaded_files, save_uploaded_files
         from .forms import UploadFileForm
-        from django.core.files.storage import FileSystemStorage
         import threading
         from django.contrib import messages
 
@@ -149,35 +148,43 @@ class UploadTrackView(View):
             message = "Please select a file!"
             messages.success(request, message)
             logger.warning("No uploaded files")
-            return redirect(reverse("import"))
+            return redirect(reverse("index"))
         elif len(files) == 1:
             f = files[0]
             logger.info("Uploaded one file %s" %f)
-            fs = FileSystemStorage()  # defaults to   MEDIA_ROOT
-            filename = fs.save(f.name, f)
-            track_id = handle_uploaded_file(files)
+
+            extension = os.path.splitext(f.name)[1]
+            if extension in [".gpx", ".csv", ".kml", ".kmz", ".tcx"]:
+                type_="track"
+            elif extension in [".jpg"]:
+                type_="photo"
+            else:
+                message="Unknown extension %s" %extension
+                messages.success(request, message)
+                logger.info(message)
+                return HttpResponseRedirect(reverse("index") )
+
+            paths = save_uploaded_files(files)
+
+            obj_id = handle_uploaded_files(paths)
             # redirect to processed file
-            message = "Imported track"
-            messages.success(request, message)
-            logger.info(message)
-            return HttpResponseRedirect(
-                reverse("track_detail", kwargs={"track_id": track_id})
-            )
+            message = "Imported %s" %type_
+            if type_=="track":
+                return HttpResponseRedirect(reverse("track_detail", kwargs={"track_id": obj_id}))
+            elif type_=="photo":
+                return HttpResponseRedirect(reverse("photo_detail", kwargs={"photo_id": obj_id}))
         else:
             # save files to disk
             logger.info("Uploaded many files")
             from pprint import pprint, pformat
-            logger.info(pformat(files))
-            for f in files:
-                fs = FileSystemStorage()  # defaults to   MEDIA_ROOT
-                filename = fs.save(f.name, f)
+            paths = save_uploaded_files(files)
             # process files in parallel thread
-            t = threading.Thread(target=handle_uploaded_file, args=(files,))
+            t = threading.Thread(target=handle_uploaded_files, args=(paths,))
             t.start()
             # generate_tracks(track_dir,ext,update)
             message = "Started import in a parallel thread, check logs for details"
             messages.success(request, message)
-            return redirect(reverse("import"))
+            return redirect(reverse("index"))
 
 class OtherExtensionsTrackView(View):
     def get(self, request, *args, **kwargs):

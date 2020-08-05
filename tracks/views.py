@@ -530,7 +530,7 @@ class DeleteTracks(View):
 
         messages.success(request, message)
 
-        return redirect(reverse("index"))
+        return redirect(reverse("import"))
 
 class DeleteEmptyTracks(View):
     def get(self, request, *args, **kwargs):
@@ -885,7 +885,7 @@ class DeleteTrackAndFile(View):
 
         messages.success(request, message)
 
-        return redirect(reverse("track_index"))
+        return redirect(reverse("index"))
 
 #edit
 # class EditTrackView(View):

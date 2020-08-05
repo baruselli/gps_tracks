@@ -82,8 +82,7 @@ class SerializeTrackView(View):
 class DeserializeView(View):
     def post(self, request, *args, **kwargs):
         from .utils import deserialize
-        from tracks.utils import handle_uploaded_file
-        handle_uploaded_file
+        from tracks.utils import handle_uploaded_files
         from tracks.forms import UploadFileForm
         from django.core.files.storage import FileSystemStorage
         import threading
@@ -119,7 +118,7 @@ class DeserializeView(View):
                 filename = fs.save(f.name, f)
                 deserialize(os.path.join(settings.MEDIA_ROOT, filename))
             # process files in parallel thread
-            # t = threading.Thread(target=handle_uploaded_file, args = (files,))
+            # t = threading.Thread(target=handle_uploaded_files, args = (files,))
             # t.start()
             # generate_tracks(track_dir,ext,update)
             # message="Started import in a parallel thread, check logs for details"

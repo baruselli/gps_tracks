@@ -107,7 +107,9 @@ function delete_hand_markers(map) {
 
 function map_right_click (map, options, link,link2,track_pk=-1){
     map.on("contextmenu", function (event) {
-    delete_hand_markers(map)
+    if (!event.originalEvent.ctrlKey){
+        delete_hand_markers(map)
+    }
     ll=event.latlng
     string=ll.toString()
     var lat= ll["lat"]

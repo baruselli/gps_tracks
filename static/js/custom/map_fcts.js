@@ -480,16 +480,21 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
     //                        name+='<div style="width:19%;float:left; margin-left: 1%;margin-top: 1%">'
     //                        name+="<a href='"+feature.link[i]+"'><img src='"+feature.url_path[i]+"'  width=100%><br>"//+
     //                        name+="</div>"
-                            name+="<a href='"+feature.link[i]+"'><img src='"+feature.thumbnail_url_path[i]+"'  width='200'><br>"//+
+                            name+="<a href='"+feature.link[i]+"'><img src='"+feature.thumbnail_url_path[i]+"'  width='200'></a>"//+
                             //feature.name[i]+" "
                             //+feature.time[i]+"</a><br>";
                             //name+="</div>"
                             switch(feature.n_elements) {
                                 case 1: var marker=L.marker(latlng,{icon: icon_objs["red"]}).bindPopup(name);break;
-                                case 2: var marker=L.marker(latlng,{icon: icon_objs["red2"]}).bindPopup(name);break;
-                                case 3: var marker=L.marker(latlng,{icon: icon_objs["red3"]}).bindPopup(name);break;
-                                case 4: var marker=L.marker(latlng,{icon: icon_objs["red4"]}).bindPopup(name);break;
-                                default: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name);break;
+                                case 2: var marker=L.marker(latlng,{icon: icon_objs["red2"]}).bindPopup(name,{className: 'popup_many_photos_2' });break;
+                                case 3: var marker=L.marker(latlng,{icon: icon_objs["red3"]}).bindPopup(name,{className: 'popup_many_photos_3' });break;
+                                case 4: var marker=L.marker(latlng,{icon: icon_objs["red4"]}).bindPopup(name,{className: 'popup_many_photos_4' });break;
+                                case 5: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_5' });break;
+                                case 6: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_6' });break;
+                                case 7: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_7' });break;
+                                case 8: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_8' });break;
+                                case 8: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_9' });break;
+                                default: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_more' });break;
                             }
                         }
                     //normal case

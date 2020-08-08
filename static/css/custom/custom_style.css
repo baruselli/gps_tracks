@@ -180,3 +180,33 @@ body {
   border: 1px solid #ccc;
   border-top: none;
 }
+
+
+/*popup photos*/
+.popup_many_photos_2 .leaflet-popup-content{
+  width:401px !important;
+}
+.popup_many_photos_3 .leaflet-popup-content{
+  width:601px !important;
+}
+.popup_many_photos_4 .leaflet-popup-content{
+  width:401px !important;
+}
+.popup_many_photos_5 .leaflet-popup-content{
+  width:601px !important;
+}
+.popup_many_photos_6 .leaflet-popup-content{
+  width:601px !important;
+}
+.popup_many_photos_7 .leaflet-popup-content{
+  width:601px !important;
+}
+.popup_many_photos_8 .leaflet-popup-content{
+  width:801px !important;
+}
+.popup_many_photos_9 .leaflet-popup-content{
+  width:601px !important;
+}
+.popup_many_photos_more .leaflet-popup-content{
+  width:1001px !important;
+}

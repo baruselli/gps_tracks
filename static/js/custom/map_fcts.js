@@ -98,9 +98,16 @@ function reset_point_sizes(class_name="leaflet_track_point", how="reset"){
     }
 }
 
+function delete_hand_markers(map) {
+    for(i=0;i<hand_markers.length;i++) {
+        map.removeLayer(hand_markers[i]);
+    }  
+}
+
 
 function map_right_click (map, options, link,link2,track_pk=-1){
     map.on("contextmenu", function (event) {
+    delete_hand_markers(map)
     ll=event.latlng
     string=ll.toString()
     var lat= ll["lat"]
@@ -123,7 +130,8 @@ function map_right_click (map, options, link,link2,track_pk=-1){
     string4="<a  target='_blank' href='"+link2+"?lat="+lat+"&lng="+lng+"&track_pk="+track_pk+"'>"+"Create waypoint"+"</a><br>"
     string5="<a  target='_blank' href=https://www.google.it/maps/@"+lat+","+lng+",15z>"+"Google Maps"+"</a>"
     console.log("Coordinates: " + lat +", "+ lng );
-  L.marker(event.latlng,{icon: icon_objs["purple"]}).addTo(map).bindPopup(string0+string3+string4+string5);
+    marker=L.marker(event.latlng,{icon: icon_objs["purple"]}).addTo(map).bindPopup(string0+string3+string4+string5);
+    hand_markers.push(marker)
   // this is only needed in tracks_list.html
   try{
     document.getElementById("searchbox_lat").value = lat;

@@ -46,16 +46,19 @@ Requires Google Tracks directory names set in Options" onclick="location.href='{
     <div style="float:left; margin-left: 0%;width:33%;">
 
         <h2>Files ready to be imported</h2>
-        <table>
+        <button  id="id_button_check" type="button" onclick="look_for_files_to_import()">Check</button>
+        <table id="files_to_import_table" style="display:none">
             <tr>
                 <td>Tracks ready to be imported</td>
-                <td id="id_tobeimported_files"><img class="waiting_gif" src="/static/gif/FhHRx.gif"></td>
-                <td> <button id="id_tobeimported_files_button" disabled onclick="location.href='{% url 'import_new_tracks'  %}'" type="button">Import</button></td>
+                <td  id="id_tobeimported_files"></td>
+                <td> <button id="id_tobeimported_files_button"  onclick="location.href='{% url 'import_new_tracks'  %}'" type="button">Import</button></td>
+                <td>    <button onclick="location.href='{% url 'all_files_report'  %}'" type="button">See details</button>                </td>
             </tr>
             <tr>
                 <td>Photos ready to be imported</td>
-                <td id="id_tobeimported_photos"><img class="waiting_gif"  src="/static/gif/FhHRx.gif"></td>
-                <td> <button id="id_tobeimported_photos_button" disabled onclick="location.href='{% url 'import_new_photos'  %}'" type="button">Import</button></td>
+                <td id="id_tobeimported_photos"></td>
+                <td> <button id="id_tobeimported_photos_button"  onclick="location.href='{% url 'import_new_photos'  %}'" type="button">Import</button></td>
+                <td>    <button onclick="location.href='{% url 'all_photos_report'  %}'" type="button">See details</button>                </td>
             </tr>
         </table>
 
@@ -329,78 +332,81 @@ Requires Google Tracks directory names set in Options" onclick="location.href='{
             "bInfo" : false,
     } )});
 
-//infos on tracks
-$(document).ready( function () {
-    url='{% url 'all_files_report_json'  %}'
-    $.getJSON(url,function(data){
-        files_toimport=data["missing_tracks_existing_paths"]
-        var n_files_to_import=files_toimport.length
-        var text_tobeimported_0="<b>"+n_files_to_import+"</b>"
 
-        var text_tobeimported=""
-        if (n_files_to_import>0){
-            text_tobeimported+= " ("+files_toimport[0]
-            $("#id_tobeimported_files_button").prop("disabled",false)
-        }
-        if (n_files_to_import>1){
-            text_tobeimported+= ", "+files_toimport[1]
-        }
-        if (n_files_to_import>2){
-            text_tobeimported+= ", "+files_toimport[2]
-        }
-        if (n_files_to_import>3){
-            text_tobeimported+= ", "+ (n_files_to_import-3) + " more"
-        }
-        if (n_files_to_import>0){
-            text_tobeimported+= ")"
-            $("#id_tobeimported_files_button").prop("title","Import "+text_tobeimported)
-        }
+    function look_for_files_to_import(){
+        $("#id_tobeimported_files").html('<img class="waiting_gif" src="/static/gif/FhHRx.gif">')
+        $("#id_tobeimported_photos").html('<img class="waiting_gif" src="/static/gif/FhHRx.gif">')
+        $("#files_to_import_table").show()
+        $("#id_tobeimported_files_button").prop("disabled",true)
+        $("#id_tobeimported_photos_button").prop("disabled",true)
 
-        //TODO: add button to import these files
-        $("#id_tobeimported_files").html(text_tobeimported_0)
-        $("#id_tobeimported_files").prop("title",text_tobeimported)
-             
+        //infos on photos
+        url='{% url 'all_photos_report_json'  %}'
+        $.getJSON(url,function(data){
+            files_toimport=data["missing_photos_existing_paths"]
+            var n_files_to_import=files_toimport.length
+            var text_tobeimported_0="<b>"+n_files_to_import+"</b>"
+            var text_tobeimported=""
 
+            if (n_files_to_import>0){
+                text_tobeimported+= " ("+files_toimport[0]
+                $("#id_tobeimported_photos_button").prop("disabled",false)
+            }
+            if (n_files_to_import>1){
+                text_tobeimported+= ", "+files_toimport[1]
+            }
+            if (n_files_to_import>2){
+                text_tobeimported+= ", "+files_toimport[2]
+            }
+            if (n_files_to_import>3){
+                text_tobeimported+= ", "+ (n_files_to_import-3) + " more"
+            }
+            if (n_files_to_import>0){
+                text_tobeimported+= ")"
+                $("#id_tobeimported_photos_button").prop("title","Import "+text_tobeimported)
+            }
+
+            //TODO: add button to import these files
+            $("#id_tobeimported_photos").html(text_tobeimported_0)
+            $("#id_tobeimported_photos").prop("title", text_tobeimported)
+
+                
+            //read_data_leaflet_alltracks(data,geojsonMarkerOptions,map,options)
+
+        })
+
+        //infos on tracks
+        url='{% url 'all_files_report_json'  %}'
+        $.getJSON(url,function(data){
+            files_toimport=data["missing_tracks_existing_paths"]
+            var n_files_to_import=files_toimport.length
+            var text_tobeimported_0="<b>"+n_files_to_import+"</b>"
+
+            var text_tobeimported=""
+            if (n_files_to_import>0){
+                text_tobeimported+= " ("+files_toimport[0]
+                $("#id_tobeimported_files_button").prop("disabled",false)
+            }
+            if (n_files_to_import>1){
+                text_tobeimported+= ", "+files_toimport[1]
+            }
+            if (n_files_to_import>2){
+                text_tobeimported+= ", "+files_toimport[2]
+            }
+            if (n_files_to_import>3){
+                text_tobeimported+= ", "+ (n_files_to_import-3) + " more"
+            }
+            if (n_files_to_import>0){
+                text_tobeimported+= ")"
+                $("#id_tobeimported_files_button").prop("title","Import "+text_tobeimported)
+            }
+
+            //TODO: add button to import these files
+            $("#id_tobeimported_files").html(text_tobeimported_0)
+            $("#id_tobeimported_files").prop("title",text_tobeimported)
+                
     })
-})
-
-//infos on photos
-$(document).ready( function () {
-    url='{% url 'all_photos_report_json'  %}'
-    $.getJSON(url,function(data){
-        files_toimport=data["missing_photos_existing_paths"]
-        var n_files_to_import=files_toimport.length
-        var text_tobeimported_0="<b>"+n_files_to_import+"</b>"
-        var text_tobeimported=""
-
-        if (n_files_to_import>0){
-            text_tobeimported+= " ("+files_toimport[0]
-            $("#id_tobeimported_photos_button").prop("disabled",false)
-        }
-        if (n_files_to_import>1){
-            text_tobeimported+= ", "+files_toimport[1]
-        }
-        if (n_files_to_import>2){
-            text_tobeimported+= ", "+files_toimport[2]
-        }
-        if (n_files_to_import>3){
-            text_tobeimported+= ", "+ (n_files_to_import-3) + " more"
-        }
-        if (n_files_to_import>0){
-            text_tobeimported+= ")"
-            $("#id_tobeimported_photos_button").prop("title","Import "+text_tobeimported)
-        }
-
-        //TODO: add button to import these files
-        $("#id_tobeimported_photos").html(text_tobeimported_0)
-        $("#id_tobeimported_photos").prop("title", text_tobeimported)
-
-             
-        //read_data_leaflet_alltracks(data,geojsonMarkerOptions,map,options)
-
-    })
-})
-
+    }
 
 </script>
 {%endblock%}    

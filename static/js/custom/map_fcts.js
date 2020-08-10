@@ -943,10 +943,13 @@ function legend_fct(map,colors,grades, id, name="Legend", decimals=1, father_id=
 
 function add_photos_ajax(data_tot,links=false,request=""){
     var base_div_text='<div style="width:19%;float:left; margin-left: 1%;margin-top: 1%">'
-    function img_text(thumbnail_url){
-        return '<img class="img_photo" src="'+thumbnail_url+'" alt="img" width="100%">'
+    function img_text(thumbnail_url,url_path){
+        return '<img \
+        onmouseover="this.src='+"'"+url_path+"'"+'" \
+        onmouseout="this.src='+"'"+thumbnail_url+"'"+'" \
+        class="img_photo" src="'+thumbnail_url+'" alt="img" width="100%">'
     }
-    function a_text(link,url_path){
+    function a_text(link){
         return '<a href="'+link+'?'+request+'">'
     }
 
@@ -957,17 +960,17 @@ function add_photos_ajax(data_tot,links=false,request=""){
             if (Array.isArray(photo.thumbnail_url_path)){ //case of clustering
                 for (i in  photo.thumbnail_url_path){
                     text+=base_div_text
-                    text_a=img_text(photo.thumbnail_url_path[i]);
+                    text_a=img_text(photo.thumbnail_url_path[i],photo.url_path[i]);
                     if (links){
-                        text_a=a_text(photo.link[i],photo.url_path[i])+text_a+"</a>";
+                        text_a=a_text(photo.link[i])+text_a+"</a>";
                     }
                     text+=text_a+"</div>"
                 }
             }else{  //normal case
                 text+=base_div_text
-                text_a=img_text(photo.thumbnail_url_path)
+                text_a=img_text(photo.thumbnail_url_path, photo.url_path)
                 if(links){
-                    text_a=a_text(photo.link, photo.url_path)+text_a+"</a>";
+                    text_a=a_text(photo.link)+text_a+"</a>";
                 }
                 text+=text_a+"</div>"
             }

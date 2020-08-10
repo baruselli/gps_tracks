@@ -378,10 +378,15 @@ class TracksAsLinesJsonView(View):
             json_global["Global Waypoints"] = waypoints_json(is_global=True, bounds=bounds)["Waypoints"]
 
 
-
+        has_hr=any(tracks.values_list("has_hr",flat=True))
+        has_freq=any(tracks.values_list("has_freq",flat=True))
 
         # add photos and waypoints, but hide them by default
-        final_json={"features":{"show_features":with_photos or with_waypoints or with_global},
+        final_json={"features":{
+                        "show_features":with_photos or with_waypoints or with_global,
+                        "has_hr":has_hr,
+                        "has_freq":has_freq,
+                    },
                     **json_tracks,
                     # **json_waypoints,
                     # **json_photos,

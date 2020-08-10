@@ -151,7 +151,15 @@
         
         //first, create table
         options=data["features"] //contains has_hr and has_freq
-        var table=create_table('#import_table',data["Tracks"],url_many_tracks,url_many_tracks_group,url_many_tracks_delete, url_many_tracks_merge,url_many_tracks_plot,options,url_many_tracks_source)
+        var table=create_table('#import_table',
+                                data["Tracks"],
+                                url_many_tracks,
+                                url_many_tracks_group,
+                                url_many_tracks_delete, 
+                                url_many_tracks_merge,
+                                url_many_tracks_plot,
+                                options,
+                                url_many_tracks_source)
 
         //highlight point on map when clicking on row: I cannot assign ids to leaflet markers, so I use the ordinal "number" property
         table.on( 'select', function ( e, dt, type, indexes ) {

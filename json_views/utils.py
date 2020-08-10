@@ -180,14 +180,14 @@ def photos_json(photos=None, is_global=False,  bounds={}, do_cluster=True, level
     level=int(level)
     if level==0:
         #simple json only to show photos
-        values=photos.values("pk","thumbnail_url_path")
+        values=photos.values("pk","thumbnail_url_path","url_path")
         for v in values:
             v["link"]= reverse("photo_detail", kwargs={"photo_id": v["pk"]}),
             json_ok.append(v)
 
     elif level==1:
     # simple json only for list
-        values=photos.values("pk","thumbnail_url_path","time","country","city","region","name")
+        values=photos.values("pk","thumbnail_url_path","time","country","city","region","name","url_path")
         for v in values:
             v["id"]=v["pk"]
             v["link"]= reverse("photo_detail", kwargs={"photo_id": v["pk"]}),
@@ -200,7 +200,7 @@ def photos_json(photos=None, is_global=False,  bounds={}, do_cluster=True, level
     # full jspon for map
         if isinstance(photos,list):
             photos=Photo.objects.filter(pk__in=[p.pk for p in photos])
-        values = photos.values("pk", "thumbnail_url_path", "time", "country", "city", "region", "name")
+        values = photos.values("pk", "thumbnail_url_path", "time", "country", "city", "region", "name","url_path")
         deduced_lats = np.array(photos.values_list("deduced_lat",flat=True),dtype=float)
         deduced_lons = np.array(photos.values_list("deduced_long", flat=True), dtype=float)
         lats = np.array(photos.values_list("lat",flat=True),dtype=float)

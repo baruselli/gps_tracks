@@ -946,7 +946,7 @@ function add_photos_ajax(data_tot,links=false,request=""){
     function img_text(thumbnail_url){
         return '<img src="'+thumbnail_url+'" alt="img" width="100%">'
     }
-    function a_text(link){
+    function a_text(link,url_path){
         return '<a href="'+link+'?'+request+'">'
     }
 
@@ -959,15 +959,15 @@ function add_photos_ajax(data_tot,links=false,request=""){
                     text+=base_div_text
                     text_a=img_text(photo.thumbnail_url_path[i]);
                     if (links){
-                        text_a=a_text(photo.link[i])+text_a+"</a>";
+                        text_a=a_text(photo.link[i],photo.url_path[i])+text_a+"</a>";
                     }
                     text+=text_a+"</div>"
                 }
             }else{  //normal case
                 text+=base_div_text
-                text_a='<img src="'+photo.thumbnail_url_path+'" alt="img" width="100%">'
+                text_a=img_text(photo.thumbnail_url_path)
                 if(links){
-                    text_a=a_text(photo.link)+text_a+"</a>";
+                    text_a=a_text(photo.link, photo.url_path)+text_a+"</a>";
                 }
                 text+=text_a+"</div>"
             }

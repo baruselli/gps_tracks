@@ -195,3 +195,7 @@ body {
 .popup_many_photos_width_5 .leaflet-popup-content{
   width:1001px !important;
 }
+
+.img_photo:hover{
+  width:500px;
+}

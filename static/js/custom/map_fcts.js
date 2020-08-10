@@ -942,26 +942,34 @@ function legend_fct(map,colors,grades, id, name="Legend", decimals=1, father_id=
     };
 
 function add_photos_ajax(data_tot,links=false,request=""){
+    var base_div_text='<div style="width:19%;float:left; margin-left: 1%;margin-top: 1%">'
+    function img_text(thumbnail_url){
+        return '<img src="'+thumbnail_url+'" alt="img" width="100%">'
+    }
+    function a_text(link){
+        return '<a href="'+link+'?'+request+'">'
+    }
+
     if (data_tot["Photos"].length>0){
         for (p in data_tot["Photos"]){
             photo=data_tot["Photos"][p]
             text=""
             if (Array.isArray(photo.thumbnail_url_path)){ //case of clustering
                 for (i in  photo.thumbnail_url_path){
-                    text+='<div style="width:19%;float:left; margin-left: 1%;margin-top: 1%">'
+                    text+=base_div_text
+                    text_a=img_text(photo.thumbnail_url_path[i]);
                     if (links){
-                        text+='<a href="'+photo.link[i]+'?'+request+'"><img src="'+photo.thumbnail_url_path[i]+'" alt="img" width="100%"></div>';
-                    }else{
-                        text+='<img src="'+photo.thumbnail_url_path[i]+'" alt="img" width="100%"></div>';
+                        text_a=a_text(photo.link[i])+text_a+"</a>";
                     }
+                    text+=text_a+"</div>"
                 }
             }else{  //normal case
-                text+='<div style="width:19%;float:left; margin-left: 1%;margin-top: 1%">'
+                text+=base_div_text
+                text_a='<img src="'+photo.thumbnail_url_path+'" alt="img" width="100%">'
                 if(links){
-                    text+='<a href="'+photo.link+'?'+request+'"><img src="'+photo.thumbnail_url_path+'" alt="img" width="100%"></a></div>';
-                }else{
-                    text+='<img src="'+photo.thumbnail_url_path+'" alt="img" width="100%"></div>'
+                    text_a=a_text(photo.link)+text_a+"</a>";
                 }
+                text+=text_a+"</div>"
             }
             $( "#photos_div" ).append(text)
         }
@@ -969,3 +977,4 @@ function add_photos_ajax(data_tot,links=false,request=""){
         $( "#photos_div" ).append("<p><b>No Photos available</b></p>")
     }
 }
+

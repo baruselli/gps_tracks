@@ -400,8 +400,10 @@
                 {% endif %}
             {%endif%}
 
-
-            </div>
+            {% for blo in track.check_if_blacklisted %}
+                <p><b>Blacklisted</b> by <a href= "{% url 'blacklist_obj' blo_id=blo.pk %}">{{blo}}</a> </p>
+            {%endfor%}
+        </div>
     </div>
 
 

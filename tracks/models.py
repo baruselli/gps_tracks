@@ -325,7 +325,17 @@ class Track(models.Model):
 
         return files
 
+    def check_if_blacklisted(self):
+        """it may happen that a track is imported but is also in blacklist,
+        so I check this"""
+        from blacklists.models import Blacklist
+        name = self.name_wo_path_wo_ext
+        result = Blacklist.all_test_files(files=[name],full_report=True)
 
+        if name in result["dict_names_objs"]:
+            return result["dict_names_objs"][name]
+        else:
+            return []
 
     def find_file(self,ext):
         """

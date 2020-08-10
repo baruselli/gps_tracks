@@ -33,7 +33,7 @@ class Blacklist(models.Model):
         return "Blacklist" + str(self.pk)
 
     def __repr__(self):
-        return "Blacklist %s - %s" %(file_name,method)
+        return "Blacklist %s - %s" %(self.file_name,self.method)
 
     def __str__(self):
         return str(self.file_name)

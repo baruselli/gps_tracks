@@ -196,6 +196,12 @@ body {
   width:1001px !important;
 }
 
+/*photos*/
+
 .img_photo:hover{
-  width:500px;
+  position:relative;
+  width:800px;
+  height:auto;
+  display:block;
+  z-index:999;
 }

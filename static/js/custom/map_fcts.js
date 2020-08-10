@@ -944,7 +944,7 @@ function legend_fct(map,colors,grades, id, name="Legend", decimals=1, father_id=
 function add_photos_ajax(data_tot,links=false,request=""){
     var base_div_text='<div style="width:19%;float:left; margin-left: 1%;margin-top: 1%">'
     function img_text(thumbnail_url){
-        return '<img src="'+thumbnail_url+'" alt="img" width="100%">'
+        return '<img class="img_photo" src="'+thumbnail_url+'" alt="img" width="100%">'
     }
     function a_text(link,url_path){
         return '<a href="'+link+'?'+request+'">'

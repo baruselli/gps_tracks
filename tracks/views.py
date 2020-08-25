@@ -139,6 +139,9 @@ class TrackView(View):
             except Exception as e:
                 track.error("Error TrackView groups: %s" %e)
 
+        #subtracks
+        subtrack_names=track.get_subtrack_names()
+
         reduce_points = request.GET.get('reduce_points', 'every')
 
         merged_tracks = track.merged_tracks(manager="all_objects").all()
@@ -168,6 +171,7 @@ class TrackView(View):
                 "merged_tracks": merged_tracks,
                 "unused_input_files":unused_input_files,
                 "n_photos_same_day": n_photos_same_day,
+                "subtrack_names":subtrack_names,
             },
         )
     def post(self, request, *args, **kwargs):

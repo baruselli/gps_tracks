@@ -191,7 +191,13 @@
                             {%if track.gpx_creator%}<tr><td> Gpx creator</td> <td>{{track.gpx_creator}}</td> </tr>{%endif%}
                             {%if track.gpx_author%}<tr><td> Gpx author</td> <td>{{track.gpx_author}}</td> </tr>{%endif%}
                             <tr><td> # points  </td> <td>{{track.n_points_gpx}}</td> </tr>
-                            {%if track.n_tracks > 0 %}<tr><td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td> <td>{{track.n_tracks}} {%if track.n_tracks > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>{%endif%}
+                            {%if track.n_tracks > 0 %}
+                            <tr><td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td> <td>{{track.n_tracks}} {%if track.n_tracks > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>
+                                {% for subtrack in subtrack_names %}
+                                    <tr><td></td><td>{{subtrack}}</td></tr>
+                                {%endfor%}
+                            {%endif%}
+    
                             {%if track.n_segments > 0 %}<tr><td><a href="{% url 'segments' track_id=track.pk %}?{{request}} "> # segments</a>  </td> <td>{{track.n_segments}}</td> </tr>{%endif%}
 
                         </tbody>
@@ -261,13 +267,15 @@
         </div>
 
         {% if tracks_same_day %}
-        <h2><a href="" onclick="plot_all_same_day(); return false;">Tracks same day</a>
+        <div class="row" style="float:left;width:400">
+            <h2><a href="" onclick="plot_all_same_day(); return false;">Tracks same day</a>
             <!-- <button class="hide_show_button" onclick="hide_show('tracks_day_block')">Hide/Show</button> -->
-        </h2>
-        <div id="tracks_day_block">
-        {% for t in tracks_same_day %}
-        <a href="{% url 'track_detail' track_id=t.pk %}">{{t.name_wo_path_wo_ext}}</a><br>
-        {% endfor %}
+            </h2>
+            <div id="tracks_day_block">
+            {% for t in tracks_same_day %}
+            <a href="{% url 'track_detail' track_id=t.pk %}">{{t.name_wo_path_wo_ext}}</a><br>
+            {% endfor %}
+            </div>
         </div>
         {% endif %}
 

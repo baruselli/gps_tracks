@@ -21,6 +21,8 @@ import numpy as np
 from .utils import get_colors
 from django.core.serializers.json import DjangoJSONEncoder
 import math
+import json
+
 
 logger = logging.getLogger("gps_tracks")
 
@@ -205,6 +207,9 @@ class Track(models.Model):
     is_merged = models.BooleanField(default=False, verbose_name="Merged from other tracks")
     merged_tracks = models.ManyToManyField("self", blank=True)
     #similarity = models.FloatField(null=True)  # for similarity calcs
+
+    subtrack_names = models.TextField(null=True, blank=True, unique=False,default="[]")
+    segment_names = models.TextField(null=True, blank=True, unique=False,default="[]")
 
     import pytz
     TIMEZONE_CHOICES = [(str(t), str(t)) for t in pytz.common_timezones]
@@ -1030,6 +1035,8 @@ class Track(models.Model):
                 self.td.subtrack_indices=[0]
                 self.td.save()
             if self.td.subtrack_indices:
+                subtrack_names=self.get_subtrack_names()
+
                 import bisect
                 from .utils import get_colors
                 split_indices = self.td.subtrack_indices
@@ -1037,9 +1044,19 @@ class Track(models.Model):
                 for i, a in enumerate(track_json_2):
                     split = bisect.bisect_right(split_indices, a["OriginalNumberAll"])
                     split = min(split, len(split_indices))  # otherwise the last one gets a +1
-                    a.update({"Subtrack": split,
+                    d={"Subtrack": split,
                             "SubtrackName": "Subtrack " + str(split),
-                            "ColorSubtrack": colors_splits[split - 1]})
+                            "ColorSubtrack": colors_splits[split - 1]}
+                    if subtrack_names:                          
+                        print(subtrack_names)
+                        try:
+                            print(subtrack_names[max(split-1,0)])
+                            d["SubtrackName"] = subtrack_names[max(split-1,0)]
+                        except:
+                            import traceback
+                            traceback.print_exc()
+                            pass
+                    a.update(d)
                     if "Distance" in a.keys():
                         try:
                             a.update({
@@ -2599,12 +2616,21 @@ class Track(models.Model):
                 subtrack_indices=[]
                 segment_indices=[]
                 point_number=0
+                subtrack_names=[]
+                segment_names=[]
                 for track in _gpx.tracks:
                     n_tracks+=1
                     subtrack_indices.append(point_number) #index of first point in subtrack
+                    if track.name:
+                        subtrack_names.append(track.name)
+                    elif track.description:
+                        subtrack_names.append(track.description)
+                    else:
+                        subtrack_names.append("Track %s" %n_tracks)
                     for segment in track.segments:
                         segment_indices.append(point_number)#index of first point in segment
                         n_segments+=1
+                        segment_names.append("Track %s - Segment %s" %(n_tracks, n_segments))
                         for point in segment.points:
                             point_number+=1
                             lats.append(point.latitude)
@@ -2628,7 +2654,8 @@ class Track(models.Model):
 
                 self.info("gpx: n_tracks %s n_segments %s n_times %s" %(n_tracks,n_segments,len(times)))
                 
-                
+                self.subtrack_names=json.dumps(subtrack_names)
+                self.segemnt_names=json.dumps(segment_names)
 
                 self.td.lats = lats
                 self.td.long = long
@@ -3808,6 +3835,12 @@ class Track(models.Model):
             "alts_smooth3":alts_smooth3,
             "times_smooth3":times_smooth3,
         }
+
+    def get_subtrack_names(self):
+        return json.loads(self.subtrack_names)
+
+    def get_segment_names(self):
+        return json.loads(self.segment_names)
 
 # def get_splits_pace_(self):
     #     from .utils import get_splits_pace, get_splits_hr

@@ -231,7 +231,7 @@ function c3plotjsondata (data,x,y,options={}){
     var y2_label = options.y2_label||"";
     var show_legend = options.show_legend!==false;//default true
     var height = options.height||200;
-    var width = options.width||600;
+    var width = options.width||550;
     var pointcolor = options.pointcolor===true;//default false
     var radius = options.radius||3;
     var popup_fct = options.popup_fct||point_popup;

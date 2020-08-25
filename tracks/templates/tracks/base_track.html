@@ -286,7 +286,7 @@
 
                 axes_splits={Speed:"y",Heartrate:"y2", Frequency:"y2"}
 
-                var width=600
+                var width=550
                 var height=200
                 var chart15=c3plot(xs1,columns_splits,[],"Splits","Speed(km/h)",'#c3_splits',type="line",mean_line=false,show_points=true,
                 show_y2=true,
@@ -386,7 +386,7 @@
                     columns_laps.push(y2_laps)
                 {%endif%}
 
-                var width=600
+                var width=550
                 var height=200
                 var chart15=c3plot(xs1,columns_laps,[],"Laps","Speed(km/h)",'#c3_laps',type="line",mean_line=false,show_points=true,show_y2=true,
                 axes=axes_laps,y2_label="Frequency, Heartrate").resize({height:height, width:width})

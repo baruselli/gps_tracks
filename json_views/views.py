@@ -514,18 +514,19 @@ class TrackJsonView(View):
         reduce_points = request.GET.get('reduce_points', 'every')
         points_line = request.GET.get('points_line', 'MultiLineString')
         every = int(request.GET.get('every', 0))
+        subtrack_number = request.GET.get('subtrack_number', None)
 
-        logger.info("TrackJsonView %s %s"%(track,reduce_points))
-
+        logger.info("TrackJsonView %s %s %s"%(track,reduce_points,subtrack_number))
 
         try:
-            track_json=track.get_json_LD(reduce_points=reduce_points)
+            track_json=track.get_json_LD(reduce_points=reduce_points,subtrack_number=subtrack_number)
             features = track.get_track_single_geojson(
                 color="blue", \
                 add_flat=False,\
                 reduce_points=reduce_points,\
                 points_line=points_line,
-                every=every
+                every=every,
+                subtrack_number=subtrack_number,
             )
             track_json["Track"]["details"]=features
         except Exception as e:

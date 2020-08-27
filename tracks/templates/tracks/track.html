@@ -194,7 +194,9 @@
                             {%if track.n_tracks > 0 %}
                             <tr><td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td> <td>{{track.n_tracks}} {%if track.n_tracks > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>
                                 {% for subtrack in subtrack_names %}
-                                    <tr><td></td><td>{{subtrack}}</td></tr>
+                                    <tr><td></td><td>
+                                        <a href="{% url 'subtrack' track_id=track.pk subtrack_number=forloop.counter %}?{{request}}">
+                                        {{subtrack}}</a></td></tr>
                                 {%endfor%}
                             {%endif%}
     

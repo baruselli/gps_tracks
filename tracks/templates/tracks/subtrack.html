@@ -1,0 +1,502 @@
+{% extends "tracks/base_track.html" %}
+{% load static %}
+{% load mathfilters %}
+{% load leaflet_tags %}
+{% load crispy_forms_tags %}
+
+{% block stylesheet %}
+    {{block.super}}
+   <style> 
+        #map {
+            height: 100%;
+            width: 80%;
+        }
+        #btn_tab_splits{
+            display:none;
+        }
+        #btn_tab_laps{
+            display:none;
+        }
+        #btn_tab_plots,#btn_tab_splits,#btn_tab_laps{
+            display:none;
+        }
+    }
+}
+    </style>
+{% endblock %}
+
+{%block title%}
+
+    <div style="width:60%; float:left;  text-align: center; position:relative; top:-25px;height:50px">
+        <h1 ><span style="vertical-align: top;"></span>{{track}} - {{subtrack_name}}</h1>
+    </div>
+
+{%endblock%}
+
+{% block buttons %}
+{%endblock%}
+
+{%block map%}
+    <div class="tabcontent" id="tab_map" style="display:block">
+        <div id="map_block">
+        <div style="height:70%">
+
+            <div class="row" id ="table_general_1" style="float:left;width:20%" >
+                <table>
+                    <thead>
+                    </thead>
+
+                    <tbody>
+                        <tr><td> Duration  </td> <td><b>{{track.duration_string2}}</b></td> </tr>
+                        <tr><td> Length </td> <td><b>{{track.length_3d|div:1000|floatformat:-2}}km</b></td> </tr>
+                        {% if track.has_times %}<tr><td> Speed</td><td><b>{% if track.avg_speed %}{{track.avg_speed|mul:3.6|floatformat:-1}}km/h{%endif%} - {{track.pace_string}}</b></td></tr>{%endif %}
+                        <tr><td> Time  </td> <td><b>{{track.beginning}}</b></td> </tr>
+                        {% if track.has_alts %}<tr><td> Altitude  </td> <td><b>{{track.min_alt|floatformat:0}}m - {{track.max_alt|floatformat:0}}m</b></td> </tr>{%endif%}
+                        {% if track.n_laps > 0 %}<tr><td> Laps  </td> <td>{{track.n_laps}}</td> </tr>{%endif%}
+                        {% if track.has_freq%}<tr><td> Frequency</td><td>{{track.total_frequency|floatformat:0}}steps/min</td></tr>{%endif%}
+                        {% if track.total_calories%}<tr><td> Calories</td><td>{{track.total_calories|floatformat:0}}</td></tr>{%endif%}
+                        {% if track.has_hr%}<tr><td> Heartrate</td><td>{{track.total_heartbeat|floatformat:0}}bpm</td></tr>{%endif%}
+                        <tr><td> Points</td> <td id="n_points">{{track.n_points}}
+                        {% if track.n_points != track.n_points_original %}<tr><td> Original Points</td><td>{{track.n_points_original}}</td></tr>{%endif%}
+                        {% if track.total_step_length%}<tr><td> Step Length</td><td>{{track.total_step_length|floatformat:-2}}m</td></tr>{%endif%}
+                        {% if track.total_steps%}<tr><td> Total Steps</td><td>{{track.total_steps}}</td></tr>{%endif%}
+                        {% if track.end_country%}<tr><td> Country</td><td>{{track.end_country}}</td></tr>{%endif%}
+                        {% if track.end_city%}<tr><td> City</td><td>{{track.end_city}}</td></tr>{%endif%}
+                        <tr><td> Photos</td><td>{{track.photos.count}}</td></tr>
+                        <tr><td> Waypoints</td><td>{{track.waypoints_all.count}}</td></tr>
+                        {% if track.description%}<tr><td> Notes</td><td>{{track.description|safe}}</td></tr>{%endif%}
+                        {% if track.is_merged %}
+                            <tr><td> Merged from tracks </td><td>{{merged_tracks.count}}</td></tr>
+                        {% endif %}
+                    </tbody>
+
+                </table>
+                <br>
+                
+                <form method="GET" action="{% url 'track_detail' track_id=track.pk %}" id="searchform">
+                    Show points:<select name="reduce_points">
+                        {% if every > 1 %}
+                        <option value="every" {%if reduce_points == "every"%} selected="selected" {%endif%}>Every {{every}}</option>
+                        {% endif %}
+                        <option value="all" {%if reduce_points == "all"%} selected="selected" {%endif%}>All</option>
+                        {% if track.td.smooth_indices %}  <option value="smooth1" {%if reduce_points == "smooth1"%} selected="selected" {%endif%}>Ramer-Douglas-Peucker 10m</option>{%endif%}
+                        {% if track.td.smooth2_indices %}  <option value="smooth2" {%if reduce_points == "smooth2"%} selected="selected" {%endif%}>Less than 100</option>{%endif%}
+                        {% if track.td.smooth3_indices %}  <option value="smooth3" {%if reduce_points == "smooth3"%} selected="selected" {%endif%}>Custom</option>{%endif%}
+                    </select>
+                    <input type="submit" value="Refresh">
+                    <button onclick="location.href='{% url 'track_smooth' track_id=track.pk  %}'" type="button">Custom choice</button>
+                </form>
+
+            </div>
+
+
+                <div id="map">
+                    {%leaflet_map "map" callback="window.map_init_basic"%}
+                    <div class="modal"></div>
+                </div>
+
+        </div>
+        </div>
+    </div>
+{%endblock%}
+
+{%block plots_title%}
+    <div class="tabcontent" id="tab_plots"> <!--div closed in block plots -->
+{%endblock%}
+
+{%block table%}
+
+    <!-- ----------------------details---------------------- -->
+    <div class="tabcontent" id="tab_details">
+        <div id="div_table">
+        <div style = "clear:both;"></div>
+        <!-- <h2>Details  -->
+            <!-- <button class="hide_show_button" onclick="hide_show('details_block')">Hide/Show</button> -->
+        <!-- </h2> -->
+        <div id="details_block">
+
+
+        <div class="row" id ="table_other" style="float:left;width:400" >
+        <h3>Other info</h3>
+        <table>
+                        <thead>
+                        </thead>
+
+                        <tbody>
+                            <tr><td> Beginning  </td> <td>{{track.beginning}}, {{track.initial_lat}}-{{track.initial_lon}}</td> </tr>
+                            <tr><td> End  </td> <td>{{track.end}}, {{track.final_lat}}-{{track.final_lon}}</td> </tr>
+                            <tr><td> Extension(s)  </td> <td>{{track.extension}}</td> </tr>
+                            <tr><td> Created  </td> <td>{{track.created}}</td> </tr>
+                            <tr><td> Modified  </td> <td>{{track.modified}}</td> </tr>
+                            <tr><td> User  </td> <td>{% if track.user%}<a href="{% url 'user_detail' user_id=track.user.pk  %}">{{track.user.name}}</a>{%endif%}</td> </tr>
+                            <tr><td> Start Address</td> <td>{{track.beg_address}}</td> </tr>
+                            <tr><td> Start City </td> <td>{{track.beg_country}} - {{track.beg_region}} - {{track.beg_city}}</td> </tr>
+                            <tr><td> End Address</td> <td>{{track.end_address}}</td> </tr>
+                            <tr><td> End City </td> <td>{{track.end_country}} - {{track.end_region}} - {{track.end_city}}</td> </tr>
+                            <tr><td> Timezone</td> <td>{{track.time_zone}}</td> </tr>
+
+                        </tbody>
+
+                    </table>
+            </div>
+
+
+        <div>
+        <h2>
+            <a href="{% url 'track_index' %}?special_search=similar_to_track&special_search_pk={{track.pk}}&how_many=20&exclude_excluded_groups=1">Similar tracks</a>
+                <!-- {% if similar_tracks %}<button class="hide_show_button" onclick="hide_show('similar_tracks_block')">Hide/Show</button>{% endif %} -->
+        </h2>
+        </div>
+
+    </div>
+
+            <div style = "clear:both;"></div>
+
+        </div>
+    </div>
+
+    <!-- --------------------files--------------------------- -->
+
+
+
+    <!-- -------------------groups---------------- -->
+
+    <!-- --------------------waypoints------------------------ -->
+
+    <div class="tabcontent" id="tab_waypoints">
+
+        {% if track.waypoints_all %}
+        <!-- <tr><td>  color  </td> <td>{{track.color}}</td> </tr> -->
+        <h2>
+            <a href="{% url 'waypoints_map' %}?track_ids={{track.pk}}"> Waypoints  </a>
+            <!-- <button class="hide_show_button" onclick="hide_show('wps_block')">Hide/Show</button> -->
+        </h2>
+        <div id="wps_block">
+            <table id="table_waypoints">
+                <tr>
+                    <th align= "left">Name</th>
+                    <th align= "left">Time</th>
+                    <th align= "left">Altitude</th>
+                    <th align= "left">Description</th>
+                    <th align= "left">Comment</th>
+                </tr>
+                {% for wp in track.waypoints_all %}
+                    <tr>
+                        <td><a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a></td>
+                        <td>{{wp.time}}</td>
+                        <td>{{wp.alt}}</td>
+                        <td>{{wp.description}}</td>
+                        <td>{{wp.comment}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {%endif%}
+    </div>
+
+    <!-- -----------------------photos----------------- -->
+
+    <div class="tabcontent" id="tab_photos">
+
+        {{track.photos_details}}
+        <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button>
+
+        {% if track.photos.all %}
+            <h2><a href="{% url 'track_photos_detail' track_id=track.pk %}?{{request}}">Photos ({{track.photos.count}})</a></h2>
+            <h3><a style="float:left" href="{% url 'photos_show'%}?track_ids={{track.pk}}">Quick show </a></h3><br>
+        {% endif %}
+
+        {% if track.date %}
+            <h3><a href="{% url 'photos_show' %}?min_date={{track.date|date:'Y-m-d'}}&max_date={{track.date|date:'Y-m-d'}}">Photos same day ({{n_photos_same_day}})</a></h3>
+        {% endif %}
+
+        {% if track.photos.all %}
+
+        <div id="photos_block">
+            <div  id="photos_div">
+            <br>
+                <!-- add photos here by AJAX-->
+            </div>
+            <div style="clear:left"></div>
+
+        <!--{% for photo in track.photos.all %}-->
+        <!--</td> <td><a href="{% url 'photo_detail' photo_id=photo.pk %}?{{request}}">{{photo.name}}</a><br>-->
+        <!--{% endfor %}-->
+    <br>
+            </div>
+        {%endif%}
+
+
+    </div>
+    <!-- --------------------other--------------- -->
+    <!-- <div class="tabcontent" id="tab_other"> -->
+
+
+
+</div>
+
+
+
+{%endblock %}
+
+
+{%block mapjs %}
+    <script type="text/javascript">
+    function map_init_basic (map, options) {
+
+    //parameters for plotting track
+
+    {% if track.avg_dist_points and every %}
+        nan=NaN
+        radius=Math.max(Math.min({{track.avg_dist_points}}*{{every}},{{default_radius}}),1)
+        if( Number.isNaN(radius)) radius={{default_radius}}
+    {%else%}
+        radius={{default_radius}}
+    {%endif%}
+
+    opacity=1
+    fillopacity=0.5
+    weight=3
+
+    //starting params for bounds
+    max_lat=-400
+    min_lat=400
+    max_long=-400
+    min_long=400
+
+    var None=NaN
+    //bounds
+    min_lat=Math.min(min_lat,{{track.min_lat}})
+    max_lat=Math.max(max_lat,{{track.max_lat}})
+    min_long=Math.min(min_long,{{track.min_long}})
+    max_long=Math.max(max_long,{{track.max_long}})
+
+    console.log(mapBounds)
+
+    if (!isNaN(min_lat)&&!isNaN(max_lat)&&!isNaN(min_long)&&!isNaN(max_long) &&
+            min_lat!=undefined && max_lat!=undefined && min_long!=undefined && max_long!=undefined){
+            if (min_lat===max_lat){
+                max_lat=max_lat+0.01
+                min_lat=min_lat-0.01
+            }
+            if (min_long===max_long){
+                max_long=max_long+0.01
+                min_long=min_long-0.01
+            }
+        var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+        bound_fitted=true
+    }else{
+        var mapBounds=null
+        bound_fitted=false
+    }
+
+    init_map_base(map,options, mapBounds=mapBounds,add_basemaps=false,track_pk={{track.pk}})
+
+
+    ///////////geoJSON
+
+    var geojsonMarkerOptions = {radius: radius,fillOpacity:fillopacity,stroke:true,opacity:opacity, weight:weight};
+    url='{% url 'track_json_list_of_points' track_id=track.pk %}?reduce_points={{reduce_points}}&subtrack_number={{subtrack_number}}'
+
+    alt=freq=hr=false
+    speed=true
+    {% if track.has_alts%}
+        alt=true
+    {% endif %}
+    {% if track.has_freq%}
+        freq=true
+    {% endif %}
+    {% if track.has_hr%}
+        hr=true
+    {% endif %}
+
+    console.log(url)
+    $.getJSON(url,function(data_tot){
+        console.log("data_tot",data_tot)
+        console.log("starting AJAX")
+        var t0 = performance.now();
+
+        if (!bound_fitted){
+            max_lat=-400
+            min_lat=400
+            max_long=-400
+            min_long=400
+            for (k in data_tot["waypoints"]){
+                min_lat=Math.min(min_lat, data_tot["waypoints"][k]["geometry"]["coordinates"][1])
+                max_lat=Math.max(max_lat,data_tot["waypoints"][k]["geometry"]["coordinates"][1])
+                min_long=Math.min(min_long,data_tot["waypoints"][k]["geometry"]["coordinates"][0])
+                max_long=Math.max(max_long,data_tot["waypoints"][k]["geometry"]["coordinates"][0])
+               }
+               console.log(min_lat,max_lat,min_long,max_long)
+
+            if (!isNaN(min_lat)&&!isNaN(max_lat)&&!isNaN(min_long)&&!isNaN(max_long)){
+               if (min_lat===max_lat){
+                   max_lat=max_lat-0.01
+                   max_lat=max_lat+0.01
+               }
+               if (min_long===max_long){
+                   min_long=min_long-0.01
+                   max_long=max_long+0.01
+               }
+                var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+                map.fitBounds(mapBounds);
+            }
+        }
+
+        ////Leaflet
+       read_data_leaflet_generic(data_tot,geojsonMarkerOptions,map,options={})
+
+        data=data_tot["Track"]["points"]
+
+      //  read_data_leaflet(data_tot,"{{track.name_wo_path_wo_ext}}",geojsonMarkerOptions,map,
+      //                          {"icons":icons,"alt":alt,"speed":speed,"freq":freq,"hr":hr})
+        ////C3, use the same data as leaflet
+
+         height=200
+         width=550
+
+        options1={
+                    "type":"scatter",
+                    "show_legend":false,
+                    "height":height,
+                    "width":width,
+                    "x_type":"time",
+                }
+        options2={
+                    "x_label":"Distance(km)",
+                    "type":"line",
+                    "show_legend":false,
+                    "height":height,
+                    "width":width,
+                }
+        //speed
+        {% if track.has_times %}
+            options1["y_label"]="Speed(km/h)"
+            options1["bind_to"]="#c3_11"
+            var chart1=c3plotjsondata(data,"DeltaTimeString",["Speed"],options1)
+            options2["y_label"]="Speed(km/h)"
+            options2["bind_to"]="#c3_21"
+            var chart5=c3plotjsondata(data,"Distance", ["Speed"],options2)
+        {% endif %}
+
+      //alt //vertical speed
+            console.log("data", data_tot)
+        hide_absent_data(data_tot,document)
+
+        {% if track.has_alts %}
+            {% if track.has_times %}
+                options1["y_label"]="Altitude(m)"
+                options1["bind_to"]="#c3_14"
+                var chart4=c3plotjsondata(data,"DeltaTimeString", ["Altitude"],options1)
+            {% endif %}
+            options2["y_label"]="Altitude(m)"
+            options2["bind_to"]="#c3_24"
+            var chart8=c3plotjsondata(data,"Distance", ["Altitude"],options2)
+            {% if track.has_times %}
+                options1["y_label"]="Slope(%)"
+                options1["bind_to"]="#c3_13"
+                var chart3=c3plotjsondata(data,"DeltaTimeString",["Slope"],options1)
+            {% endif %}
+            options2["y_label"]="Slope(%)"
+            options2["bind_to"]="#c3_23"
+            var chart7=c3plotjsondata(data,"Distance",["Slope"],options2)
+        {% endif %}
+        //heartrate
+        {% if track.has_hr %}
+            {% if track.has_times %}
+                options1["y_label"]="Heartbeat(bpm)"
+                options1["bind_to"]="#c3_16"
+                options1["colors_"]="ColorHeartrate Group"
+                options1["pointcolor"]=true
+                var chart11=c3plotjsondata(data,"DeltaTimeString",["Heartrate"],options1)
+            {% endif %}
+            options1["colors_"]=undefined //reset
+            options1["pointcolor"]=false //reset
+            options2["y_label"]="Heartbeat(bpm)"
+            options2["bind_to"]="#c3_26"
+            var chart12=c3plotjsondata(data,"Distance",["Heartrate"],options2)
+        {% endif %}
+        //frequency //step length
+        {% if track.has_freq %}
+            {% if track.has_times %}
+                options1["y_label"]="Frequency"
+                options1["bind_to"]="#c3_12"
+                var chart2=c3plotjsondata(data,"DeltaTimeString",["Frequency"],options1)
+            {% endif %}
+            options2["y_label"]="Frequency"
+            options2["bind_to"]="#c3_22"
+            var chart6=c3plotjsondata(data,"Distance",["Frequency"],options2)
+            {% if track.has_times %}
+                options1["y_label"]="Step Length(m)"
+                options1["bind_to"]="#c3_15"
+                var chart9= c3plotjsondata(data,"DeltaTimeString",["StepLength"],options1)
+            {% endif %}
+            options2["y_label"]="Step Length(m)"
+            options2["bind_to"]="#c3_25"
+            var chart10=c3plotjsondata(data,"Distance",["StepLength"],options2)
+        {% endif %}
+
+
+        // add photos
+        add_photos_ajax(data_tot,links=true)
+
+        var t1 = performance.now();
+        console.log("AJAX call took " + (t1 - t0) + " milliseconds.")
+
+
+    })
+
+
+
+
+
+
+    }
+
+    </script>
+{%endblock%}
+
+{% block form %}
+    <div class="tabcontent" id="tab_edit">
+
+            <div style="width:50%; float:left">
+                <h2>Edit
+                    <!-- <button class="hide_show_button" onclick="hide_show('edit_block')">Hide/Show</button> -->
+                </h2>
+                <div id="edit_block">
+                    {{ form.media }}
+                    {{ form.non_field_errors }}
+                    {{ form.errors }}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <input type="submit" value="OK">
+                    </form>
+                </div>
+            </div>
+    
+
+            <div style="width:50%; float:left">
+                <h2>Actions</h2>
+                <div>
+                    <h3>Delete</h3>
+                        <button onclick="deletetrack_fct()" type="button">Delete track</button>
+                        <button onclick="deletefile_fct()" type="button">Delete track and files</button>
+                        <button onclick="deletefile_bl_fct()" type="button">Delete track and blacklist</button>
+                    <h3>Export</h3>
+                        <button onclick="location.href='{% url 'serialize_track' track_id=track.pk  %}'" type="button">Export json</button>
+                        <button onclick="location.href='{% url 'track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
+                        <button onclick="location.href='{% url 'track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
+                    <!-- <button onclick="location.href='{% url 'find_laps' track_id=track.pk  %}?{{request}}'" type="button">Find Laps</button> -->
+                    <!-- <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button> -->
+                    <h3>Other</h3>
+                        <button onclick="location.href='{% url 'geopy_track' track_id=track.pk  %}'" type="button">Get infos on endpoints</button>
+                        <button onclick="location.href='{% url 'track_set_all_properties' track_id=track.pk  %}'" type="button">Refresh properties</button>
+                    <!-- <button onclick="test_fct()" type="button">Test</button> -->
+                </div>
+            </div>
+
+        <div style="clear:both">
+
+    </div>
+{% endblock%}

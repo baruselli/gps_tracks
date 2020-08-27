@@ -26,6 +26,8 @@ urlpatterns = [
     url(r"^track/rolling/(?P<track_id>[0-9]+)/$",views.TrackRollingView.as_view(),name="rolling_track",),
     url(r"^track/track_set_all_properties/(?P<track_id>[0-9]+)/$",views.TrackSetAllPropertiesView.as_view(),name="track_set_all_properties",),
 
+    url(r"^track/subtrack/(?P<track_id>[0-9]+)/(?P<subtrack_number>[0-9]+)$",views.SubTrackView.as_view(),name="subtrack",),
+
 
     # delete
     url(r"^import/tracks/delete$", views.DeleteTracks.as_view(), name="delete_tracks"),

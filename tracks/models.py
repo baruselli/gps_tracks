@@ -942,11 +942,11 @@ class Track(models.Model):
 
         return track_json
 
-    def original_index_from_reduced_index(self):
+    def original_index_from_reduced_index(self,reduced_index):
         pass
 
-    def reduced_index_from_original_index(self):
-        pass
+    def reduced_index_from_original_index(self,original_index):
+        return original_index//self.index_every - self.starting_index
 
     def set_json_LD(self, how="all"):
         """Returns json as a list of dictionaries, one for each point"""
@@ -1122,7 +1122,8 @@ class Track(models.Model):
 
     def get_json_LD(self, reduce_points="every",do_waypoints=True,do_photos=True,
                     global_wps=True, global_photos=True,global_lines=True,global_geojson=True,
-                    color=None,every=None, is_from_many_tracks=False):
+                    color=None,every=None, is_from_many_tracks=False,
+                    subtrack_number=None):
         """
         Returns json for track as a list of dictionaries, one dict per point.
         Plus other infos:legend, which features track has.
@@ -1232,6 +1233,9 @@ class Track(models.Model):
             if not every:
                 every = self.get_every()
             json_ok = track_json_2[::int(every)]
+
+        if subtrack_number is not None:
+            json_ok = json_ok[:]
 
         ## update number & other stuff
         for i,a in enumerate(json_ok):
@@ -1437,7 +1441,7 @@ class Track(models.Model):
 
     def get_track_single_geojson(self, color=None, points_line="MultiPoint", reduce_points="every", 
                         add_flat=True, number=0,waypoints=False,photos=False,
-                        every=0):
+                        every=0,subtrack_number=None):
         # try to read from db
 
         if self.json_properties and not OptionSet.get_option("ALWAYS_RELOAD_TRACK_JSON"):
@@ -1506,7 +1510,8 @@ class Track(models.Model):
                 coordinates_all=[[lon, lat] for lon,lat in zip(self.td.long, self.td.lats) ]
             track_json["geometry"]["coordinates"]=self.get_reduced_coordinates(coordinates_all,
                                                     reduce_points=reduce_points,
-                                                    every=every)
+                                                    every=every,
+                                                    subtrack_number=subtrack_number)
         # if how == "line_smooth2" or how=="smooth2":
         #     track_json["geometry"]={
         #                     "type": "LineString",
@@ -1576,7 +1581,26 @@ class Track(models.Model):
 
         return track_json
 
-    def get_reduced_coordinates(self, coordinates,reduce_points="smooth2",every=0):
+    def get_subtrack_bounds(self,subtrack_number=1):
+        """subtrack_number starts form 1"""
+        subtrack_number=int(subtrack_number)
+        subtrack_indices=self.td.subtrack_indices
+        try:
+            initial_bound=subtrack_indices[subtrack_number-1]
+        except:
+            initial_bound=0
+        try:
+            final_bound=subtrack_indices[subtrack_number]
+        except:
+            final_bound=-1
+
+        # indices are wrt initial indices, not with every_index
+        initial_bound=self.reduced_index_from_original_index(initial_bound)
+        final_bound=self.reduced_index_from_original_index(final_bound)
+
+        return [initial_bound,final_bound]
+
+    def get_reduced_coordinates(self, coordinates,reduce_points="smooth2",every=0,subtrack_number=None):
         """
         coordinates->LineString is list of pairs
         coordinates->MultiLineString is list of lists pairs
@@ -1593,6 +1617,14 @@ class Track(models.Model):
             coordinates_lp = coordinates
             # convert to list of lists of pairs
             coordinates_llp = [coordinates_lp]
+
+        if subtrack_number is not None:
+            bounds=self.get_subtrack_bounds(subtrack_number)
+            print(bounds, "bounds")
+            # for now ignore segments!
+            # TODO: keep segments
+            print(len(coordinates_llp),len(coordinates_lp))
+            coordinates_llp = [coordinates_lp[bounds[0]:bounds[1]]]
 
         if reduce_points=="smooth1":
             if self.td.smooth_indices:
@@ -3838,6 +3870,15 @@ class Track(models.Model):
 
     def get_subtrack_names(self):
         return json.loads(self.subtrack_names)
+
+    def get_subtrack_name(self,n=1):
+        n=int(n)
+        names = self.get_subtrack_names()
+        try:
+            return names[n-1]
+        except:
+            return "SubTrack %s" %n
+
 
     def get_segment_names(self):
         return json.loads(self.segment_names)

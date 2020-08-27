@@ -1057,3 +1057,30 @@ class TracksSetAllPropertiesView(View):
         return HttpResponseRedirect(
             reverse("import")
         )
+
+### subtrack
+class SubTrackView(View):
+
+    template_name = "tracks/subtrack.html"
+
+    def get(self, request, *args, **kwargs):
+
+        logger.info("SubTrackView")
+        import time
+        start = time.time()
+
+        track_id = kwargs.get("track_id", None)
+        subtrack_number = kwargs.get("subtrack_number", None)
+        track=Track.all_objects.get(pk=track_id)
+        every=track.get_every()
+        subtrack_name=track.get_subtrack_name(subtrack_number)
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "track": track,
+                "subtrack_number": subtrack_number,
+                "subtrack_name": subtrack_name,
+            },
+        )

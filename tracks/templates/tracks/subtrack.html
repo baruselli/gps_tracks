@@ -26,15 +26,17 @@
 
 {%block title%}
 
-    {% if previous_subtrack_name %}
     <div style="width:20%; float:left; text-align: left;">
+        {% if previous_subtrack_name %}
         <a href="{% url 'subtrack' track_id=track.pk subtrack_number=previous_subtrack_number %}">&larr; 
             <!-- {{previous_track.date}} -  -->
             {{previous_subtrack_name|truncatechars:30}} ({{previous_subtrack_number}})
             <!-- &larr; -->
         </a>
+        {% else %}
+        <br>
+        {% endif %}
     </div>
-    {% endif %}
 
 
     <div style="width:60%; float:left;  text-align: center; position:relative; top:-25px;height:100px">
@@ -51,6 +53,8 @@
             <!-- &larr; -->
         </a>
     </div>
+    {% else %}
+    <br>
     {% endif %}
 
     <div style="clear:both"></div>

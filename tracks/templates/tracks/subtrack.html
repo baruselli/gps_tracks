@@ -9,7 +9,6 @@
    <style> 
         #map {
             height: 100%;
-            width: 80%;
         }
         #btn_tab_splits{
             display:none;
@@ -17,7 +16,7 @@
         #btn_tab_laps{
             display:none;
         }
-        #btn_tab_plots,#btn_tab_splits,#btn_tab_laps{
+        #btn_tab_splits,#btn_tab_laps,#btn_tab_details,#btn_tab_files,#btn_tab_groups,#btn_tab_edit,#btn_tab_photos,#btn_tab_logs{
             display:none;
         }
     }
@@ -27,9 +26,34 @@
 
 {%block title%}
 
-    <div style="width:60%; float:left;  text-align: center; position:relative; top:-25px;height:50px">
-        <h1 ><span style="vertical-align: top;"></span>{{track}} - {{subtrack_name}}</h1>
+    {% if previous_subtrack_name %}
+    <div style="width:20%; float:left; text-align: left;">
+        <a href="{% url 'subtrack' track_id=track.pk subtrack_number=previous_subtrack_number %}">&larr; 
+            <!-- {{previous_track.date}} -  -->
+            {{previous_subtrack_name|truncatechars:30}} ({{previous_subtrack_number}})
+            <!-- &larr; -->
+        </a>
     </div>
+    {% endif %}
+
+
+    <div style="width:60%; float:left;  text-align: center; position:relative; top:-25px;height:100px">
+        <h1 ><span style="vertical-align: top;"></span>
+            <a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a>
+             <br>{{subtrack_name}} ({{subtrack_number}})</h1>
+    </div>
+
+    {% if next_subtrack_name %}
+    <div style="width:20%; float:left; text-align: left;">
+        <a href="{% url 'subtrack' track_id=track.pk subtrack_number=next_subtrack_number %}">&rarr; 
+            <!-- {{next_track.date}} -  -->
+            {{next_subtrack_name|truncatechars:30}} ({{next_subtrack_number}})
+            <!-- &larr; -->
+        </a>
+    </div>
+    {% endif %}
+
+    <div style="clear:both"></div>
 
 {%endblock%}
 
@@ -39,63 +63,13 @@
 {%block map%}
     <div class="tabcontent" id="tab_map" style="display:block">
         <div id="map_block">
-        <div style="height:70%">
-
-            <div class="row" id ="table_general_1" style="float:left;width:20%" >
-                <table>
-                    <thead>
-                    </thead>
-
-                    <tbody>
-                        <tr><td> Duration  </td> <td><b>{{track.duration_string2}}</b></td> </tr>
-                        <tr><td> Length </td> <td><b>{{track.length_3d|div:1000|floatformat:-2}}km</b></td> </tr>
-                        {% if track.has_times %}<tr><td> Speed</td><td><b>{% if track.avg_speed %}{{track.avg_speed|mul:3.6|floatformat:-1}}km/h{%endif%} - {{track.pace_string}}</b></td></tr>{%endif %}
-                        <tr><td> Time  </td> <td><b>{{track.beginning}}</b></td> </tr>
-                        {% if track.has_alts %}<tr><td> Altitude  </td> <td><b>{{track.min_alt|floatformat:0}}m - {{track.max_alt|floatformat:0}}m</b></td> </tr>{%endif%}
-                        {% if track.n_laps > 0 %}<tr><td> Laps  </td> <td>{{track.n_laps}}</td> </tr>{%endif%}
-                        {% if track.has_freq%}<tr><td> Frequency</td><td>{{track.total_frequency|floatformat:0}}steps/min</td></tr>{%endif%}
-                        {% if track.total_calories%}<tr><td> Calories</td><td>{{track.total_calories|floatformat:0}}</td></tr>{%endif%}
-                        {% if track.has_hr%}<tr><td> Heartrate</td><td>{{track.total_heartbeat|floatformat:0}}bpm</td></tr>{%endif%}
-                        <tr><td> Points</td> <td id="n_points">{{track.n_points}}
-                        {% if track.n_points != track.n_points_original %}<tr><td> Original Points</td><td>{{track.n_points_original}}</td></tr>{%endif%}
-                        {% if track.total_step_length%}<tr><td> Step Length</td><td>{{track.total_step_length|floatformat:-2}}m</td></tr>{%endif%}
-                        {% if track.total_steps%}<tr><td> Total Steps</td><td>{{track.total_steps}}</td></tr>{%endif%}
-                        {% if track.end_country%}<tr><td> Country</td><td>{{track.end_country}}</td></tr>{%endif%}
-                        {% if track.end_city%}<tr><td> City</td><td>{{track.end_city}}</td></tr>{%endif%}
-                        <tr><td> Photos</td><td>{{track.photos.count}}</td></tr>
-                        <tr><td> Waypoints</td><td>{{track.waypoints_all.count}}</td></tr>
-                        {% if track.description%}<tr><td> Notes</td><td>{{track.description|safe}}</td></tr>{%endif%}
-                        {% if track.is_merged %}
-                            <tr><td> Merged from tracks </td><td>{{merged_tracks.count}}</td></tr>
-                        {% endif %}
-                    </tbody>
-
-                </table>
-                <br>
-                
-                <form method="GET" action="{% url 'track_detail' track_id=track.pk %}" id="searchform">
-                    Show points:<select name="reduce_points">
-                        {% if every > 1 %}
-                        <option value="every" {%if reduce_points == "every"%} selected="selected" {%endif%}>Every {{every}}</option>
-                        {% endif %}
-                        <option value="all" {%if reduce_points == "all"%} selected="selected" {%endif%}>All</option>
-                        {% if track.td.smooth_indices %}  <option value="smooth1" {%if reduce_points == "smooth1"%} selected="selected" {%endif%}>Ramer-Douglas-Peucker 10m</option>{%endif%}
-                        {% if track.td.smooth2_indices %}  <option value="smooth2" {%if reduce_points == "smooth2"%} selected="selected" {%endif%}>Less than 100</option>{%endif%}
-                        {% if track.td.smooth3_indices %}  <option value="smooth3" {%if reduce_points == "smooth3"%} selected="selected" {%endif%}>Custom</option>{%endif%}
-                    </select>
-                    <input type="submit" value="Refresh">
-                    <button onclick="location.href='{% url 'track_smooth' track_id=track.pk  %}'" type="button">Custom choice</button>
-                </form>
-
-            </div>
-
-
+            <div style="height:70%">
+    
                 <div id="map">
                     {%leaflet_map "map" callback="window.map_init_basic"%}
                     <div class="modal"></div>
                 </div>
-
-        </div>
+            </div>
         </div>
     </div>
 {%endblock%}
@@ -108,51 +82,6 @@
 
     <!-- ----------------------details---------------------- -->
     <div class="tabcontent" id="tab_details">
-        <div id="div_table">
-        <div style = "clear:both;"></div>
-        <!-- <h2>Details  -->
-            <!-- <button class="hide_show_button" onclick="hide_show('details_block')">Hide/Show</button> -->
-        <!-- </h2> -->
-        <div id="details_block">
-
-
-        <div class="row" id ="table_other" style="float:left;width:400" >
-        <h3>Other info</h3>
-        <table>
-                        <thead>
-                        </thead>
-
-                        <tbody>
-                            <tr><td> Beginning  </td> <td>{{track.beginning}}, {{track.initial_lat}}-{{track.initial_lon}}</td> </tr>
-                            <tr><td> End  </td> <td>{{track.end}}, {{track.final_lat}}-{{track.final_lon}}</td> </tr>
-                            <tr><td> Extension(s)  </td> <td>{{track.extension}}</td> </tr>
-                            <tr><td> Created  </td> <td>{{track.created}}</td> </tr>
-                            <tr><td> Modified  </td> <td>{{track.modified}}</td> </tr>
-                            <tr><td> User  </td> <td>{% if track.user%}<a href="{% url 'user_detail' user_id=track.user.pk  %}">{{track.user.name}}</a>{%endif%}</td> </tr>
-                            <tr><td> Start Address</td> <td>{{track.beg_address}}</td> </tr>
-                            <tr><td> Start City </td> <td>{{track.beg_country}} - {{track.beg_region}} - {{track.beg_city}}</td> </tr>
-                            <tr><td> End Address</td> <td>{{track.end_address}}</td> </tr>
-                            <tr><td> End City </td> <td>{{track.end_country}} - {{track.end_region}} - {{track.end_city}}</td> </tr>
-                            <tr><td> Timezone</td> <td>{{track.time_zone}}</td> </tr>
-
-                        </tbody>
-
-                    </table>
-            </div>
-
-
-        <div>
-        <h2>
-            <a href="{% url 'track_index' %}?special_search=similar_to_track&special_search_pk={{track.pk}}&how_many=20&exclude_excluded_groups=1">Similar tracks</a>
-                <!-- {% if similar_tracks %}<button class="hide_show_button" onclick="hide_show('similar_tracks_block')">Hide/Show</button>{% endif %} -->
-        </h2>
-        </div>
-
-    </div>
-
-            <div style = "clear:both;"></div>
-
-        </div>
     </div>
 
     <!-- --------------------files--------------------------- -->
@@ -164,70 +93,13 @@
     <!-- --------------------waypoints------------------------ -->
 
     <div class="tabcontent" id="tab_waypoints">
-
-        {% if track.waypoints_all %}
-        <!-- <tr><td>  color  </td> <td>{{track.color}}</td> </tr> -->
-        <h2>
-            <a href="{% url 'waypoints_map' %}?track_ids={{track.pk}}"> Waypoints  </a>
-            <!-- <button class="hide_show_button" onclick="hide_show('wps_block')">Hide/Show</button> -->
-        </h2>
-        <div id="wps_block">
-            <table id="table_waypoints">
-                <tr>
-                    <th align= "left">Name</th>
-                    <th align= "left">Time</th>
-                    <th align= "left">Altitude</th>
-                    <th align= "left">Description</th>
-                    <th align= "left">Comment</th>
-                </tr>
-                {% for wp in track.waypoints_all %}
-                    <tr>
-                        <td><a href="{% url 'waypoint_detail' waypoint_id=wp.pk %}">{{wp.name}}</a></td>
-                        <td>{{wp.time}}</td>
-                        <td>{{wp.alt}}</td>
-                        <td>{{wp.description}}</td>
-                        <td>{{wp.comment}}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-        {%endif%}
     </div>
 
     <!-- -----------------------photos----------------- -->
 
     <div class="tabcontent" id="tab_photos">
-
-        {{track.photos_details}}
-        <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button>
-
-        {% if track.photos.all %}
-            <h2><a href="{% url 'track_photos_detail' track_id=track.pk %}?{{request}}">Photos ({{track.photos.count}})</a></h2>
-            <h3><a style="float:left" href="{% url 'photos_show'%}?track_ids={{track.pk}}">Quick show </a></h3><br>
-        {% endif %}
-
-        {% if track.date %}
-            <h3><a href="{% url 'photos_show' %}?min_date={{track.date|date:'Y-m-d'}}&max_date={{track.date|date:'Y-m-d'}}">Photos same day ({{n_photos_same_day}})</a></h3>
-        {% endif %}
-
-        {% if track.photos.all %}
-
-        <div id="photos_block">
-            <div  id="photos_div">
-            <br>
-                <!-- add photos here by AJAX-->
-            </div>
-            <div style="clear:left"></div>
-
-        <!--{% for photo in track.photos.all %}-->
-        <!--</td> <td><a href="{% url 'photo_detail' photo_id=photo.pk %}?{{request}}">{{photo.name}}</a><br>-->
-        <!--{% endfor %}-->
-    <br>
-            </div>
-        {%endif%}
-
-
     </div>
+
     <!-- --------------------other--------------- -->
     <!-- <div class="tabcontent" id="tab_other"> -->
 
@@ -438,7 +310,7 @@
 
 
         // add photos
-        add_photos_ajax(data_tot,links=true)
+     add_photos_ajax(data_tot,links=true)
 
         var t1 = performance.now();
         console.log("AJAX call took " + (t1 - t0) + " milliseconds.")

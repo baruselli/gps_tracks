@@ -1070,10 +1070,25 @@ class SubTrackView(View):
         start = time.time()
 
         track_id = kwargs.get("track_id", None)
-        subtrack_number = kwargs.get("subtrack_number", None)
+        subtrack_number = int(kwargs.get("subtrack_number", 1))
         track=Track.all_objects.get(pk=track_id)
         every=track.get_every()
         subtrack_name=track.get_subtrack_name(subtrack_number)
+
+        n_subtracks=len(track.td.subtrack_indices)
+
+        subtrack_name=track.get_subtrack_name(subtrack_number)
+
+        if subtrack_number>1:
+            previous_subtrack_name=track.get_subtrack_name(subtrack_number-1)
+        else:
+            previous_subtrack_name=None
+        if subtrack_number<n_subtracks:
+            next_subtrack_name=track.get_subtrack_name(subtrack_number+1)
+        else:
+            next_subtrack_name=None
+
+
 
         return render(
             request,
@@ -1082,5 +1097,9 @@ class SubTrackView(View):
                 "track": track,
                 "subtrack_number": subtrack_number,
                 "subtrack_name": subtrack_name,
+                "previous_subtrack_name": previous_subtrack_name,
+                "previous_subtrack_number": subtrack_number-1,
+                "next_subtrack_name": next_subtrack_name,
+                "next_subtrack_number": subtrack_number+1,
             },
         )

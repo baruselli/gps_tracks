@@ -945,8 +945,14 @@ class Track(models.Model):
     def original_index_from_reduced_index(self,reduced_index):
         pass
 
-    def reduced_index_from_original_index(self,original_index):
-        return original_index//self.index_every - self.starting_index
+    def reduced_index_from_original_index(self,original_index,upper=False):
+        res=original_index//self.index_every - self.starting_index
+        if original_index%self.index_every==0:
+            return res
+        elif upper:
+            return res + 1 
+        else:
+            return res
 
     def set_json_LD(self, how="all"):
         """Returns json as a list of dictionaries, one for each point"""
@@ -1214,6 +1220,10 @@ class Track(models.Model):
 
         #print(track_json_2[0])
 
+        if subtrack_number is not None:
+            reduce_points=None
+            every=1
+
         ## take only some indices
         json_ok=[]
         if len(self.td.smooth_indices) and reduce_points == "smooth1":
@@ -1235,7 +1245,9 @@ class Track(models.Model):
             json_ok = track_json_2[::int(every)]
 
         if subtrack_number is not None:
-            json_ok = json_ok[:]
+            i,f=self.get_subtrack_bounds(subtrack_number)
+            print(subtrack_number,i,f)
+            json_ok = json_ok[i:f]
 
         ## update number & other stuff
         for i,a in enumerate(json_ok):
@@ -1594,9 +1606,9 @@ class Track(models.Model):
         except:
             final_bound=-1
 
-        # indices are wrt initial indices, not with every_index
-        initial_bound=self.reduced_index_from_original_index(initial_bound)
-        final_bound=self.reduced_index_from_original_index(final_bound)
+        # indices are wrt initial indices, without every_index
+        initial_bound=self.reduced_index_from_original_index(initial_bound,upper=True)
+        final_bound=self.reduced_index_from_original_index(final_bound,upper=False)
 
         return [initial_bound,final_bound]
 

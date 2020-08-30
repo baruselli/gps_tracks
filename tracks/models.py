@@ -1066,7 +1066,7 @@ class Track(models.Model):
                     if "Distance" in a.keys():
                         try:
                             a.update({
-                                "SubtracktDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
+                                "SubtrackDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
                             # distance wrt first point in the split
                             })
                         except Exception as e:
@@ -1518,8 +1518,12 @@ class Track(models.Model):
         else:
             try:
                 coordinates_all=track_json["coordinates_all"]
+                #print(len(coordinates_all),len(coordinates_all[0]),len(coordinates_all[1]),len(coordinates_all[2]))
+                #TODO: wrong
+                print("a")
             except:
                 coordinates_all=[[lon, lat] for lon,lat in zip(self.td.long, self.td.lats) ]
+                print("b")
             track_json["geometry"]["coordinates"]=self.get_reduced_coordinates(coordinates_all,
                                                     reduce_points=reduce_points,
                                                     every=every,
@@ -1672,12 +1676,20 @@ class Track(models.Model):
 
         return coordinates_1
 
+    def get_indices_reduced(self,indices):
+        """corregge gli indici (e.g. segmenti e subtrack) in base a quale frazione di punti sono stati importati"""
+        every=self.index_every
+        if not every or every==1:
+            return indices
+        else:
+            return [self.reduced_index_from_original_index(a,upper=True) for a in indices]
+
     def get_coordinates_for_multilinestring(self):
         all_coordinates = []
         try:
             coordinates_0 = [[lon, lat] for lon,lat in zip(self.td.long, self.td.lats) ]
-            segments = self.td.segment_indices or [0]
-            subtracks = self.td.subtrack_indices or [0]
+            segments = self.get_indices_reduced(self.td.segment_indices or [0])
+            subtracks = self.get_indices_reduced(self.td.subtrack_indices or [0])
             # for history I have one segment per point, so I would get no lines
             if len(segments)>=self.n_points:
                 segments=[0]

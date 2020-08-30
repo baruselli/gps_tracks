@@ -76,7 +76,7 @@ class Blacklist(models.Model):
             files=find_files_in_dir()
         
 
-        logger.info("%s test_files" %self)
+        logger.debug("%s test_files" %self)
 
         #extract names without path and extensions
         file_names = [os.path.splitext(os.path.split(f)[-1])[0] for f in files]

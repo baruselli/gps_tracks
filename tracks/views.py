@@ -1088,6 +1088,8 @@ class SubTrackView(View):
         else:
             next_subtrack_name=None
 
+        subtrack_names=track.get_subtrack_names()
+
 
 
         return render(
@@ -1101,5 +1103,7 @@ class SubTrackView(View):
                 "previous_subtrack_number": subtrack_number-1,
                 "next_subtrack_name": next_subtrack_name,
                 "next_subtrack_number": subtrack_number+1,
+                "request": request.GET.urlencode(),
+                "subtrack_names":subtrack_names,
             },
         )

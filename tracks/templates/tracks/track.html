@@ -193,13 +193,7 @@
                             <tr><td> # points  </td> <td>{{track.n_points_gpx}}</td> </tr>
                             {%if track.n_tracks > 0 %}
                             <tr><td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td> <td>{{track.n_tracks}} {%if track.n_tracks > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>
-                                {% for subtrack in subtrack_names %}
-                                    <tr><td></td><td>
-                                        <a href="{% url 'subtrack' track_id=track.pk subtrack_number=forloop.counter %}?{{request}}">
-                                        {{subtrack}}</a></td></tr>
-                                {%endfor%}
                             {%endif%}
-    
                             {%if track.n_segments > 0 %}<tr><td><a href="{% url 'segments' track_id=track.pk %}?{{request}} "> # segments</a>  </td> <td>{{track.n_segments}}</td> </tr>{%endif%}
 
                         </tbody>
@@ -268,6 +262,19 @@
         {%endif%}
         </div>
 
+        <div>
+            <h2>
+                <a href="{% url 'track_index' %}?special_search=similar_to_track&special_search_pk={{track.pk}}&how_many=20&exclude_excluded_groups=1">Similar tracks</a>
+                    <!-- {% if similar_tracks %}<button class="hide_show_button" onclick="hide_show('similar_tracks_block')">Hide/Show</button>{% endif %} -->
+            </h2>
+        </div>
+        <div>
+            <h2>
+                <!-- <a href="{% url 'track_index' %}?lat={{track.avg_lat}}&lng={{track.avg_long}}&dist=100&how_many=20&use_color=1&how=line_smooth2">Nearby tracks</a> -->
+                <a href="{% url 'track_index' %}?special_search=close_to_track&special_search_pk={{track.pk}}&how_many=20&exclude_excluded_groups=1">Nearby tracks</a>
+            </h2>
+        </div>
+
         {% if tracks_same_day %}
         <div class="row" style="float:left;width:400">
             <h2><a href="" onclick="plot_all_same_day(); return false;">Tracks same day</a>
@@ -284,10 +291,6 @@
 
 
         <div>
-        <h2>
-            <a href="{% url 'track_index' %}?special_search=similar_to_track&special_search_pk={{track.pk}}&how_many=20&exclude_excluded_groups=1">Similar tracks</a>
-                <!-- {% if similar_tracks %}<button class="hide_show_button" onclick="hide_show('similar_tracks_block')">Hide/Show</button>{% endif %} -->
-        </h2>
         <div id="similar_tracks_block">
             {% if similar_tracks %}
                     <table id="similar_tracks_table">
@@ -306,12 +309,6 @@
         </div>
         </div>
 
-        <div>
-            <h2>
-                <!-- <a href="{% url 'track_index' %}?lat={{track.avg_lat}}&lng={{track.avg_long}}&dist=100&how_many=20&use_color=1&how=line_smooth2">Nearby tracks</a> -->
-                <a href="{% url 'track_index' %}?special_search=close_to_track&special_search_pk={{track.pk}}&how_many=20&exclude_excluded_groups=1">Nearby tracks</a>
-            </h2>
-        </div>
     </div>
 
             <div style = "clear:both;"></div>

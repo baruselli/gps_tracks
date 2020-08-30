@@ -83,6 +83,15 @@
             height: 70%;
             width: 100%;
         }
+        {% if track_n_tracks < 2 %}
+        #btn_tab_subtracks{
+                display: none;
+            }
+        {%endif%}
+        .selected_subtrack{
+            font-weight: bold;
+            font-size: 130%;
+        }
     </style>
 {%endblock%}
 
@@ -105,6 +114,7 @@
         <button class="tablinks " id="btn_tab_plots" onclick="open_tab(event, 'tab_plots')"><h2>Plots</h2></a></li>
         <button class="tablinks" id="btn_tab_files" onclick="open_tab(event, 'tab_files')"><h2>Files</h2></a></li>
         <button class="tablinks" id="btn_tab_groups" onclick="open_tab(event, 'tab_groups')"><h2>Groups</h2></a></li>            
+        <button class="tablinks" id="btn_tab_subtracks" onclick="open_tab(event, 'tab_subtracks')"><h2>Tracks</h2></a></li>
         <button class="tablinks" id="btn_tab_photos" onclick="open_tab(event, 'tab_photos')"><h2>Photos</h2></a></li>
         <button class="tablinks" id="btn_tab_waypoints" onclick="open_tab(event, 'tab_waypoints')"><h2>Waypoints</h2></a></li>
         <button class="tablinks" id="btn_tab_cardio" onclick="open_tab(event, 'tab_cardio')"><h2>Cardio</h2></a></li>
@@ -390,6 +400,93 @@
                 var height=200
                 var chart15=c3plot(xs1,columns_laps,[],"Laps","Speed(km/h)",'#c3_laps',type="line",mean_line=false,show_points=true,show_y2=true,
                 axes=axes_laps,y2_label="Frequency, Heartrate").resize({height:height, width:width})
+            {%endif%}
+            {%endif%}
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% block subtracks %}
+    {% if 1 %}
+    <div class="tabcontent" id="tab_subtracks">
+
+        <div id ="div_subtracks">
+            <div id="subtracks_block">
+
+                        <div class="row" id ="table_splits" width=100% style="float: left">
+                            <table id="subtracks_table">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td>
+                                        <td>{{track.n_tracks}}</td>
+                                        <td> </td> 
+                                    </tr>
+                                    {% for subtrack in subtrack_names %}
+                                        <tr
+                                        {% if forloop.counter == subtrack_number %}
+                                        class="selected_subtrack"
+                                        {%endif %}
+                                        >
+                                            <td></td><td>
+                                            {{forloop.counter}}</td><td>
+                                            <a href="{% url 'subtrack' track_id=track.pk subtrack_number=forloop.counter %}?{{request}}">
+                                            {{subtrack}}</a></td>
+                                        </tr>
+                                    {%endfor%}
+                            </table>
+                        </div>
+
+            </div>
+        <div style = "clear:both;"></div>
+        </div>
+    </div>
+    
+        <script>
+                //////Splits
+            {% if stats_splits %}
+            {% if track.has_times or track.has_hr or track.has_freq %}
+            var None=0
+            var nan=0
+
+                y1_splits={{stats_splits.speeds}}
+                y2_splits={{stats_splits.hrs}}
+                y3_splits={{stats_splits.freqs}}
+
+
+                //console.log(y1_splits,y2_splits,y3_splits);
+                x1_splits=Array.from(y1_splits,(val,index)=>index+1);
+                x2_splits=Array.from(y2_splits,(val,index)=>index+1);
+                x3_splits=Array.from(y3_splits,(val,index)=>index+1);
+                y1_splits.unshift("Speed");
+                x1_splits.unshift("x_speed");
+                xs1=[];
+                xs1["Speed"]="x_speed";
+                columns_splits=[x1_splits,y1_splits]
+                {% if track.has_freq %}
+                    xs1["Frequency"]="x_frequency";
+                    y3_splits.unshift("Frequency");
+                    x3_splits.unshift("x_frequency");
+                    columns_splits.push(x3_splits)
+                    columns_splits.push(y3_splits)
+                {%endif%}
+
+                {% if track.has_hr %}
+                    y2_splits.unshift("Heartrate");
+                    xs1["Heartrate"]="x_heartrate";
+                    x2_splits.unshift("x_heartrate");
+                    columns_splits.push(x2_splits)
+                    columns_splits.push(y2_splits)
+                {%endif%}
+
+                axes_splits={Speed:"y",Heartrate:"y2", Frequency:"y2"}
+
+                var width=550
+                var height=200
+                var chart15=c3plot(xs1,columns_splits,[],"Splits","Speed(km/h)",'#c3_splits',type="line",mean_line=false,show_points=true,
+                show_y2=true,
+                axes=axes_splits,y2_label="Frequency, Heartrate").resize({height:height, width:width})
             {%endif%}
             {%endif%}
         </script>

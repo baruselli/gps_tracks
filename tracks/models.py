@@ -1518,12 +1518,8 @@ class Track(models.Model):
         else:
             try:
                 coordinates_all=track_json["coordinates_all"]
-                #print(len(coordinates_all),len(coordinates_all[0]),len(coordinates_all[1]),len(coordinates_all[2]))
-                #TODO: wrong
-                print("a")
             except:
                 coordinates_all=[[lon, lat] for lon,lat in zip(self.td.long, self.td.lats) ]
-                print("b")
             track_json["geometry"]["coordinates"]=self.get_reduced_coordinates(coordinates_all,
                                                     reduce_points=reduce_points,
                                                     every=every,

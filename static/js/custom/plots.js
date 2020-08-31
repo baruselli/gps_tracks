@@ -611,7 +611,8 @@ function convert_data_c3(data,y="Speed", feature="Split", feature_name="Split"){
     console.log(data)
     data_ok=data.filter(a => a[feature])
     data_out=data_ok.map(function(a){
-            a[feature_name+" "+parseInt(a[feature])]=a[y]
+        split_name=a[feature+"Name"]
+        a[split_name]=a[y]
             return a
             })
     return data_out

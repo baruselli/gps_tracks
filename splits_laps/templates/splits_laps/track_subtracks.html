@@ -64,9 +64,11 @@
 
                     ///////// c3 plots
                    // c3 plots
-                   button_html='<button id="button_plot" onclick="do_plots()" type="button">Show Plots</button>'
+                   button_html='<button id="button_plot" onclick="$('+"'#waiting_gif'"+').show();do_plots()" type="button">Show Plots</button>'
 
                    $("#plots_block").prepend(button_html)
+                   $("#plots_block").prepend('<img id="waiting_gif" src="/static/gif/FhHRx.gif">')
+                   $("#waiting_gif").hide()
 
 
                 })
@@ -76,7 +78,7 @@
         function do_plots(){
 
             $("#button_plot").hide()
-            $("#plots_block").prepend('<img id="waiting_gif" src="/static/gif/FhHRx.gif">')
+            
 
             colors=[]
             subtracks_num=[]
@@ -106,6 +108,7 @@
             for (i=0;i<yys.length;i+=1){
                 console.log(xs[i],yys[i])
                 //substitute y column names with subtrack names for legend
+                console.log(data_track)
                 data_chart = convert_data_c3(data_track,y=yys[i], feature="Subtrack", feature_name="Subtrack")
 
                 if (i%2==0){

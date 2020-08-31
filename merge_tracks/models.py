@@ -110,13 +110,18 @@ class MergedTrack(models.Model):
         track.is_merged=True
         track.save()
 
+
+        subtrack_names=[]
         tracks_ids=[]
         for t in tracks:
             track.merged_tracks.add(t)
             tracks_ids.append(t.pk)
+            subtrack_names.append(t.name_wo_path_wo_ext)
             #todo: add gpx, csv files
 
             track.user=t.user
+        import json
+        track.subtrack_names=json.dumps(subtrack_names)
         track.save()
 
         ## check which points to add for each track, to avoid overlaps

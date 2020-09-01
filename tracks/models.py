@@ -77,8 +77,10 @@ class Track(models.Model):
     n_points_tcx = models.IntegerField(blank=False, null=True, default=0)
     n_points_kml = models.IntegerField(blank=False, null=True, default=0)
     n_tracks = models.IntegerField(blank=False, null=True,default=0)
-    n_segments = models.IntegerField(blank=False, null=True,default=0)
+    n_tracks_gpx = models.IntegerField(blank=False, null=True,default=0)
     n_tracks_kml = models.IntegerField(blank=False, null=True,default=0)
+    n_segments = models.IntegerField(blank=False, null=True,default=0)
+    n_segments_gpx = models.IntegerField(blank=False, null=True,default=0)
     n_segments_kml = models.IntegerField(blank=False, null=True,default=0)
     n_laps = models.IntegerField(blank=False, null=True)
     total_dist_csv = models.FloatField(null=True)  # from csv
@@ -1301,8 +1303,8 @@ class Track(models.Model):
 
         ## Segment, subtrack
         if "gpx" in self.extension:
-            n_tracks=self.n_tracks
-            n_segments=self.n_segments
+            n_tracks=self.n_tracks_gpx
+            n_segments=self.n_segments_gpx
         elif "kml" in self.extension or  "kmz" in self.extension:
             n_tracks=self.n_tracks_kml
             n_segments=self.n_segments_kml
@@ -2700,14 +2702,16 @@ class Track(models.Model):
                 if len(subtrack_indices)<len(lats):                    
                     self.td.subtrack_indices = subtrack_indices
                     self.n_tracks=n_tracks
+                    self.n_tracks_gpx=n_tracks
                 else:
                     self.td.subtrack_indices = [0,]
                     self.n_tracks=1
+                    self.n_tracks_gpx=1
 
                 self.info("gpx: n_tracks %s n_segments %s n_times %s" %(n_tracks,n_segments,len(times)))
                 
                 self.subtrack_names=json.dumps(subtrack_names)
-                self.segemnt_names=json.dumps(segment_names)
+                self.segment_names=json.dumps(segment_names)
 
                 self.td.lats = lats
                 self.td.long = long
@@ -3201,6 +3205,7 @@ class Track(models.Model):
             times=[]
             segment_indices=[]
             subtrack_indices=[]
+            subtrack_names = []
             self.n_tracks_kml=0
             self.n_segments_kml=0
             try:
@@ -3225,6 +3230,10 @@ class Track(models.Model):
             #    print(t._time_span.end_res)
                 self.n_tracks_kml+=1
                 subtrack_indices.append(point_number)
+                if t.name or t.description:
+                    subtrack_names.append(str(t.name)+" - " +str(t.description))
+                else:
+                    subtrack_names.append("Track %s" %n_tracks)
                 for g in t.geometry.geoms:
                     self.n_segments_kml+=1
                     segment_indices.append(point_number)
@@ -3239,23 +3248,25 @@ class Track(models.Model):
                             
                         #TODO times
 
+            self.n_tracks=self.n_tracks_kml
             self.td.lats=lats
             self.td.long=longs
             self.n_points_kml=len(lats)
             self.info("Fastkml points %s" %len(lats))
             if not None in alts: self.td.alts=alts
             #self.td.times=times
-            if not "gpx" in self.extension:
-                if len(segment_indices)<len(lats):
-                    self.td.segment_indices=segment_indices
-                else:
-                    self.td.segment_indices=[0,]
-                    self.n_segments_kml=1
-                if len(subtrack_indices)<len(lats):
-                    self.td.subtrack_indices=subtrack_indices
-                else:
-                    self.td.subtrack_indices=[0,]
-                    self.n_tracks_kml=1
+            if len(segment_indices)<len(lats):
+                self.td.segment_indices=segment_indices
+            else:
+                self.td.segment_indices=[0,]
+                self.n_segments_kml=1
+            if len(subtrack_indices)<len(lats):
+                self.td.subtrack_indices=subtrack_indices
+            else:
+                self.td.subtrack_indices=[0,]
+                self.n_tracks_kml=1
+                self.n_tracks=1
+            self.subtrack_names=json.dumps(subtrack_names)
             self.save()
 
 

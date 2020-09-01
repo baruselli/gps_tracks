@@ -245,12 +245,15 @@ class TracksAsLinesJsonView(View):
         ## if i give ids, I keep the same order of the ids, for compatibility with
         ## TracksAsPointListsJsonView (othersie color, which is based on order, is wrong)
         if track_ids:
-            track_ids=track_ids.split("_")
-            track_ids=[int(a) for a in track_ids]
-            ## https://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order
-            from django.db.models import Case, When
-            preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(track_ids)])
-            tracks = tracks.order_by(preserved)
+            try:
+                track_ids=track_ids.split("_")
+                track_ids=[int(a) for a in track_ids]
+                ## https://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order
+                from django.db.models import Case, When
+                preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(track_ids)])
+                tracks = tracks.order_by(preserved)
+            except:
+                pass
 
         use_color=bool(request.GET.get("use_color", False))
         reduce_points=request.GET.get("reduce_points", None)

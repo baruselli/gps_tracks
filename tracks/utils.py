@@ -448,6 +448,12 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     # by ids, here I must take the all_objects selector
     if ids_string:
         tracks =initial_queryset.filter(pk__in=[int(pk) for pk in ids_string.split("_") ])
+        ids_string=ids_string.split("_")
+        ids_string=[int(a) for a in ids_string]
+        ## https://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order
+        from django.db.models import Case, When
+        preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ids_string)])
+        tracks = tracks.order_by(preserved)
 
     # by group, in OR with ids
     if group_pk_search:

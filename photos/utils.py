@@ -327,11 +327,15 @@ def deduce_lat_long(photo,track):
             if photo.time.replace(tzinfo=None)<times[0].replace(tzinfo=None):
                 photo.deduced_lat = track.td.lats[0]
                 photo.deduced_long = track.td.long[0]
+                if track.td.alts and track.td.alts[0]:
+                    photo.deduced_alt = track.td.alts[0]
                 photo.save()
                 return
             if photo.time.replace(tzinfo=None)>times[-1].replace(tzinfo=None):
                 photo.deduced_lat = track.td.lats[-1]
                 photo.deduced_long = track.td.long[-1]
+                if track.td.alts and track.td.alts[-1]:
+                    photo.deduced_alt = track.td.alts[-1]
                 photo.save()
                 return
 
@@ -344,6 +348,8 @@ def deduce_lat_long(photo,track):
                 d2 = dt2/(dt1 + dt2)
                 photo.deduced_lat=track.td.lats[i]*d1+track.td.lats[i-1]*d2
                 photo.deduced_long = track.td.long[i]*d1 + track.td.long[i - 1]*d2
+                if track.td.alts:
+                    photo.deduced_alt=track.td.alts[i]*d1+track.td.alts[i-1]*d2
                 photo.save()
                 return
     except Exception as e:

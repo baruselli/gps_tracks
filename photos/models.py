@@ -28,6 +28,7 @@ class Photo(models.Model):
     #
     deduced_lat = models.FloatField(null=True,default=None)
     deduced_long = models.FloatField(null=True,default=None)
+    deduced_alt = models.FloatField(null=True,default=None)
     track_how = models.CharField(
         max_length=255,
         verbose_name="Way of linkning to track",

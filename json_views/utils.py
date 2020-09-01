@@ -920,7 +920,12 @@ def track_json_to_splits(track_json,feature="Split"):
 
 
 def loosen_bounds_list(bounds):
-    if bounds[0] is not None and bounds[1] is not None and bounds[2] is not None and bounds[3] is not None:
+    import numpy as np
+    ok=True
+    for i in range(4):
+        ok=ok and (bounds[i] is not None)
+        ok=ok and not np.isnan(bounds[i])
+    if ok:
         return [bounds[0]-0.01,bounds[1]+0.01,bounds[2]-0.01,bounds[3]+0.01]
     else:
         return [None,None,None,None]

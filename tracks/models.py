@@ -1020,15 +1020,19 @@ class Track(models.Model):
                 for i, a in enumerate(track_json_2):
                     ### segments (here named splits) start from 1
                     split = bisect.bisect_right(split_indices, a["OriginalNumberAll"])
-                    print(i,a["OriginalNumber"],a["OriginalNumberAll"], split)
+                    # print(i,a["OriginalNumber"],a["OriginalNumberAll"], split)
                     split = min(split, len(split_indices))  # otherwise the last one gets a +1, max is
                     a.update({"Segment": split,
                             "SegmentName": "Segment " + str(split),
                             "ColorSegment": colors_splits[split - 1]})
                     if "Distance" in a.keys():
+                        # print(len(track_json_2)) #4438
+                        # print(split_indices) #max 30602
+                        # print(len(split_indices)) #65
                         try:
+                            initial_split_index = self.reduced_index_from_original_index(split_indices[split - 1],upper=True)
                             a.update({
-                                "SegmentDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
+                                "SegmentDistance": a["Distance"] - track_json_2[initial_split_index]["Distance"]
                             # distance wrt first point in the split
                             })
                         except Exception as e:
@@ -1056,9 +1060,9 @@ class Track(models.Model):
                             "SubtrackName": "Subtrack " + str(split),
                             "ColorSubtrack": colors_splits[split - 1]}
                     if subtrack_names:                          
-                        print(subtrack_names)
+                        # print(subtrack_names)
                         try:
-                            print(subtrack_names[max(split-1,0)])
+                            # print(subtrack_names[max(split-1,0)])
                             d["SubtrackName"] = subtrack_names[max(split-1,0)]
                         except:
                             import traceback
@@ -1067,8 +1071,9 @@ class Track(models.Model):
                     a.update(d)
                     if "Distance" in a.keys():
                         try:
+                            initial_split_index = self.reduced_index_from_original_index(split_indices[split - 1],upper=True)
                             a.update({
-                                "SubtrackDistance": a["Distance"] - track_json_2[split_indices[split - 1]]["Distance"]
+                                "SubtrackDistance": a["Distance"] - track_json_2[initial_split_index]["Distance"]
                             # distance wrt first point in the split
                             })
                         except Exception as e:
@@ -1248,7 +1253,7 @@ class Track(models.Model):
 
         if subtrack_number is not None:
             i,f=self.get_subtrack_bounds(subtrack_number)
-            print(subtrack_number,i,f)
+            # print(subtrack_number,i,f)
             json_ok = json_ok[i:f]
 
         ## update number & other stuff
@@ -1634,10 +1639,10 @@ class Track(models.Model):
 
         if subtrack_number is not None:
             bounds=self.get_subtrack_bounds(subtrack_number)
-            print(bounds, "bounds")
+            # print(bounds, "bounds")
             # for now ignore segments!
             # TODO: keep segments
-            print(len(coordinates_llp),len(coordinates_lp))
+            # print(len(coordinates_llp),len(coordinates_lp))
             coordinates_llp = [coordinates_lp[bounds[0]:bounds[1]]]
 
         if reduce_points=="smooth1":
@@ -3777,7 +3782,7 @@ class Track(models.Model):
             if not time:
                 if self.beginning:
                     time = self.beginning
-                    print(self.beginning)
+                    # print(self.beginning)
                 elif self.td.times:
                     time = self.td.times[0]
                 else:

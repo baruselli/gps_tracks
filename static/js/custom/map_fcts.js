@@ -192,7 +192,7 @@ function map_right_click_laps (map, options, link,link2,radius=10){
 });
 }
 
-function point_popup(feature, full=true){
+function point_popup(feature, full=true,show_subtrack_name=false){
             name=""
             if(feature.track_name && feature.color)
             name+="<b><font color="+feature.color+">"+ feature.track_name+"</font></b><br>"
@@ -214,7 +214,10 @@ function point_popup(feature, full=true){
                 if(feature.Split!=undefined)         name+="<font color="+feature.ColorSplit+">Split: "+parseInt(feature.Split)+"</font><br>"
                 if(feature.LapName!=undefined)         name+="<font color="+feature.ColorLap+">"+feature.LapName+"</font><br>"
                 if(feature.Segment!=undefined)         name+="<font color="+feature.ColorSegment+">Segment: "+feature.Segment+"</font><br>"
-                if(feature.Subtrack!=undefined)         name+="<font color="+feature.ColorSubtrack+">Subtrack: "+feature.Subtrack+"</font><br>"
+                if(feature.SubtrackName!=undefined)         name+="<font color="+feature.ColorSubtrack+">Subtrack: "+feature.Subtrack + " - " + feature.SubtrackName+"</font><br>"
+            }
+            if(show_subtrack_name && !full){
+                if(feature.SubtrackName!=undefined)         name+="<font color="+feature.ColorSubtrack+">Subtrack: "+feature.Subtrack + " - " + feature.SubtrackName+"</font><br>"
             }
             return name
             }
@@ -233,6 +236,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
     lap=options.lap,
     do_popup=options.do_popup!==false //default true
     var debug = options.debug===true;
+    show_subtrack_name=options.show_subtrack_name===true;
 
     if(debug) console.log("track_layer_fromjson options", options, geojsonMarkerOptions)
 
@@ -425,7 +429,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                     }
                     var marker =L.circle(latlng, geojsonMarkerOptions);
                     if (do_popup){
-                        marker.bindPopup(point_popup(feature, full=false))
+                        marker.bindPopup(point_popup(feature, full=false,show_subtrack_name=show_subtrack_name))
                     }
                     marker.on('mouseover', function (e) {
                         this.openPopup();
@@ -588,7 +592,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
 
 function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
 
-  //  console.log("read_data_leaflet_generic")
+    //  console.log("read_data_leaflet_generic")
     var t0 = performance.now();
 
     tracks={}      //tracks
@@ -665,7 +669,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                 colors_tracks=data[element]
                 break;
             case "Track":
-            if (plot_track){
+                if (plot_track){
                     data_track=data[element]["points"]
                     data_length=data_track.length
                     //add number of points
@@ -679,7 +683,8 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     for (i in legend_names){
                         legend_name=legend_names[i]
                         console.log("legend_name", legend_name)
-                        track_group["Color by "+legend_name]=track_layer_fromjson(data_track,geojsonMarkerOptions,{"color_feature":"Color"+legend_name})
+                        options["color_feature"]="Color"+legend_name
+                        track_group["Color by "+legend_name]=track_layer_fromjson(data_track,geojsonMarkerOptions,options)
                     }
                 }
                 break;
@@ -801,7 +806,8 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     color=data_split["color"]
                     name=data_split["name"]
                     text="<font color='"+color+"'>"+name+"</font>"
-                    splits[text]=track_layer_fromjson(data_split["points"],geojsonMarkerOptions,{"color_feature":"Color"+element.slice(0, -1)}).addTo(map)
+                    options["color_feature"]="Color"+element.slice(0, -1)
+                    splits[text]=track_layer_fromjson(data_split["points"],geojsonMarkerOptions,options).addTo(map)
                     splits_name=element
                 }
                 groupCheckboxes= true

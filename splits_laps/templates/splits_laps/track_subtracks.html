@@ -58,6 +58,7 @@
                 $.getJSON(url,function(data){
 
                     //read_data_leaflet_splits(data,"{{track.name_wo_path_wo_ext}}",geojsonMarkerOptions,map,options)
+                    options["show_subtrack_name"]=true
                     read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
 
                     window.data=data

@@ -14,7 +14,7 @@
         #btn_tab_details,#btn_tab_splits,#btn_tab_cardio,#btn_tab_logs,#btn_tab_files,#btn_tab_groups,#btn_tab_photos{
             display: none;
         }
-        #hide_map_button,#btn_tab_waypoints,#btn_tab_laps,#btn_tab_edit{
+        #hide_map_button,#btn_tab_waypoints,#btn_tab_laps{
             display: none;
         }
     </style>
@@ -59,6 +59,12 @@
 
                     //read_data_leaflet_splits(data,"{{track.name_wo_path_wo_ext}}",geojsonMarkerOptions,map,options)
                     options["show_subtrack_name"]=true
+                    {% if use_points == 1 %}
+                        options["use_points"]=true
+                    {%else%}
+                        options["use_points"]=false
+                    {%endif%}
+                    console.log("hhhhhhh", options["use_points"])
                     read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
 
                     window.data=data
@@ -141,6 +147,23 @@
     </script>
 {% endblock %}
 
+{% block form %}
+    <div class="tabcontent" id="tab_edit">
+        <div id="div_form">
+
+            <form method="GET" id="searchform">
+                Show points:
+                <select name="use_points">
+                    <option value=1 {%if use_points == 1 %} selected="selected" {%endif%}>Points</option>
+                    <option value=0 {%if not use_points == 1 %} selected="selected" {%endif%}>Lines</option>
+                </select>
+
+                <button value="Refresh" id="submit_button">Refresh </button>
+            </form>
+        </div>
+    </div>
+
+{%endblock%}
 
 {% block splits %}
 {% endblock %}

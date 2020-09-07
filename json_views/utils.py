@@ -909,7 +909,33 @@ def track_json_to_splits(track_json,feature="Split"):
             splits_json[split]={"points":[], "color":p["Color"+name], "name":p[name+"Name"], "number":split}
         splits_json[split]["points"].append(p)
 
+    #TODO:keep segments
+    # TODO: color and popup
+
+    for split in splits_json:
+        link=None
+        if feature=="Subtrack":
+            try:
+                track_pk=track_only_json[0]["track_pk"]
+                link=reverse("subtrack", kwargs={"track_id":track_pk,"subtrack_number":split})
+            except:
+                pass
+
+        splits_json[split]["details"]={
+            "type":"Feature",
+            "geometry":{
+                "type":"MultiLineString",
+                "coordinates":[[[p["coordinates"][0], p["coordinates"][1]] for p in splits_json[split]["points"]]]
+            },
+            "color":splits_json[split]["color"],
+            "name":splits_json[split]["name"],
+            "number":splits_json[split]["number"],
+            "point_type":"track_as_line",
+            "link":link,
+        }
+
     track_json[name_plural]=splits_json
+
 
     if "legend" in track_json.keys():
         track_json.pop("legend")

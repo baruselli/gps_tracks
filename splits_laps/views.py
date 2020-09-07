@@ -334,6 +334,7 @@ class SubtracksView(View):
         logger.info("SplitsView %s" % track_id)
         track = get_object_or_404(Track.all_objects, pk=track_id)
         subtrack_names=track.get_subtrack_names()
+        use_points = int(request.GET.get('use_points', 0))
 
         reduce_points = request.GET.get('reduce_points', 'every')
         return render(
@@ -343,6 +344,7 @@ class SubtracksView(View):
                 "track": track,
                 "request": request.GET.urlencode(),
                 "reduce_points": reduce_points,
-                "subtrack_names":subtrack_names
+                "subtrack_names":subtrack_names,
+                "use_points":use_points,
             },
         )

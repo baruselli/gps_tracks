@@ -292,7 +292,12 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
 
                     default_properties = default_point_properties(type="path",reset="reset")
 
-                    var name="<a href='"+feature.link+"'><b>"+feature.name+"</b></a>";
+                    if (feature.link != null && feature.link != undefined){
+                        var name="<a href='"+feature.link+"'><b>"+feature.name+"</b></a>";
+                    }else{
+                        var name="<b>"+feature.name+"</b>";
+                    }
+
                     // add groups if present
                     if (feature.Groups){
                         for (var i in  feature.Groups){
@@ -806,9 +811,18 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     color=data_split["color"]
                     name=data_split["name"]
                     text="<font color='"+color+"'>"+name+"</font>"
-                    options["color_feature"]="Color"+element.slice(0, -1)
-                    splits[text]=track_layer_fromjson(data_split["points"],geojsonMarkerOptions,options).addTo(map)
-                    splits_name=element
+                    if (options["use_points"]){
+                        console.log("POINTS")
+                        //points
+                        options["color_feature"]="Color"+element.slice(0, -1)
+                        splits[text]=track_layer_fromjson(data_split["points"],geojsonMarkerOptions,options).addTo(map)
+                    }else{
+                        //lines
+                        console.log("LINES")
+                        options["color_feature"]="color"
+                        splits[text]=track_layer_fromjson(data_split["details"],geojsonMarkerOptions,options).addTo(map)
+                        splits_name=element
+                    }
                 }
                 groupCheckboxes= true
                 break;

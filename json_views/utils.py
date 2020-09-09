@@ -851,7 +851,7 @@ def add_ranks(json_ok):
             ("length_length", True),
             ("speed_speed", True),
             ("total_frequency", True),
-            ("min_alt",True),
+            ("min_alt",False),
             ("max_alt", True),
             ("total_heartrate", False), # lower is better
             ("total_calories", True),

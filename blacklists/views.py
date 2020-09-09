@@ -128,9 +128,14 @@ class DeleteTrackAndBlacklist(View):
 
         message= "Deleted Track " + track_name
 
-        blacklist,created=Blacklist.objects.get_or_create(file_name=track_name)
-        if created:
-            blacklist.file_name=track_name
+        q = Blacklist.objects.filter(file_name=track_name,method="Exact")
+
+        if q:
+            blacklist = q.first()
+            blacklist.active=True
+            blacklist.save()
+        else:
+            blacklist = Blacklist(file_name=track_name,method="Exact",active=True)
             blacklist.save()
             message+=", %s blacklisted" %track_name
 

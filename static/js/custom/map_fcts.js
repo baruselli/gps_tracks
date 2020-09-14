@@ -503,7 +503,7 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                                 case 7: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_width_3' });break;
                                 case 8: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_width_4' });break;
                                 case 9: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_width_3' });break;
-                                default: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_more' });break;
+                                default: var marker=L.marker(latlng,{icon: icon_objs["red5"]}).bindPopup(name,{className: 'popup_many_photos_width_4' });break;
                             }
                         }
                     //normal case

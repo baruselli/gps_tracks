@@ -221,8 +221,9 @@ def download_tomtom(ext="csv"):
         r1 = s.post(login, json=params)
 
         import zipfile
-        logger.info("Download %s" %ext)
-        all_data = base + "/service/webapi/v2/activity/zip/1.zip?format=%s"%ext
+        filename=OptionSet.get_option("TOMTOM_FILENAME")
+        logger.info("Download %s %s" %(filename,ext))
+        all_data = base + "/service/webapi/v2/activity/zip/%s?format=%s"%(filename,ext)
         r3 = s.get(all_data)
         out_file = os.path.join(settings.TRACKS_DIR, "tomtom_%s.zip"%ext)
         open(out_file, "wb").write(r3.content)

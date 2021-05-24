@@ -517,6 +517,10 @@
             <h3><a href="{% url 'photos_show' %}?min_date={{track.date|date:'Y-m-d'}}&max_date={{track.date|date:'Y-m-d'}}">Photos same day ({{n_photos_same_day}})</a></h3>
         {% endif %}
 
+        {% if track.date %}
+            <h3><a target="_blank" href="https://photos.google.com/search/{{track.date.year}}%2F{{track.date.month}}%2F{{track.date.day}}">Google Photos same day</a></h3>
+        {% endif %}
+
         {% if track.photos.all %}
 
         <div id="photos_block">

@@ -993,9 +993,14 @@ class TrackAutocomplete(autocomplete.Select2QuerySetView):
             # if possbile, search over pk
             try:
                 qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)|
-                                Q(pk=self.q)).order_by("-beginning")
+                                Q(pk=self.q)|
+                                Q(ascii_name__icontains=self.q)).order_by("-beginning")
             except:
-                qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)).order_by("-beginning")
+                try:
+                    qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)|
+                                Q(ascii_name__icontains=self.q)).order_by("-beginning")
+                except:
+                    qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)).order_by("-beginning")
 
 
         return qs
@@ -1005,7 +1010,11 @@ class TrackAutocompleteName(autocomplete.Select2QuerySetView):
         qs = Track.objects.all()
 
         if self.q:
-            data = qs.filter(name_wo_path_wo_ext__icontains=self.q).order_by("-beginning").values_list('name_wo_path_wo_ext',flat=True)
+            try:
+                data = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)|Q(ascii_name__icontains=self.q)).order_by("-beginning").values_list('name_wo_path_wo_ext',flat=True)
+            except:
+                data = qs.filter(name_wo_path_wo_ext__icontains=self.q).order_by("-beginning").values_list('name_wo_path_wo_ext',flat=True)
+            
             json = list(data)
             return JsonResponse(json, safe=False)
 
@@ -1018,9 +1027,14 @@ class TrackAllAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             try:
                 qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)|
-                                Q(pk=self.q)).order_by("-beginning")
+                                Q(pk=self.q)|
+                                Q(ascii_name__icontains=self.q)).order_by("-beginning")
             except:
-                qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)).order_by("-beginning")
+                try:
+                    qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)|
+                                Q(ascii_name__icontains=self.q)).order_by("-beginning")
+                except:
+                    qs = qs.filter(Q(name_wo_path_wo_ext__icontains=self.q)).order_by("-beginning")
 
 
         return qs

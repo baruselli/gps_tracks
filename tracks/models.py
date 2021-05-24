@@ -55,6 +55,7 @@ class Track(models.Model):
     name_wo_path_wo_ext = models.CharField(max_length=255,verbose_name="name withput path and extension",null=False, blank=False,  unique=True,)
     extension = models.CharField(max_length=40, verbose_name="Extension(s)", null=False, blank=False, unique=False)
     file_name = models.CharField(max_length=512, verbose_name="File name", null=False, blank=False, unique=False)
+    ascii_name = models.CharField(max_length=512, verbose_name="Ascii name", null=True, blank=True, unique=False, default="")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Date of creation", null=True, blank=True)
     modified = models.DateTimeField(auto_now=True, verbose_name="Date of modification", null=True, blank=True)
     enabled = models.BooleanField(default=True, verbose_name="Enabled for import")
@@ -371,6 +372,13 @@ class Track(models.Model):
                 self.error(".. input file not found.")
                 return None
 
+    def set_ascii_name(self):
+        """https://stackoverflow.com/questions/3194516/replace-special-characters-with-ascii-equivalent"""
+        import unicodedata
+        text = u'Cześć'
+        self.ascii_name = unicodedata.normalize('NFKD', self.name_wo_path_wo_ext).encode('ascii', 'ignore')
+        self.save()
+
     def set_all_properties(self,direct_call=False):
         # if It do not already have a gpx file, I create a gpx obj to use all the utilities of gpxpy
         # when direct call, noone outside takes care of added groups, so i have to refresh their properties by hand
@@ -638,6 +646,14 @@ class Track(models.Model):
         step += 1
         self.set_track_single_geojson()
 
+        try:
+            self.info("%s - Set ascii name" %step)
+            step += 1
+            self.set_ascii_name()
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self.warning(str(e))
 
         self.save()
         self.td.save()

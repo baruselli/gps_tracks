@@ -16,7 +16,7 @@ class SmoothTrackForm(forms.Form):
 class TrackEditForm(forms.ModelForm):
     class Meta:
         model = Track
-        fields = ["description","user","time_zone","starting_index","ending_index", "is_active"]
+        fields = ["description","user","time_zone","starting_index","ending_index", "is_active", "priority"]
 
 class TrackGroupForm(forms.ModelForm):
     class Meta:

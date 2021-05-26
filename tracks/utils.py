@@ -422,6 +422,8 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     deleted_tracks = request.get('deleted_tracks', 0)#OK
     exclude_excluded_groups = request.get('exclude_excluded_groups', 0)#OK
     regex_name = request.get('regex_name', False)#OK
+    priority = request.get('priority', None)#OK
+    priority_how = request.get('priority_how', None)#OK
     ## special searches
     # duplicated_tracks = request.get('duplicated_tracks',False)#OK
     #wrong_coords = request.get('wrong_coords',None) #TODO
@@ -557,6 +559,16 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     if frequency=="no":
         tracks = tracks.filter(Q(total_frequency__isnull=True)|Q(total_frequency=decimal.Decimal('NaN'))|Q(total_frequency=0))
 
+    # by priority
+    if priority is not None:
+        if not priority_how:
+            priority_how = "eq"
+        if priority_how =="eq":
+            tracks = tracks.filter(priority=priority)
+        elif priority_how =="gt":
+            tracks = tracks.filter(priority__gt=priority)
+        elif priority_how =="lt":
+            tracks = tracks.filter(priority__lt=priority)
 
     import decimal
 

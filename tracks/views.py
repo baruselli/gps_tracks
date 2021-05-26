@@ -386,6 +386,8 @@ class TracksListView(View):
         regex_name=request.GET.get('regex_name', False)#OK
         special_search=request.GET.get('special_search', None)#OK
         special_search_pk=request.GET.get('special_search_pk', None)#OK
+        priority = request.GET.get('priority', None)#OK
+        priority_how = request.GET.get('priority_how', None)#OK
 
 
 
@@ -450,6 +452,9 @@ class TracksListView(View):
             if not how_many and not dist:
                 how_many=20
 
+        if priority is not None and not priority_how:
+            priority_how = "eq"
+
         return render(request, self.template_name, { 
              "request":request.GET.urlencode(),
              "name":name,
@@ -483,6 +488,8 @@ class TracksListView(View):
              "with_photos":with_photos,
              "deleted_tracks":deleted_tracks,
              "by_id":by_id,
+             "priority":priority,
+             "priority_how":priority_how,
             #  "merged_tracks":merged_tracks,
             #  "duplicated_tracks":duplicated_tracks,
              "track_form": track_form,

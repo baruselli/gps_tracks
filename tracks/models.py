@@ -226,6 +226,8 @@ class Track(models.Model):
     final_lat = models.FloatField(null=True)
     final_lon = models.FloatField(null=True)
 
+    priority = models.IntegerField(blank=False, null=False,default=5)
+
     photos_details = models.CharField(max_length=512, null=True, blank=True, default="No linking performed yet")
 
     duplicated_group=-1

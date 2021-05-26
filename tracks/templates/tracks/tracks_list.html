@@ -192,6 +192,15 @@
                     <h4>Other</h4>
                     <table>
                         <tr><td>Max results</td><td><input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/></td></tr>
+                        <tr><td>Priority</td><td>
+                            <select  id="searchbox30" name="priority_how">
+                                <option value=''{% if not priority_how %} selected {%endif%}></option>
+                                <option value='gt'{% if priority_how == "gt" %} selected {%endif%}>></option>
+                                <option value='eq'{% if priority_how == "eq" %} selected {%endif%}>=</option>
+                                <option value='lt'{% if priority_how == "lt" %} selected {%endif%}><</option>
+                            </select>
+                            <input class="searchfield" id="searchbox31" name="priority" type="number" value="{{priority}}" placeholder="Priority"/></td></tr>                        
+                        </td></tr>
                         <tr><td>Last created tracks</td><td><input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="Number of tracks"/></td></tr>
                         <tr><td>Deleted Tracks</td><td>
                         <select  id="searchbox18" name="deleted_tracks">

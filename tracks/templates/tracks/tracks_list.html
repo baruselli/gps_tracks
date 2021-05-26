@@ -229,6 +229,7 @@
                 <!-- <input type="reset" value="Reset"> -->
                 <button type="button" onclick="window.location.href = '{% url  'track_index' %}'" class="reset_button  button">Reset</button>
                 <button type="button" onclick="window.location.href = '{% url  'group_rule_new' %}?{{request}}'" class="save_button button">Save search</button>
+                <button type="button" onclick="window.location.href = '{% url  'group_from_search' %}?{{request}}'" class="save_button button">Create group</button>
             </div>
         </form>
         </div>

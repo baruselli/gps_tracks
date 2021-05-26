@@ -316,6 +316,51 @@ class GroupStatisticsView(View):
             },
         )
 
+class GroupFromSearchView(View):
+
+    template_name = "groups/group_from_search.html"
+
+    def get(self, request, *args, **kwargs):
+
+        logger.debug("GroupFromSearchView")
+        Model=GroupRule
+
+        try:
+            import urllib
+            initial_string = "?" + urllib.parse.urlencode(request.GET)
+        except:
+            initial_string = "?"
+
+        return render(
+            request, self.template_name, {"initial_string": initial_string}
+        )
+
+    def post(self, request, *args, **kwargs):
+        from .models import GroupRule as Model
+
+        name=request.POST.get("name","")
+        query_string=request.POST.get("query_string","")
+
+        if name and query_string:
+            rule = GroupRule(
+                name=name,
+                query_string=query_string,
+            )
+            rule.save()
+            group = Group(
+                name=name,
+                auto_update_properties=True,
+            )
+            group.save()
+            group.rules.add(rule)
+            group.add_tracks_from_rules()
+            group.set_attributes()
+            
+            return HttpResponseRedirect(
+                reverse("group_detail", kwargs={"group_id": group.pk})
+            )
+
+
 ## autocomplete
 from dal import autocomplete
 

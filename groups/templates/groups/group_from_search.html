@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% load staticfiles%}
+
+{% load crispy_forms_tags %}
+
+{% block head_title %}
+    <title>New group from search</title>
+{% endblock %}
+
+{% block title %}
+    <div><h1>New group from search</h1></div>
+{%endblock%}
+
+{% block buttons %}
+{%endblock%}
+
+
+{% block js %}
+    <script>
+    </script>
+{%endblock%}
+
+
+{% block content %}
+
+{% endblock %}
+
+
+{% block form %}
+  <br>
+   <form method="POST" action="" id="searchform">
+        {% csrf_token %}
+        
+        <label for="name">Name:</label>
+        <input id="name" type="text" name="name" required><br><br>
+
+        <label for="query_string">Query string:</label>
+        <textarea id="query_string" name="query_string" rows="4" cols="100" required>{{initial_string}}</textarea>
+
+        
+
+
+        <input type="submit"  name="rule_form" value="Submit">
+    </form>
+
+
+{%endblock%}
+
+{% block form0 %}
+
+{%endblock%}

@@ -502,9 +502,9 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     # by name
     if name:
         if regex_name:
-            tracks = tracks.filter(name_wo_path_wo_ext__iregex=name)
+            tracks = tracks.filter(Q(name_wo_path_wo_ext__iregex=name)|Q(ascii_name__iregex=name))
         else:
-            tracks = tracks.filter(name_wo_path_wo_ext__icontains=name)
+            tracks = tracks.filter(Q(name_wo_path_wo_ext__icontains=name)|Q(ascii_name__icontains=name))
 
     # by extension
     if extension:

@@ -41,6 +41,7 @@ class Group(models.Model):
     always_use_lines = models.BooleanField(default=False, verbose_name="Always use lines instead of points in this page")
     rules = models.ManyToManyField('groups.GroupRule',blank=True)
     rules_act_as_and = models.BooleanField(default=True, verbose_name="Take intersection of rules (instead of union)")
+    tracks_priority = models.IntegerField(blank=True, null=True, verbose_name="Default priority to assign to tracks")
 
     @property
     def n_tracks(self):
@@ -305,6 +306,7 @@ class Group(models.Model):
 
     def save(self, *args, **kwargs):
         super(Group, self).save(*args, **kwargs)
+        self.assign_priority_to_tracks()
 
     def filtered_tracks(self,initial_queryset=None):
         """
@@ -387,6 +389,13 @@ class Group(models.Model):
             self.set_attributes(updated_tracks=tracks_list)
 
             return names      
+
+    def assign_priority_to_tracks(self):
+        from django.db.models import Q
+        # I update track priority either to modify the default value 5, or to increase it
+        if self.tracks_priority is not None:
+            self.tracks.filter(Q(priority=5)|Q(priority__lt=self.tracks_priority)).update(priority = self.tracks_priority)
+
 
 class GroupRule(models.Model):
     name = models.CharField(max_length=255, verbose_name="Name", null=False, blank=False,unique=True)

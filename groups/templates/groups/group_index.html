@@ -31,7 +31,8 @@
                 <!-- <td>Avg Lat</td>
                 <td>Avg Long</td> -->
                 <th>Tracks</th>
-                <th>From Path</th>
+                <th>From File Path</th>
+                <th>Default priority</th>
                 <!-- <td>Color</td> -->
                 <!--<td>Points</td>-->
                 <!--<td>WayPoints</td>-->
@@ -57,6 +58,7 @@
                     <td>{{group.avg_long}}</td> -->
                     <td>{{group.size}}</td>
                     <td>{% if group.is_path_group %}Yes{%else%}No{%endif%}</td>
+                    <td>{{group.tracks_priority}}</td>
                     <!-- <td>{{group.color}}</td> -->
                     <!--<td>{{group.total_points}}</td>-->
                     <!--<td>{{group.n_waypoints}}</td>-->
@@ -74,6 +76,7 @@
             </tbody>
             <tfoot>
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

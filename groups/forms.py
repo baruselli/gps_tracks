@@ -11,7 +11,7 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
 
-        fields = ["name","tracks","exclude_from_search", "auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules","rules_act_as_and"]
+        fields = ["name","tracks","exclude_from_search", "auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules","rules_act_as_and","tracks_priority"]
         widgets = {"tracks":autocomplete.ModelSelect2Multiple(url='track-autocomplete') ,
                     'rules': autocomplete.ModelSelect2Multiple(url='group_rule-autocomplete') }
 
@@ -33,7 +33,7 @@ class GroupForm(forms.ModelForm):
 class GroupFormQuick(forms.ModelForm):
     class Meta:
         model = Group
-        fields = ["name","exclude_from_search","auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules","rules_act_as_and"]
+        fields = ["name","exclude_from_search","auto_update_properties","use_points_instead_of_lines","hide_in_forms","always_use_lines","rules","rules_act_as_and","tracks_priority"]
         widgets = {'rules':  autocomplete.ModelSelect2Multiple(url='group_rule-autocomplete') }
 
 class GroupRuleForm(forms.ModelForm):

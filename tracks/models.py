@@ -2903,6 +2903,7 @@ class Track(models.Model):
             ###################original data, so I can understand which points are selected by the algorithms
             original_times=[]
             original_lats = []
+            original_lats_lons = []
             use_time = True
             for track in _gpx.tracks:
                 for segment in track.segments:
@@ -2912,6 +2913,7 @@ class Track(models.Model):
                         else:
                             use_time=False
                         original_lats.append(point.latitude)
+                        original_lats_lons.append((point.latitude,point.longitude))
 
             _gpx.simplify(max_distance=10)  # algorithm
             _gpx2.reduce_points(max_points_no=100)  # min_distance or max_points_no
@@ -2920,6 +2922,7 @@ class Track(models.Model):
             ###################_gpx
             times=[]
             lats = []
+            lats_lons = []
             use_time = True
             for track in _gpx.tracks:
                 for segment in track.segments:
@@ -2929,13 +2932,15 @@ class Track(models.Model):
                         else:
                             use_time=False
                         lats.append(point.latitude)
+                        lats_lons.append((point.latitude, point.longitude))
 
             from .utils import get_sub_indices
             
             if(use_time):
                 sub_indices = get_sub_indices(original_times,times)
             else:
-                sub_indices = get_sub_indices(original_lats, lats)
+                #sub_indices = get_sub_indices(original_lats, lats)
+                sub_indices = get_sub_indices(original_lats_lons, lats_lons)
             
             self.td.smooth_indices = sub_indices
             self.save()
@@ -2965,6 +2970,7 @@ class Track(models.Model):
             ################### _gpx2
             times=[]
             lats = []
+            lats_lons = []
             use_time = True
             for track in _gpx2.tracks:
                 for segment in track.segments:
@@ -2974,12 +2980,14 @@ class Track(models.Model):
                         else:
                             use_time=False
                         lats.append(point.latitude)
+                        lats_lons.append((point.latitude, point.longitude))
 
             from .utils import get_sub_indices
             if(use_time):
                 self.td.smooth2_indices=get_sub_indices(original_times,times)
             else:
-                self.td.smooth2_indices = get_sub_indices(original_lats, lats)
+                #self.td.smooth2_indices = get_sub_indices(original_lats, lats)
+                self.td.smooth2_indices = get_sub_indices(original_lats_lons, lats_lons)
 
             self.info("_gpx2 smoothed length2 %s" %len(lats))
             self.length_2d_smooth2 = _gpx2.length_2d()  # m

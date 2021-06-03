@@ -289,6 +289,11 @@
         </div>
         {% endif %}
 
+        {% if track.date %}
+            <div class="row" style="float:left;width:400">
+                <h2><a target="_blank" href="https://www.google.com/maps/timeline?pb=!1m2!1m1!1s{{track.date|date:'Y-m-d'}}">Google Timeline same day</a></h2>
+            </div>
+        {% endif %}
 
 
         <div>

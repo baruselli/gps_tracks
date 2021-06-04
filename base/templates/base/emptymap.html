@@ -124,6 +124,9 @@
         map.on("moveend", function () {
             //auto search on move or zoom map
             if ($("#auto_refresh_tracks").is(':checked')){
+                if ($("#auto_clear_tracks").is(':checked')){
+                    clear_tracks(map)
+                }
                 refresh_tracks(map,base_url, get_search_params())
                 //$("#refresh_tracks").prop('disabled', true);
             //search with button
@@ -134,6 +137,9 @@
 
         // click on search tracks
         $("#refresh_tracks").click(function(e){
+            if ($("#auto_clear_tracks").is(':checked')){
+                clear_tracks(map)
+            }
             refresh_tracks(map,base_url, get_search_params())
             //$("#refresh_tracks").prop('disabled', true);
         });

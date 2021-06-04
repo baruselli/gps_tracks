@@ -1038,6 +1038,7 @@ function add_photos_ajax(data_tot,links=false,request=""){
 function clear_tracks(map){
     window.plotted_tracks=[]
     window.plotted_tracks_ids=[]
+    window.selected_tracks = []
     $.each(window.global_tracks,function(name,layer){
         map.removeLayer(layer)
     })

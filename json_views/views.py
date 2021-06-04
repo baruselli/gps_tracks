@@ -268,6 +268,7 @@ class TracksAsLinesJsonView(View):
         # ranks date_order added only for manytracks_plots
         ranks = int(request.GET.get('ranks', 0))
         date_order = int(request.GET.get('date_order', 0))
+        max_n_tracks = int(request.GET.get('max_n_tracks', 0))
 
         n_tracks=tracks.count()
 
@@ -280,7 +281,8 @@ class TracksAsLinesJsonView(View):
         points_line=request.GET.get("points_line", None)
 
         if not points_line:
-            max_n_tracks = OptionSet.get_option("MAX_N_TRACKS_AS_LINES")
+            if not max_n_tracks:
+                max_n_tracks = OptionSet.get_option("MAX_N_TRACKS_AS_LINES")
             if n_tracks<=max_n_tracks:
                 points_line="MultiLineString"
                 if not reduce_points:
@@ -340,7 +342,8 @@ class TracksAsLinesJsonView(View):
                 simple=simple,
                 waypoints=with_waypoints,
                 photos=with_photos,
-                ranks=ranks
+                ranks=ranks,
+                max_n_tracks=max_n_tracks,
             )
             
             # t2=time.time()

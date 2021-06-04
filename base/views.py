@@ -136,7 +136,8 @@ class EmptyMap(View):
         return render(request, self.template_name, {
             "lat": lat, "long": long, "address": address,
             "min_lat": min_lat, "max_lat": max_lat,"min_long": min_long, "max_long": max_long,
-            "location_name":location_name})
+            "location_name":location_name,
+            "max_n_tracks": OptionSet.get_option("MAX_N_TRACKS_AS_LINES")})
 
 # class Statistics(View):
 #     template_name = "base/statistics.html"

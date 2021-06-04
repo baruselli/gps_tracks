@@ -411,6 +411,10 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     how_many = request.get('how_many',None) #OK
     lat = request.get('lat',None) #TOK
     long = request.get('lng',None) #OK
+    min_lat = request.get('min_lat',None) 
+    min_long = request.get('min_lng',None) 
+    max_lat = request.get('max_lat',None) 
+    max_long = request.get('max_lng',None) 
     distance = request.get('dist',None) #OK 
     by_id = request.get('by_id', None) #OK
     ids_string = request.get('track_ids',None) #no need
@@ -434,6 +438,7 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     # 
     special_search=request.get('special_search', None)#OK
     special_search_pk=request.get('special_search_pk', None)#OK
+    exclude_tracks_ids=request.get('exclude_tracks_ids', None) # from emptymap, not in any form
 
     if no_search:
         return Track.objects.none()
@@ -560,6 +565,7 @@ def filter_tracks(request,silent=True,initial_queryset=None):
         tracks = tracks.filter(Q(total_frequency__isnull=True)|Q(total_frequency=decimal.Decimal('NaN'))|Q(total_frequency=0))
 
     # by priority
+    print("priority", priority, "priority_how",priority_how)
     if priority is not None:
         if not priority_how:
             priority_how = "eq"
@@ -569,6 +575,22 @@ def filter_tracks(request,silent=True,initial_queryset=None):
             tracks = tracks.filter(priority__gt=priority)
         elif priority_how =="lt":
             tracks = tracks.filter(priority__lt=priority)
+
+    # by ids to exclude
+    if exclude_tracks_ids:
+        exclude_tracks_ids=[int(a) for a in exclude_tracks_ids.split(",")]
+        tracks=tracks.exclude(pk__in=exclude_tracks_ids)
+
+    # by min max lat long
+    if min_lat:
+        tracks = tracks.filter(avg_lat__gt=min_lat)
+    if max_lat:
+        tracks = tracks.filter(avg_lat__lt=max_lat)
+    if min_long:
+        tracks = tracks.filter(avg_long__gt=min_long)
+    if max_long:
+        tracks = tracks.filter(avg_long__lt=max_long)
+
 
     import decimal
 

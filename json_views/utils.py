@@ -458,7 +458,7 @@ def get_json_LD_tracks(ids, reduce_points="every", do_waypoints=True, do_photos=
 ## as lines
 def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineString", 
                 reduce_points="smooth2", add_flat=False, keep_empty_set=False,ranks=False,
-                group_pk=None,simple=False,waypoints=False,photos=False,every=0):
+                group_pk=None,simple=False,waypoints=False,photos=False,every=0,max_n_tracks=None):
     # TODO: do for a single track, then call fct for single track
     """
     json for a list of tracks, only global properties and geometry (no arrays of alt, speed, etc):
@@ -491,7 +491,8 @@ def tracks_json(tracks=None, with_color=False, how=None, points_line="MultiLineS
     # except Exception as e:
     #     logger.error(e)
 
-    max_n_tracks = OptionSet.get_option("MAX_N_TRACKS_AS_LINES")
+    if not max_n_tracks:
+        max_n_tracks = OptionSet.get_option("MAX_N_TRACKS_AS_LINES")
     photos_list=[]
     waypoints_list=[]
 

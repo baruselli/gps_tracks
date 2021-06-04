@@ -375,6 +375,22 @@ function track_layer_fromjson(data,geojsonMarkerOptions,options={}){
                             }
                         }
 
+                        // keep track of selected tracks if no table (e.g. in emptymap)
+                        if(!table && window.selected_tracks != undefined){
+                            var was_already_selected = window.selected_tracks.includes(feature.pk)
+                            if (!e.originalEvent.ctrlKey){
+                                //select only this one
+                                window.selected_tracks=[feature.pk]
+                            }
+                            else if (was_already_selected && e.originalEvent.ctrlKey){
+                                //deselect this
+                                window.selected_tracks.splice(window.selected_tracks.indexOf(feature.pk), 1);
+                            }else if (!was_already_selected) {
+                                window.selected_tracks.push(feature.pk)
+                            }
+                            highlight_leaflet_points(number=null,class_name="leaflet_track_marker", track_pks=window.selected_tracks)
+                        }
+
                         //  //row( e.target.id ).nodes().to$().addClass( 'selected' )
                     });
                     //   layer.on('mouseout', function (e) {
@@ -600,7 +616,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
     //  console.log("read_data_leaflet_generic")
     var t0 = performance.now();
 
-    tracks={}      //tracks
+    //tracks={}      //global_tracks now a global variable
     track_group={} //for single track
     features={}  // wps, photos, lines, (groups?)
     global_features={}  //global wps, photos, lines
@@ -712,7 +728,19 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                 }
                 // now loop over dict
                 for (track_name in tracks_dict){
+                    //keep track of plotted tracks to avoid double plotting (from emptymap)
+                    if (window.plotted_tracks != undefined){
+                        if (window.plotted_tracks.includes(track_name)){
+                            continue
+                        }else{
+                            window.plotted_tracks.push(track_name)
+                        }
+                    }
                     data_track= tracks_dict[track_name]
+                    //keep track of plotted tracks to avoid double plotting (from emptymap)
+                    if (window.plotted_tracks_ids != undefined){
+                        window.plotted_tracks_ids.push(data_track["pk"])
+                    }
                     if (colors_tracks != null) {
                         color=colors_tracks[track_name]
                     }else if ("color" in data_track) {
@@ -724,7 +752,7 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                     options["color_feature"]="color"
                     options["track_name"]=track_name
                     //console.log("data_track", data_track)
-                    tracks[text]=track_layer_fromjson(data_track,geojsonMarkerOptions,options).addTo(map)
+                    global_tracks[text]=track_layer_fromjson(data_track,geojsonMarkerOptions,options).addTo(map)
                 }
                 groupCheckboxes = true
                 break;
@@ -788,17 +816,19 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
                 }
                 break;
             case "minmaxlatlong": //used to give map bounds
-                latslong = data[element]
-               // console.log(latslong)
-                min_lat=latslong[0];max_lat=latslong[1];min_long=latslong[2];max_long=latslong[3];
-                var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
-                if (min_lat>=-90 && min_lat<=90 && max_lat>=-90 && max_lat<=90 &&
-                    min_long>=-180 && min_long<=180 && max_long>=-180 && max_long <=180){
-                    try{
-                        map.fitBounds(mapBounds);
-                    }catch(error){
-                        console.log(error)
-                    }
+                if (!options["nominmaxlatlong"]){
+                    latslong = data[element]
+                    // console.log(latslong)
+                     min_lat=latslong[0];max_lat=latslong[1];min_long=latslong[2];max_long=latslong[3];
+                     var mapBounds = L.latLngBounds([[min_lat, min_long],[max_lat,max_long]]);
+                     if (min_lat>=-90 && min_lat<=90 && max_lat>=-90 && max_lat<=90 &&
+                         min_long>=-180 && min_long<=180 && max_long>=-180 && max_long <=180){
+                         try{
+                             map.fitBounds(mapBounds);
+                         }catch(error){
+                             console.log(error)
+                         }
+                     }
                 }
                 break;
             case "Laps":
@@ -836,8 +866,8 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
         groupedOverlays["Track"]=track_group
         exclusiveGroups= ["Track"]
     }
-    if (tracks!={}){
-        groupedOverlays["Tracks"]=tracks
+    if (global_tracks!={}){
+        groupedOverlays["Tracks"]=global_tracks
     }
     if (groups!={}){
         groupedOverlays["Groups"]=groups
@@ -856,21 +886,24 @@ function read_data_leaflet_generic(data,geojsonMarkerOptions,map,options={})  {
     }
     
 
-    var options2 = {
-      exclusiveGroups: exclusiveGroups,
-      groupCheckboxes: groupCheckboxes
-    };
+    if (!options["nogroupedlayers"]){
+        var options2 = {
+            exclusiveGroups: exclusiveGroups,
+            groupCheckboxes: groupCheckboxes
+          };
+      
+          var layerControl = L.control.groupedLayers(baseMaps, groupedOverlays, options2);
+          map.addControl(layerControl);
+      
+          // groups are btw all shown by default, but the checkbox remains unselected,
+          // so i select it by hand
+          if (groupCheckboxes){
+              $(".leaflet-control-layers-group-selector").prop("checked",true)
+          }
+        //put the first map as selected, otherwise the radio button is empty for all
+        $("input:radio[name=leaflet-base-layers]:first").prop('checked', true);
 
-    var layerControl = L.control.groupedLayers(baseMaps, groupedOverlays, options2);
-    map.addControl(layerControl);
-
-    // groups are btw all shown by default, but the checkbox remains unselected,
-    // so i select it by hand
-    if (groupCheckboxes){
-        $(".leaflet-control-layers-group-selector").prop("checked",true)
     }
-    //put the first map as selected, otherwise the radio button is empty for all
-    $("input:radio[name=leaflet-base-layers]:first").prop('checked', true);
 
     var t1 = performance.now();
     console.log("--read_data_leaflet_generic took", (t1-t0)/1000, "seconds")
@@ -1001,3 +1034,59 @@ function add_photos_ajax(data_tot,links=false,request=""){
     }
 }
 
+//removes all pltted tracks on the map
+function clear_tracks(map){
+    window.plotted_tracks=[]
+    window.plotted_tracks_ids=[]
+    $.each(window.global_tracks,function(name,layer){
+        map.removeLayer(layer)
+    })
+    refresh_plotted_tracks_number()
+}
+
+// search all tracks according to map bounds and further params
+// used for live serach on emptymap
+function refresh_tracks(map, base_url, search_params){
+
+    var bounds = [map.getBounds().getSouthWest(),
+                    map.getBounds().getNorthEast(),]
+
+    var query_string=
+        "min_lat="+bounds[0]["lat"]+
+        "&max_lat="+bounds[1]["lat"]+
+        "&min_lng="+bounds[0]["lng"]+
+        "&max_lng="+bounds[1]["lng"]+
+        //"&how_many=10"+
+        "&use_color=1"
+
+    if (window.plotted_tracks_ids.length>0){
+        query_string+="&exclude_tracks_ids="+window.plotted_tracks_ids.join(",")
+    }
+
+    if (search_params){
+        $.each(search_params,function(name,value){
+            query_string+="&"+name+"="+value
+        })
+    }
+
+    var url=base_url+"?"+query_string
+    console.log(url)
+
+    if ($("#auto_clear_tracks").is(':checked')){
+        clear_tracks(map)
+    }
+
+    $.getJSON(url,function(data){
+        options={
+            "nogroupedlayers":1,
+            "nominmaxlatlong":1,
+        }
+        geojsonMarkerOptions=[]
+        read_data_leaflet_generic(data,geojsonMarkerOptions,map,options)
+        refresh_plotted_tracks_number()
+    })
+}
+
+function refresh_plotted_tracks_number(){
+    $("#n_tracks").text(window.plotted_tracks_ids.length +" tracks")
+}

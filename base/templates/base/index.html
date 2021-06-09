@@ -22,15 +22,14 @@
 {% block content %}
 <div style="position:relative;top:-25px">
     <div style="float:left; margin-left: 0%;width:33%;">
-        <h2>Quick Import Tracks</h2>
+        <h2>Quick Import</h2>
 
-        <button {% if not ok_tomtom %}disabled {%endif%} 
-        title="Download and import tracks and photos from Google Drive and Google Photos. 
-Requires TomTom username and password set in Options."
-            onclick="location.href='{% url 'quick_import'  %}'" type="button">Quick Import Google</button>
-        <button {% if not ok_google %}disabled {%endif%} 
-        title="Download and import tracks from TomTom. 
-Requires Google Tracks directory names set in Options" onclick="location.href='{% url 'quick_import_tomtom'  %}'" type="button">Quick Import TomTom</button>
+        {% for quick_import in quick_imports %}
+            <button {% if not quick_import.is_ok %}disabled {%endif%} 
+                    onclick="location.href='{% url 'quick_import_execute' id=quick_import.pk %}'" type="button">{{quick_import.name}}
+            </button>
+        {% endfor %}
+
     </div>
 
     <div style="float:left; margin-left: 0%;width:33%;">

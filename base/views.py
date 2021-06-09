@@ -12,6 +12,7 @@ from lines.models import Line
 from geojson_obj.models import GeoJsonObject
 from users.models import User
 from options.models import OptionSet
+from quick_import.models import QuickImport
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.urls import reverse
@@ -45,9 +46,8 @@ class MenuView(View):
             dict_ytd["min_date"]=min(dict_ytd["dates"]).strftime("%Y-%m-%d")
             dict_ytd["max_date"]=max(dict_ytd["dates"]).strftime("%Y-%m-%d")
 
-        ok_tomtom = OptionSet.get_option("TOMTOM_USER") and OptionSet.get_option("TOMTOM_PASSWORD")
-        ok_google = bool(OptionSet.get_option("GOOGLE_TRACKS_DIRS"))
 
+        quick_imports = QuickImport.objects.filter(active=True)
 
         return render(
             request,
@@ -56,8 +56,7 @@ class MenuView(View):
             "track_form":track_form,
             "group_form":group_form,
             "year_track_dates":year_track_dates,
-            "ok_tomtom":ok_tomtom,
-            "ok_google": ok_google
+            "quick_imports": quick_imports,
             },
         )
     

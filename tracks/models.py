@@ -2010,7 +2010,7 @@ class Track(models.Model):
                 svg_file=  os.path.join(settings.BASE_DIR, "media", "svg",self.name_wo_path_wo_ext+'.svg')
                 xy_chart.render_to_file(svg_file)
                 #xy_chart.render_to_png(png_file)
-                self.svg_file="/static/svg/" + self.name_wo_path_wo_ext+".svg"
+                self.svg_file="/media/svg/" + self.name_wo_path_wo_ext+".svg"
                 self.save()
                 self.info("OK Draw SVG")
                 return svg_file
@@ -2040,7 +2040,7 @@ class Track(models.Model):
             png_file=  os.path.join(settings.BASE_DIR, "media", "png",self.name_wo_path_wo_ext+'.png')
             plt.savefig(png_file, bbox_inches='tight',transparent=True)
             plt.cla()
-            self.png_file="/static/png/" + self.name_wo_path_wo_ext+".png"
+            self.png_file="/media/png/" + self.name_wo_path_wo_ext+".png"
             self.save()
             self.info("OK Draw png")
             return png_file

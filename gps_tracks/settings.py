@@ -231,15 +231,15 @@ USE_L10N = True
 ##PATHS
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"), os.path.join(BASE_DIR, "media"))
-TRACKS_DIR = os.path.join(BASE_DIR, "media", "input_files")
-PHOTOS_DIR = os.path.join(BASE_DIR, "media", "Camera")
-EXPORT_DIR = os.path.join(BASE_DIR, "media", "export")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 MEDIA_BASE_DIR = os.path.join(BASE_DIR, "media")
-MEDIA_ROOT = os.path.join(BASE_DIR, "media", "upload")
-MULTITRACK_ROOT = os.path.join(BASE_DIR, "media", "input_files", "multitrack")
-SVG_DIRS=[os.path.join(BASE_DIR, 'media',"svg")]
-LOGS_DIR= os.path.join(BASE_DIR, "media","logs")
+TRACKS_DIR = os.path.join(MEDIA_BASE_DIR, "input_files")
+PHOTOS_DIR = os.path.join(MEDIA_BASE_DIR, "Camera")
+EXPORT_DIR = os.path.join(MEDIA_BASE_DIR, "export")
+MEDIA_ROOT = os.path.join(MEDIA_BASE_DIR, "upload")
+MULTITRACK_ROOT = os.path.join(MEDIA_BASE_DIR, "input_files", "multitrack")
+SVG_DIRS=[os.path.join(MEDIA_BASE_DIR,"svg")]
+LOGS_DIR= os.path.join(MEDIA_BASE_DIR,"logs")
 
 
 # import dj_database_url

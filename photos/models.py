@@ -91,7 +91,8 @@ class Photo(models.Model):
             logger.error("cannot create thumbnail for %s" %self.name)
 
         self.thumbnail=outfile
-        self.thumbnail_url_path = "/static/camera/thumbnails/" + os.path.split(outfile)[-1]
+        rel_path_name = os.path.relpath(outfile,settings.MEDIA_BASE_DIR).replace("\\","/")
+        self.thumbnail_url_path = "/media/" + rel_path_name
         self.save()
         return outfile
 

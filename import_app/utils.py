@@ -455,7 +455,7 @@ def import_photos(path=None, update=False, files=None):
 
             rel_path_name = os.path.relpath(file,settings.MEDIA_BASE_DIR).replace("\\","/")
 
-            photo.url_path = "/static/" + rel_path_name
+            photo.url_path = "/media/" + rel_path_name
             photo.name = name_simple
             photo.path = file
             photo.save()

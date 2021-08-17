@@ -14,6 +14,8 @@ import os
 import mimetypes
 from envparse import env
 
+env.read_envfile('.env')
+
 mimetypes.add_type("image/svg+xml", ".svg", True)
 
 
@@ -267,11 +269,17 @@ SHOW_GOOGLE_MAPS=env('SHOW_GOOGLE_MAPS',cast=bool,default=False)
 SHOW_TODO=env('SHOW_TODO',cast=bool,default=False)
 print("SHOW_TODO",SHOW_TODO)
 
-ADDITIONAL_PHOTO_DIRS = env('ADDITIONAL_PHOTO_DIRS',default="").strip()
+ADDITIONAL_PHOTO_DIRS = env('ADDITIONAL_PHOTO_DIRS',default="")#.strip()
 ADDITIONAL_PHOTO_DIRS = ADDITIONAL_PHOTO_DIRS.split(";")
+if ADDITIONAL_PHOTO_DIRS:
+    print("ADDITIONAL_PHOTO_DIRS", ADDITIONAL_PHOTO_DIRS)
+
 
 import sys
 today=datetime.datetime.now().strftime("%Y%m%d")
+
+
+
 
 
 LOGGING = {

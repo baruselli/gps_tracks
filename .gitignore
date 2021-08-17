@@ -15,6 +15,7 @@ requirements_old.txt
 static/js/external/old/*
 static/css/old/*
 *log
+*.env
 
 
 !media/Camera/.gitkeep

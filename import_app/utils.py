@@ -358,13 +358,20 @@ def find_files_in_dir(dir_=None, extensions=[".kmz", ".kml", ".gpx", ".csv", ".t
     if dir_ is None:
         dir_ = settings.TRACKS_DIR
 
+    # I can pass a single directory, or a list of directories
+    if isinstance(dir_,list) or isinstance(dir_,tuple):
+        dirs = dir_
+    else:
+        dirs = [dir_]
+
     files = []
-    logger.info("find_files_in_dir: %s, ext: %s" %(dir_, str(extensions)))
-    for root, dirs, filess in os.walk(dir_):
-        for file in filess:
-            for extension in extensions:
-                if file.endswith(extension):
-                    files.append(os.path.join(root, file))
+    logger.info("find_files_in_dir(s): %s, ext: %s" %(dirs, str(extensions)))
+    for dir_ in dirs:
+        for root, dirs, filess in os.walk(dir_):
+            for file in filess:
+                for extension in extensions:
+                    if file.endswith(extension):
+                        files.append(os.path.join(root, file))
     return files
 
 def find_files_in_dir_by_prefix(dir_, prefix):
@@ -435,6 +442,7 @@ def import_photos(path=None, update=False, files=None):
         files_to_import = [files_dict_1[a] for a in names_to_import]
         logger.info("Found %s files not in db" % len(files_to_import))
 
+    all_dirs = get_all_photo_dirs()
     for file in files_to_import:
         name_simple=files_dict_2[file]
 
@@ -453,9 +461,19 @@ def import_photos(path=None, update=False, files=None):
             else:
                 logger.info("create photo %s" % file)
 
-            rel_path_name = os.path.relpath(file,settings.MEDIA_BASE_DIR).replace("\\","/")
+            # check in which media directory the file is contained
+            # I simply check the full path of the file and of the directory, could be done better
+            from gps_tracks.utils import match_url_path
+            for dir_ in all_dirs:
+                if dir_ in file:
+                    rel_path_name = os.path.relpath(file,dir_).replace("\\","/")
+                    break
+            else:
+                rel_path_name = os.path.relpath(file,settings.MEDIA_BASE_DIR).replace("\\","/")
+                dir_ = settings.MEDIA_BASE_DIR
 
-            photo.url_path = "/media/" + rel_path_name
+            photo.url_path = match_url_path(dir_) + rel_path_name
+
             photo.name = name_simple
             photo.path = file
             photo.save()
@@ -627,13 +645,23 @@ def reimport_failed_tracks():
     for t in tracks:
         t.reimport()
 
+def get_all_photo_dirs():
+    dirs = [settings.PHOTOS_DIR]
+    dirs2 = settings.ADDITIONAL_PHOTO_DIRS
+    if dirs2:
+        dirs.extend(dirs2)
+    return dirs
 
 def find_imported_and_existing_photos(dir_=None,extensions=[".jpg",]):
-
     if dir_ is None:
-        dir_ = settings.PHOTOS_DIR
+        dirs = get_all_photo_dirs()
+    else:
+        if isinstance(dir_,list) or isinstance(dir_,tuple):
+            dirs = dir_
+        else:
+            dirs = [dir_]
 
-    files = find_files_in_dir(dir_=dir_, extensions=extensions)
+    files = find_files_in_dir(dir_=dirs, extensions=extensions)
     thumbnail_dir = os.path.join(settings.PHOTOS_DIR, "thumbnails")
     files=[f for f in files if thumbnail_dir not in f]
     file_names=[name_wo_path_wo_ext(f) for f in files]
@@ -775,6 +803,8 @@ def import_new_tracks(dir_=None,extensions=[".kmz", ".kml", ".gpx", ".csv", ".tc
 
 def import_new_photos(dir_=None,extensions=[".jpg"]):
     """find and import new photos"""
+    if dir_ is None:
+        dir_ = get_all_photo_dirs()
     files = find_imported_and_existing_photos(dir_=dir_, extensions=extensions)["missing_photos_existing_paths"]
     import_photos(files=files, update=False)
 

@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from .utils import match_url_path
 
 urlpatterns = [
                 url(r"^admin/", admin.site.urls),
@@ -44,7 +45,11 @@ urlpatterns = [
                 url(r"options/", include("options.urls")),
                 url(r"json/", include("json_views.urls")),
                 url(r"merge_tracks/", include("merge_tracks.urls")),
-]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_BASE_DIR)
+]  + static(match_url_path(settings.MEDIA_BASE_DIR), document_root=settings.MEDIA_BASE_DIR)
+
+# add additional urls for other photo dirs
+for additional_photo_dir in settings.ADDITIONAL_PHOTO_DIRS:
+    urlpatterns += static(match_url_path(additional_photo_dir), document_root=additional_photo_dir)
 
 if settings.DEBUG:
     import debug_toolbar

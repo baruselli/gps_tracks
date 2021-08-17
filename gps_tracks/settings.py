@@ -267,6 +267,9 @@ SHOW_GOOGLE_MAPS=env('SHOW_GOOGLE_MAPS',cast=bool,default=False)
 SHOW_TODO=env('SHOW_TODO',cast=bool,default=False)
 print("SHOW_TODO",SHOW_TODO)
 
+ADDITIONAL_PHOTO_DIRS = env('ADDITIONAL_PHOTO_DIRS',default="").strip()
+ADDITIONAL_PHOTO_DIRS = ADDITIONAL_PHOTO_DIRS.split(";")
+
 import sys
 today=datetime.datetime.now().strftime("%Y%m%d")
 

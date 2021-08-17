@@ -331,7 +331,7 @@ class ImportNewPhotosView(View):
 
         logger.info("ImportNewPhotos")
         logger.info(settings.PHOTOS_DIR)
-        t = threading.Thread(target=import_new_photos, args=(str(settings.PHOTOS_DIR),))
+        t = threading.Thread(target=import_new_photos)
         t.start()
 
         message = "Started import in a parallel thread, check logs for details"

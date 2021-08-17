@@ -99,8 +99,7 @@ class ImportPhotos(View):
         from django.contrib import messages
 
         logger.info("ImportPhotos")
-        logger.info(settings.PHOTOS_DIR)
-        t = threading.Thread(target=import_photos, args=(str(settings.PHOTOS_DIR),))
+        t = threading.Thread(target=import_photos, kwargs={"update":False})
         t.start()
 
         message = "Started import in a parallel thread, check logs for details"
@@ -116,8 +115,7 @@ class UpdatePhotos(View):
         from django.contrib import messages
 
         logger.info("ImportPhotos")
-        logger.info(settings.PHOTOS_DIR)
-        t = threading.Thread(target=import_photos, args=(str(settings.PHOTOS_DIR),True))
+        t = threading.Thread(target=import_photos, kwargs={"update":True})
         t.start()
 
         message = "Started import in a parallel thread, check logs for details"
@@ -316,7 +314,7 @@ class ImportNewTracksView(View):
         from django.contrib import messages
 
         logger.info("ImportNewTracks")
-        logger.info(settings.PHOTOS_DIR)
+        logger.info(settings.TRACKS_DIR)
         t = threading.Thread(target=import_new_tracks, args=(str(settings.TRACKS_DIR),))
         t.start()
 
@@ -333,7 +331,6 @@ class ImportNewPhotosView(View):
         from django.contrib import messages
 
         logger.info("ImportNewPhotos")
-        logger.info(settings.PHOTOS_DIR)
         t = threading.Thread(target=import_new_photos)
         t.start()
 

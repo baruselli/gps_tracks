@@ -6,4 +6,4 @@ def match_url_path(path):
     if path == settings.MEDIA_BASE_DIR:
         return settings.MEDIA_URL
     else:
-        return "/media_" + path.replace("/","_").replace("\\","_").replace(":","_").replace(" ","_").replace("'","_").replace('"',"_")
+        return "/media_" + path.replace("/","_").replace("\\","_").replace(":","_").replace(" ","_").replace("'","_").replace('"',"_")+"/"

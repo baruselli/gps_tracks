@@ -44,6 +44,8 @@ class Import(View):
 
         ok_tomtom =  OptionSet.get_option("TOMTOM_USER") and OptionSet.get_option("TOMTOM_PASSWORD")
         ok_google =  bool(OptionSet.get_option("GOOGLE_TRACKS_DIRS"))
+        from .utils import get_all_photo_dirs
+        all_photos_dirs = "; ".join(get_all_photo_dirs())
 
         return render(request, self.template_name, {
             "show_timeline":show_timeline,
@@ -60,6 +62,7 @@ class Import(View):
             "n_users": n_users,
             "tracks_dir":settings.TRACKS_DIR,
             "photos_dir": settings.PHOTOS_DIR,
+            "all_photos_dirs": all_photos_dirs,
             "ok_tomtom":ok_tomtom,
             "ok_google": ok_google
         })

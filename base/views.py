@@ -239,6 +239,8 @@ def context_base_settings(request):
             basemaps = eval(basemaps)
         else:
             basemaps=[]
+        if not settings.SHOW_GOOGLE_MAPS:
+            basemaps = [b for b in basemaps if not b.startswith("Google.")]
     except Exception as e:
         import traceback
 

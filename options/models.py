@@ -66,6 +66,7 @@ class OptionSet(models.Model):
         ('deduced', 'Deduced from tracks'),
     )
     PHOTO_LOCATIONS = models.CharField(max_length=20, choices=PHOTO_LOCATION_CHOICES, default="original", verbose_name="Preferred location method")
+    PHOTOS_DOWNLOAD_DIR = models.CharField(max_length=1023, blank=True, null=True, default="", verbose_name="Folder to which download photos, if empty default is media/Camera inside the project directory. If changed, must be added to ADDITIONAL_PHOTO_DIRS in the .env file to be able to import and show downloaded photos")
     # timezone
     import pytz
     TIMEZONE_CHOICES = [(t, t) for t in pytz.common_timezones]
@@ -98,12 +99,14 @@ class OptionSet(models.Model):
         super(OptionSet, self).save(*args, **kwargs)
 
     @staticmethod
-    def get_option(option_name):
+    def get_option(option_name, default=None):
         try:
             active_set = OptionSet.objects.get(is_active=True)
             value = getattr(active_set, option_name)
+            if not value:
+                value = default
         except:
-            return None
+            return default
         return value
 
     @staticmethod

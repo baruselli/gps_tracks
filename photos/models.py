@@ -87,8 +87,8 @@ class Photo(models.Model):
             im = Image.open(self.path)
             im.thumbnail(size)
             im.save(outfile, "JPEG")
-        except IOError:
-            logger.error("cannot create thumbnail for %s" %self.name)
+        except IOError as e:
+            logger.error("cannot create thumbnail for %s: %s" %(self.name, e))
 
         self.thumbnail=outfile
         rel_path_name = os.path.relpath(outfile,settings.MEDIA_BASE_DIR).replace("\\","/")

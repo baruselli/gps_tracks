@@ -77,7 +77,7 @@ class QuickImport(models.Model):
                 downloaded_photos += google_photos(only_last_year=True)
             # import photos
             elif step.step_code == "import_photos":
-                imported_photos = import_photos(files=downloaded_photos)
+                imported_photos = import_photos(files=downloaded_photos, update=True)
             # link photos - tracks
             elif step.step_code == "associate_photos_to_tracks":
                 associate_photos_to_tracks(photo_list=imported_photos, track_list=generated_tracks)

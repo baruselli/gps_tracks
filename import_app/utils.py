@@ -806,7 +806,7 @@ def import_new_photos(dir_=None,extensions=[".jpg"]):
     if dir_ is None:
         dir_ = get_all_photo_dirs()
     files = find_imported_and_existing_photos(dir_=dir_, extensions=extensions)["missing_photos_existing_paths"]
-    import_photos(files=files, update=False)
+    import_photos(files=files, update=True)
 
 def save_uploaded_files(files):
     """save uploaded files, and return list of paths where they are saved"""

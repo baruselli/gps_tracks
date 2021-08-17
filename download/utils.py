@@ -121,7 +121,10 @@ def google_drive_photos():
             gauth
         )  # Create GoogleDrive instance with authenticated GoogleAuth instance
 
-        existing_file_list = os.listdir(settings.PHOTOS_DIR)
+        from options.models import OptionSet
+        download_dir = OptionSet.get_option("PHOTOS_DOWNLOAD_DIR", default=settings.PHOTOS_DIR)
+
+        existing_file_list = os.listdir(download_dir)
         # print (existing_file_list)
 
         downloaded_photos=[]
@@ -146,8 +149,8 @@ def google_drive_photos():
                         # print (file1['originalFilename'])
                         # qui cerco che la foto non esista gia
                         if file1["originalFilename"] not in existing_file_list:
-                            logger.info("downloading " + file1["originalFilename"])
-                            photo_path= os.path.join(settings.PHOTOS_DIR, file1["originalFilename"])
+                            photo_path= os.path.join(download_dir, file1["originalFilename"])
+                            logger.info("downloading " + photo_path)
                             file1.GetContentFile(photo_path)
                             downloaded_photos.append(photo_path)
         logger.info("done")
@@ -170,9 +173,12 @@ def google_photos(only_last_year=False):
         # service = build('drive', 'v3', credentials=creds)
         service = build('photoslibrary', 'v1', credentials=creds)
 
-        existing_file_list = os.listdir(settings.PHOTOS_DIR)
-
         from options.models import OptionSet
+
+        download_dir = OptionSet.get_option("PHOTOS_DOWNLOAD_DIR", default=settings.PHOTOS_DIR)
+
+        existing_file_list = os.listdir(download_dir)
+
         if only_last_year:
             min_year=datetime.now().year
         else:
@@ -195,8 +201,8 @@ def google_photos(only_last_year=False):
                     if item["filename"] not in existing_file_list:
                         # here I (try to) filter real photos, not other images
                         if "mediaMetadata" in item and "photo" in item["mediaMetadata"] and item["mediaMetadata"]["photo"]:
-                            logger.info("downloading " + item["filename"])
-                            photo_path = os.path.join(settings.PHOTOS_DIR, item["filename"])
+                            photo_path = os.path.join(download_dir, item["filename"])
+                            logger.info("downloading " + photo_path)
                             urllib.request.urlretrieve(item["baseUrl"]+"=d", photo_path) #=d needed for full image
                             downloaded_photos.append(photo_path)
 

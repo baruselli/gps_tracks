@@ -24,6 +24,7 @@
         <button class="tablinks active" id="btn_tab_tracks" onclick="open_tab(event, 'tab_tracks')"><h2>Tracks</h2></a></li>
         <button class="tablinks " id="btn_tab_photos" onclick="open_tab(event, 'tab_photos')"><h2>Photos</h2></a></li>
         <button class="tablinks" id="btn_tab_delete" onclick="open_tab(event, 'tab_delete')"><h2>Delete</h2></a></li>
+        <button class="tablinks" id="btn_tab_quickimport" onclick="open_tab(event, 'tab_quickimport')"><h2>Quick Import</h2></a></li>
         <button class="tablinks" id="btn_tab_statistics" onclick="open_tab(event, 'tab_statistics')"><h2>Statistics</h2></a></li>
     </div>
         
@@ -158,6 +159,17 @@
 </div>    
     
 
+<div class="tabcontent" id="tab_quickimport">
+    <p>It is possible to set up quick procedures of import, which are available in the home page.</p>
+    <table>
+        <thead><th>Name</th><th>Steps</th><th>Active</th></thead>
+        {% for qi in quick_imports %}
+            <tr><td><a href="{% url 'quick_import_edit' id=qi.pk  %}">{{ qi.name }}</a></td><td>{% for step in qi.steps.all %}{{step}};{%endfor%}</td><td>{{qi.active}}</td></tr>
+        {% endfor %}
+    </table>
+    <button onclick="location.href='{% url 'quick_import_edit'  %}'">New</a>
+</div>
+
 <div class="tabcontent" id="tab_statistics">
     <table>
         <thead><td></td><td><b>#</b></td><td><b>First</b></td><td><b>Last</b></td></thead>
@@ -169,8 +181,6 @@
         <tr><td><b>GeoJSON</b></td><td>{{n_geojson}}</td><td></td><td></td></tr>
         <tr><td><b>Users</b></td><td>{{n_users}}</td><td></td><td></td></tr>
     </table>
-    
-    
 </div>
 
 

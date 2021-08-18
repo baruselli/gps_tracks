@@ -47,6 +47,9 @@ class Import(View):
         from .utils import get_all_photo_dirs
         all_photos_dirs = "; ".join(get_all_photo_dirs())
 
+        from quick_import.models import QuickImport
+        quick_imports = QuickImport.objects.all()
+
         return render(request, self.template_name, {
             "show_timeline":show_timeline,
             "n_tracks": n_tracks,
@@ -64,7 +67,8 @@ class Import(View):
             "photos_dir": settings.PHOTOS_DIR,
             "all_photos_dirs": all_photos_dirs,
             "ok_tomtom":ok_tomtom,
-            "ok_google": ok_google
+            "ok_google": ok_google,
+            "quick_imports": quick_imports,
         })
 
 class ImportUpdate(View):

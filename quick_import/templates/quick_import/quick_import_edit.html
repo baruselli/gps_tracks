@@ -1,0 +1,64 @@
+{% extends "base/base.html" %}
+{% load staticfiles%}
+
+{% load crispy_forms_tags %}
+
+{% block head_title %}
+    {% if obj %}
+        <title>Quick Import {{obj.name}}</title>
+    {% else %}
+        <title>Quick Import</title>
+    {%endif %}
+{% endblock %}
+
+{% block title %}
+    {% if obj %}
+        <div><h1>Quick Import {{obj.name}}</h1></div>
+    {% else %}
+        <div><h1>Quick Import</h1></div>
+    {%endif %}
+{%endblock%}
+
+{% block buttons %}
+    {% if obj %}
+        <button onclick="deleterule_fct()" type="button">Delete Quick Import</button>
+    {%endif %}
+{%endblock%}
+
+
+{% block js %}
+    <script>
+        {% if obj %}
+            function deleterule_fct() {
+                var r=confirm("Really delete rule?");
+                if (r == true) {
+                    location.href='{% url 'group_rule_delete' rule_id=obj.pk  %}'
+                }
+            } 
+        {%endif %}
+
+    </script>
+{%endblock%}
+
+
+{% block content %}
+
+{% endblock %}
+
+
+{% block form %}
+  <br>
+   <form method="POST" action="" id="searchform">
+        {% csrf_token %}
+
+        {{ form}}
+
+        <input type="submit"  name="quick_import_form" value="Submit">
+    </form>
+
+
+{%endblock%}
+
+{% block form0 %}
+
+{%endblock%}

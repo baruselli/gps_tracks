@@ -30,9 +30,9 @@
     <script>
         {% if obj %}
             function deleterule_fct() {
-                var r=confirm("Really delete rule?");
+                var r=confirm("Really delete quick import?");
                 if (r == true) {
-                    location.href='{% url 'group_rule_delete' rule_id=obj.pk  %}'
+                    location.href='{% url 'quick_import_delete' id=obj.pk  %}'
                 }
             } 
         {%endif %}

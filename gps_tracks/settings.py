@@ -240,7 +240,8 @@ PHOTOS_DIR = os.path.join(MEDIA_BASE_DIR, "Camera")
 EXPORT_DIR = os.path.join(MEDIA_BASE_DIR, "export")
 MEDIA_ROOT = os.path.join(MEDIA_BASE_DIR, "upload")
 MULTITRACK_ROOT = os.path.join(MEDIA_BASE_DIR, "input_files", "multitrack")
-SVG_DIRS=[os.path.join(MEDIA_BASE_DIR,"svg")]
+SVG_DIR=os.path.join(MEDIA_BASE_DIR,"svg")
+PNG_DIR=os.path.join(MEDIA_BASE_DIR,"png")
 LOGS_DIR= os.path.join(MEDIA_BASE_DIR,"logs")
 
 

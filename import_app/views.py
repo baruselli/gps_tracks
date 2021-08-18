@@ -63,8 +63,8 @@ class Import(View):
                 db_size = rows[0][0]
             elif settings.DB_TYPE == "sqlite":
                 import os
-                db_size = os.stat(settings.DB_NAME).st_size / 1024 / 1024
-                db_size = str(db_size)+" MB"
+                from humanize import naturalsize
+                db_size = naturalsize(os.stat(settings.DB_NAME).st_size)
             else:
                 db_size = ""
         except:

@@ -92,3 +92,22 @@ class QuickImportEditView(View):
             return render(
                 request, self.template_name, {"form": form, "has_error": True}
             )
+
+class QuickImportDeleteView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        id = kwargs.get("id", None)
+
+        logger.debug("QuickImportDeleteView")
+
+
+        obj = QuickImport.objects.get(pk=id)
+        obj.delete()
+
+        message = "Quick Import %s deleted" %obj
+        messages.success(request, message)
+
+        return HttpResponseRedirect(
+            reverse("import")
+        )

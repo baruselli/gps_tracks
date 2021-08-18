@@ -843,3 +843,42 @@ def save_uploaded_files(files):
         file_path = os.path.join(path,filename) 
         paths.append(file_path)
     return paths
+
+#https://geekflare.com/check-file-folder-size-in-python/
+def get_dir_sizes():
+    logger.info("get_dir_sizes")
+    import time
+    t0=time.time()
+    import os
+    media_dir = settings.MEDIA_BASE_DIR
+
+    total_size = 0
+
+    sizes = {
+        settings.TRACKS_DIR: 0 ,
+        settings.PHOTOS_DIR: 0 ,
+        settings.EXPORT_DIR: 0 ,
+        settings.SVG_DIR: 0 ,
+        settings.PNG_DIR: 0 ,
+        settings.LOGS_DIR: 0 ,
+    }
+
+    size=0
+    for path, dirs, files in os.walk(settings.MEDIA_BASE_DIR):
+        for f in files:
+            fp = os.path.join(path, f)
+            f_size = os.stat(fp).st_size
+            total_size += f_size
+            for d in sizes.keys():
+                if d in path:
+                    sizes[d]+=f_size
+                    break
+
+    sizes[media_dir]=total_size
+
+    from humanize import naturalsize
+    sizes={a:naturalsize(b) for a,b in sizes.items()}
+
+    logger.info("get_dir_sizes: %s" %(time.time()-t0))
+
+    return sizes

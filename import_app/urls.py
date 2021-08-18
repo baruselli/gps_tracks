@@ -35,4 +35,6 @@ urlpatterns = [
     url(r"^all_photos_report$", views.AllPhotosReportView.as_view(), name="all_photos_report"),
     url(r"^all_photos_report_json$", views.AllPhotosReportJsonView.as_view(), name="all_photos_report_json"),
     url(r"^import_new_photos$", views.ImportNewPhotosView.as_view(), name="import_new_photos"),
+    # dir infos
+    url(r"^get_dir_sizes$", views.GetDirSizesView.as_view(), name="get_dir_sizes"),
 ]

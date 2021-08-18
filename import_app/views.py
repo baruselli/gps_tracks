@@ -364,3 +364,8 @@ class ImportNewPhotosView(View):
         messages.success(request, message)
 
         return redirect(request.META.get('HTTP_REFERER'))
+
+class GetDirSizesView(View):
+    def get(self, request, *args, **kwargs):
+        from .utils import get_dir_sizes
+        return JsonResponse(get_dir_sizes())

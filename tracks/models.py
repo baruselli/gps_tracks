@@ -1821,7 +1821,12 @@ class Track(models.Model):
             frequency_string = str(int(self.total_frequency))
         except:
             frequency_string=""
-            
+        
+        try:
+            pace_ms = int((self.pace or 0) *60000)
+        except:
+            pace_ms = 0
+
         features = {
             # directly from DB
             "name": self.name_wo_path_wo_ext,
@@ -1860,7 +1865,7 @@ class Track(models.Model):
             "pace": {
                 "pace": self.pace,
                 "pace_string": self.pace_string,
-                "pace_ms": int((self.pace or 0) *60000),
+                "pace_ms": pace_ms,
             },
             "n_laps": to_float_or_zero(self.n_laps),
             "total_frequency": to_float_or_zero(self.total_frequency),

@@ -181,6 +181,9 @@
         <tr><td><b>GeoJSON</b></td><td>{{n_geojson}}</td><td></td><td></td></tr>
         <tr><td><b>Users</b></td><td>{{n_users}}</td><td></td><td></td></tr>
     </table>
+    {% if db_size %}
+        <p>DB size: {{db_size}}</p><br>
+    {% endif %}
 </div>
 
 

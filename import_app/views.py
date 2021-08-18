@@ -50,6 +50,27 @@ class Import(View):
         from quick_import.models import QuickImport
         quick_imports = QuickImport.objects.all()
 
+        try:
+            if settings.DB_TYPE == "postgres":
+                from django.db import connection
+                cursor = connection.cursor()
+                sql = '''
+                    SELECT pg_size_pretty( pg_database_size('%s') );
+                    ''' % (settings.DB_NAME)
+                cursor.execute(sql)
+                rows = cursor.fetchall()
+                cursor.close()
+                db_size = rows[0][0]
+            elif settings.DB_TYPE == "sqlite":
+                import os
+                db_size = os.stat(settings.DB_NAME).st_size / 1024 / 1024
+                db_size = str(db_size)+" MB"
+            else:
+                db_size = ""
+        except:
+            db_site = ""
+
+
         return render(request, self.template_name, {
             "show_timeline":show_timeline,
             "n_tracks": n_tracks,
@@ -69,6 +90,7 @@ class Import(View):
             "ok_tomtom":ok_tomtom,
             "ok_google": ok_google,
             "quick_imports": quick_imports,
+            "db_size":db_size,
         })
 
 class ImportUpdate(View):

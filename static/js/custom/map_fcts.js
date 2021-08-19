@@ -131,9 +131,10 @@ function map_right_click (map, options, link,link2,track_pk=-1){
                 "<input type='submit' value='OK'></form><br>"
     string4="<a  target='_blank' href='"+link2+"?lat="+lat+"&lng="+lng+"&track_pk="+track_pk+"'>"+"Create waypoint"+"</a><br>"
     string5="<a  target='_blank' href=https://www.google.it/maps/@"+lat+","+lng+",15z>"+"Google Maps"+"</a><br>"
-    string6="<a  target='_blank' href=https://www.openstreetmap.org/?lat="+lat+"&lon="+lng+"&zoom=15&layers=M>"+"Open Street Map"+"</a>"
+    string6="<a  target='_blank' href=https://www.openstreetmap.org/?lat="+lat+"&lon="+lng+"&zoom=15&layers=M>"+"OpenStreetMap"+"</a> / "
+    string7="<a  target='_blank' href=https://www.opentopomap.org/#map=15/"+lat+"/"+lng+">"+"OpenTopoMap"+"</a>"
     console.log("Coordinates: " + lat +", "+ lng );
-    marker=L.marker(event.latlng,{icon: icon_objs["purple"]}).addTo(map).bindPopup(string0+string3+string4+string5+string6);
+    marker=L.marker(event.latlng,{icon: icon_objs["purple"]}).addTo(map).bindPopup(string0+string3+string4+string5+string6+string7);
     hand_markers.push(marker)
   // this is only needed in tracks_list.html
   try{

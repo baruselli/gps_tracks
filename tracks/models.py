@@ -2012,11 +2012,12 @@ class Track(models.Model):
                                     style=custom_style,width=500, height=500*delta_y/delta_x)
                 xy_chart.add('', [[x,y] for x,y in zip(xs,ys)])
                 
-                svg_file=  os.path.join(settings.BASE_DIR, "media", "svg",self.name_wo_path_wo_ext+'.svg')
+                svg_file=  os.path.join(settings.SVG_DIR,self.name_wo_path_wo_ext+'.svg')
                 xy_chart.render_to_file(svg_file)
                 #xy_chart.render_to_png(png_file)
                 import os
-                self.svg_file=os.path.join(settings.SVG_DIR,self.name_wo_path_wo_ext+".svg")  
+                from gps_tracks.utils import match_url_path
+                self.svg_file=match_url_path(settings.SVG_DIR)+self.name_wo_path_wo_ext+".svg"
                 self.save()
                 self.info("OK Draw SVG")
                 return svg_file
@@ -2043,11 +2044,11 @@ class Track(models.Model):
             plt.gca().set_aspect('equal', adjustable='box')
             plt.axis('off')
             plt.scatter(x,y)
-            png_file=  os.path.join(settings.BASE_DIR, "media", "png",self.name_wo_path_wo_ext+'.png')
+            png_file=  os.path.join(settings.PNG_DIR,self.name_wo_path_wo_ext+'.png')
             plt.savefig(png_file, bbox_inches='tight',transparent=True)
             plt.cla()
-            import os
-            self.png_file=os.path.join(settings.PNG_DIR, self.name_wo_path_wo_ext+".png")
+            from gps_tracks.utils import match_url_path
+            self.png_file=match_url_path(settings.PNG_DIR)+ self.name_wo_path_wo_ext+".png"
             self.save()
             self.info("OK Draw png")
             return png_file

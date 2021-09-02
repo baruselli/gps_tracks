@@ -418,9 +418,7 @@ def import_photos(path=None, update=False, files=None):
     if files is None:
         files = find_files_in_dir(path, ".jpg")
 
-    thumbnail_dir = os.path.join(settings.PHOTOS_DIR, "thumbnails")
-
-    files=[f for f in files if thumbnail_dir not in f]
+    files=[f for f in files if settings.THUMBNAIL_DIR not in f]
 
     logger.info("...found %s files" %len(files))
 
@@ -662,8 +660,7 @@ def find_imported_and_existing_photos(dir_=None,extensions=[".jpg",]):
             dirs = [dir_]
 
     files = find_files_in_dir(dir_=dirs, extensions=extensions)
-    thumbnail_dir = os.path.join(settings.PHOTOS_DIR, "thumbnails")
-    files=[f for f in files if thumbnail_dir not in f]
+    files=[f for f in files if  settings.THUMBNAIL_DIR not in f]
     file_names=[name_wo_path_wo_ext(f) for f in files]
 
     all_photos=Photo.objects.all().values_list('name', flat=True)
@@ -857,6 +854,7 @@ def get_dir_sizes():
     sizes = {
         settings.TRACKS_DIR: 0 ,
         settings.PHOTOS_DIR: 0 ,
+        settings.THUMBNAIL_DIR: 0 ,
         settings.EXPORT_DIR: 0 ,
         settings.SVG_DIR: 0 ,
         settings.PNG_DIR: 0 ,
@@ -872,9 +870,18 @@ def get_dir_sizes():
             for d in sizes.keys():
                 if d in path:
                     sizes[d]+=f_size
-                    break
+
 
     sizes[media_dir]=total_size
+
+    # external folders
+    for add_dir in  settings.ADDITIONAL_PHOTO_DIRS:
+        sizes[add_dir] = 0        
+        for path, dirs, files in os.walk(add_dir):
+            for f in files:
+                fp = os.path.join(path, f)
+                f_size = os.stat(fp).st_size
+                sizes[add_dir] += f_size
 
     from humanize import naturalsize
     sizes={a:naturalsize(b) for a,b in sizes.items()}

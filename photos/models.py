@@ -75,8 +75,7 @@ class Photo(models.Model):
         import os, sys
         from PIL import Image
 
-        thumbnail_dir=os.path.join(settings.PHOTOS_DIR,"thumbnails")
-        outfile=os.path.join(thumbnail_dir,self.name)+".jpg"
+        outfile=os.path.join(settings.THUMBNAIL_DIR,self.name)+".jpg"
 
         try:
             os.mkdir(thumbnail_dir)
@@ -92,7 +91,9 @@ class Photo(models.Model):
 
         self.thumbnail=outfile
         rel_path_name = os.path.relpath(outfile,settings.MEDIA_BASE_DIR).replace("\\","/")
-        self.thumbnail_url_path = "/media/" + rel_path_name
+        # I put thumbnails in main media directory
+        from gps_tracks.utils import match_url_path
+        self.thumbnail_url_path = match_url_path(settings.MEDIA_BASE_DIR) + rel_path_name
         self.save()
         return outfile
 

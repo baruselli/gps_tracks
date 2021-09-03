@@ -16,6 +16,8 @@ static/js/external/old/*
 static/css/old/*
 *log
 *.env
+*.backup
+.env
 
 
 !media/Camera/.gitkeep

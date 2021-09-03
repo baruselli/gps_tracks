@@ -24,11 +24,11 @@ class Photo(models.Model):
     # these 2 fields are to speed up menu loadings
     tracks = models.ManyToManyField("tracks.Track",blank=True)
     track_name = models.CharField(max_length=255, verbose_name="Track name", null=True, blank=True, unique=False)
-    track_pk = models.IntegerField(null=True)
+    track_pk = models.IntegerField(null=True, blank=True)
     #
-    deduced_lat = models.FloatField(null=True,default=None)
-    deduced_long = models.FloatField(null=True,default=None)
-    deduced_alt = models.FloatField(null=True,default=None)
+    deduced_lat = models.FloatField(null=True,default=None, blank=True)
+    deduced_long = models.FloatField(null=True,default=None, blank=True)
+    deduced_alt = models.FloatField(null=True,default=None, blank=True)
     track_how = models.CharField(
         max_length=255,
         verbose_name="Way of linkning to track",

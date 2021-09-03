@@ -382,3 +382,15 @@ def deduce_city(photo,track):
     elif track.beg_city:
         photo.city = track.beg_city
     photo.save()
+
+def move_directory(old_dir, new_dir, old_url, new_url ,photos):
+    from gps_tracks.utils import match_url_path
+    from django.conf import settings 
+
+    for p in photos:
+        print(p.path, p.url_path)
+        p.path = p.path.replace(old_dir, new_dir)
+        p.url_path = p.url_path.replace(old_url, new_url)
+        print(p.path, p.url_path)
+        p.save()
+        

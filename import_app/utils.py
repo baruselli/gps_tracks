@@ -440,7 +440,8 @@ def import_photos(path=None, update=False, files=None):
         files_to_import = [files_dict_1[a] for a in names_to_import]
         logger.info("Found %s files not in db" % len(files_to_import))
 
-    all_dirs = get_all_photo_dirs()
+    # I do from longest name to avoid having a file in a wrong folder if one is called dir1 and the other dir11
+    all_dirs = sorted(get_all_photo_dirs(), key=len,reverse=True)
     for file in files_to_import:
         name_simple=files_dict_2[file]
 

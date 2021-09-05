@@ -177,7 +177,11 @@ def google_photos(only_last_year=False):
 
         download_dir = OptionSet.get_option("PHOTOS_DOWNLOAD_DIR", default=settings.PHOTOS_DIR)
 
-        existing_file_list = os.listdir(download_dir)
+        #existing_file_list = os.listdir(download_dir)
+        from import_app.utils import get_all_photo_dirs
+        existing_file_list = []
+        for dir_ in get_all_photo_dirs():
+            existing_file_list.extend(os.listdir(dir_))
 
         if only_last_year:
             min_year=datetime.now().year

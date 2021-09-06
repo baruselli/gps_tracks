@@ -1,5 +1,6 @@
 .vscode/
 media/Camera/*
+media/thumbnails/*
 media/export/*
 media/input_files/*
 media/png/*
@@ -21,6 +22,7 @@ static/css/old/*
 
 
 !media/Camera/.gitkeep
+!media/thumbnails/.gitkeep
 !media/export/.gitkeep
 !media/input_files/.gitkeep
 !media/png/.gitkeep

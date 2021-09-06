@@ -462,16 +462,8 @@ def import_photos(path=None, update=False, files=None):
 
             # check in which media directory the file is contained
             # I simply check the full path of the file and of the directory, could be done better
-            from gps_tracks.utils import match_url_path
-            for dir_ in all_dirs:
-                if dir_ in file:
-                    rel_path_name = os.path.relpath(file,dir_).replace("\\","/")
-                    break
-            else:
-                rel_path_name = os.path.relpath(file,settings.MEDIA_BASE_DIR).replace("\\","/")
-                dir_ = settings.MEDIA_BASE_DIR
-
-            photo.url_path = match_url_path(dir_) + rel_path_name
+            from gps_tracks.utils import path_to_url
+            photo.url_path =path_to_url(file)
 
             photo.name = name_simple
             photo.path = file
@@ -812,6 +804,7 @@ def find_duplicated_photos(extensions=[".jpg"]):
             dict_name_files[base_name]=[file]
 
     duplicated_files_list=[]
+    from gps_tracks.utils import path_to_url
     for name, files in dict_name_files.items():
         names_wo_path = [os.path.basename(f) for f in files]
         # print(names_wo_path,set(names_wo_path))
@@ -829,6 +822,7 @@ def find_duplicated_photos(extensions=[".jpg"]):
                         {
                             "name":f,
                             "size": os.stat(f).st_size,
+                            "link": path_to_url(f),
                         } 
                         for f in duplicated_files
                     ],

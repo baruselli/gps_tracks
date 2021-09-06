@@ -30,9 +30,12 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% for file in row.files %}
+                    <!-- {% for file in row.files %}
                         <a href="{% url 'download_file' %}?file_path={{file.name}}">{{file.name}}</a><br>
-                    {%endfor %}    
+                    {%endfor %}     -->
+                    {% for file in row.files %}
+                        <a href="{{file.link}}">{{file.name}}</a><br>
+                    {%endfor %}                       
                 </td>
                 <td>
                     {% for file in row.files %}

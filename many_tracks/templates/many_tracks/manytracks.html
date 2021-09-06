@@ -185,8 +185,8 @@
         {% endif %}
         do_plots={{do_plots}}
 
-        plots_url = '{% url 'tracks_as_point_lists_json' %}?{{request}}&use_color=1'
-        table_data_url = '{% url 'tracks_as_lines_json' %}?{{request}}&use_color=1'
+        plots_url = '{% url 'tracks_as_point_lists_json' %}?{{request|safe}}&use_color=1'
+        table_data_url = '{% url 'tracks_as_lines_json' %}?{{request|safe}}&use_color=1'
 
         if(use_points){
             map_url = plots_url  //list of points

@@ -172,7 +172,7 @@
 
             init_map_base(map,options,mapBounds=null,add_basemaps=false)
 
-            url='{% url 'allphotos_json'%}?{{request}}'
+            url='{% url 'allphotos_json'%}?{{request|safe}}'
             console.log(url)
 
             $.getJSON(url,function(data){
@@ -186,7 +186,7 @@
     {% else %}
 
         $( document ).ready(function() {
-            url='{% url 'allphotos_json'%}?{{request}}&do_cluster=0&level=1'
+            url='{% url 'allphotos_json'%}?{{request|safe}}&do_cluster=0&level=1'
             console.log(url)
 
             $.getJSON(url,function(data){

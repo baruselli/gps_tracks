@@ -44,7 +44,7 @@
             }
         }
 
-        function data_url(){return '{% url 'tracks_as_lines_json' %}?{{request}}&use_color=1' }
+        function data_url(){return '{% url 'tracks_as_lines_json' %}?{{request|safe}}&use_color=1' }
     </script>
     <script>
         $( document ).ready(function() {
@@ -237,8 +237,8 @@
                 <input type="submit" value="Search" id ="submit_button" class="submit_button button">
                 <!-- <input type="reset" value="Reset"> -->
                 <button type="button" onclick="window.location.href = '{% url  'track_index' %}'" class="reset_button  button">Reset</button>
-                <button type="button" onclick="window.location.href = '{% url  'group_rule_new' %}?{{request}}'" class="save_button button">Save search</button>
-                <button type="button" onclick="window.location.href = '{% url  'group_from_search' %}?{{request}}'" class="save_button button">Create group</button>
+                <button type="button" onclick="window.location.href = '{% url  'group_rule_new' %}?{{request|safe}}'" class="save_button button">Save search</button>
+                <button type="button" onclick="window.location.href = '{% url  'group_from_search' %}?{{request|safe}}'" class="save_button button">Create group</button>
             </div>
         </form>
         </div>

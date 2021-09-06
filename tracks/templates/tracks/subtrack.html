@@ -41,7 +41,7 @@
 
     <div style="width:60%; float:left;  text-align: center; position:relative; top:-25px;height:100px">
         <h1 ><span style="vertical-align: top;"></span>
-            <a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a>
+            <a href="{% url 'track_detail' track_id=track.pk %}?{{request|safe}}">{{track.name_wo_path_wo_ext}}</a>
              <br>{{subtrack_name}} ({{subtrack_number}})</h1>
     </div>
 
@@ -363,7 +363,7 @@
                         <button onclick="location.href='{% url 'serialize_track' track_id=track.pk  %}'" type="button">Export json</button>
                         <button onclick="location.href='{% url 'track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
                         <button onclick="location.href='{% url 'track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
-                    <!-- <button onclick="location.href='{% url 'find_laps' track_id=track.pk  %}?{{request}}'" type="button">Find Laps</button> -->
+                    <!-- <button onclick="location.href='{% url 'find_laps' track_id=track.pk  %}?{{request|safe}}'" type="button">Find Laps</button> -->
                     <!-- <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button> -->
                     <h3>Other</h3>
                         <button onclick="location.href='{% url 'geopy_track' track_id=track.pk  %}'" type="button">Get infos on endpoints</button>

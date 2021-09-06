@@ -213,7 +213,7 @@
     <div class="tabcontent" id="tab_splits">
 
         <div id ="div_splits">
-            <h2> <a href="{% url 'splits' track_id=track.pk  %}?{{request}}">Splits</a>
+            <h2> <a href="{% url 'splits' track_id=track.pk  %}?{{request|safe}}">Splits</a>
                 <!-- <button class="hide_show_button" onclick="hide_show('splits_block')">Hide/Show</button> -->
             </h2>
             <div id="splits_block">
@@ -419,7 +419,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td>
+                                        <td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request|safe}} "># tracks </a>  </td>
                                         <td>{{track.n_tracks}}</td>
                                         <td> </td> 
                                     </tr>
@@ -431,7 +431,7 @@
                                         >
                                             <td></td><td>
                                             {{forloop.counter}}</td><td>
-                                            <a href="{% url 'subtrack' track_id=track.pk subtrack_number=forloop.counter %}?{{request}}">
+                                            <a href="{% url 'subtrack' track_id=track.pk subtrack_number=forloop.counter %}?{{request|safe}}">
                                             {{subtrack}}</a></td>
                                         </tr>
                                     {%endfor%}

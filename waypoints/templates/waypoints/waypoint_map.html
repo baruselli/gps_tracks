@@ -128,7 +128,7 @@
 {% block js %}
 <script type="text/javascript">
 
-url='{% url 'allwps_json'%}?{{request}}'
+url='{% url 'allwps_json'%}?{{request|safe}}'
 console.log(url)
 
 
@@ -159,7 +159,7 @@ console.log(url)
             {% if view_type == "map_table" %}
                 //if it comes out clustered, redo the call without clustering
                 if (data ["Waypoints"][0] && data["Waypoints"][0]["elements"]){
-                    url='{% url 'allwps_json'%}?{{request}}&do_cluster=0'
+                    url='{% url 'allwps_json'%}?{{request|safe}}&do_cluster=0'
                     $.getJSON(url,function(data){
                         console.log("data is clustered, calling", url)
                         var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")
@@ -182,7 +182,7 @@ console.log(url)
 
         $.getJSON(url,function(data){
             if (data ["Waypoints"][0] && data["Waypoints"][0]["elements"]){
-                url='{% url 'allwps_json'%}?{{request}}&do_cluster=0'
+                url='{% url 'allwps_json'%}?{{request|safe}}&do_cluster=0'
                 $.getJSON(url,function(data){
                     console.log("data is clustered, calling", url)
                     var table=create_table_waypoints('#import_table',data["Waypoints"],"{% url 'waypoints_map' %}")

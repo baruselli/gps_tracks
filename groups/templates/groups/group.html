@@ -32,7 +32,7 @@
 
 
         function data_url(){
-            url='{% url 'tracks_as_lines_json'%}'+"?{{request}}&group_pk={{group.pk}}&use_color=1"
+            url='{% url 'tracks_as_lines_json'%}'+"?{{request|safe}}&group_pk={{group.pk}}&use_color=1"
             return url
         }
     </script>

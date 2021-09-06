@@ -140,7 +140,7 @@
     <tbody>
     <tr><td>Track(s)</td> <td> </td></tr>
     {% for track in  photo.tracks.all %}
-    <tr><td></td> <td><a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a>
+    <tr><td></td> <td><a href="{% url 'track_detail' track_id=track.pk %}?{{request|safe}}">{{track.name_wo_path_wo_ext}}</a>
     </td></tr> 
     {%endfor%}
     <tr><td>Date</td><td>{{photo.time}}</td> </tr>

@@ -139,7 +139,7 @@
     <h2>
         <!-- Plots -->
         <!-- <button class="hide_show_button" onclick="hide_show('plots_block')">Hide/Show</button> -->
-        <button onclick="location.href='{% url 'rolling_track' track_id=track.pk  %}?{{request}}'" type="button">Smooth plots</button>
+        <button onclick="location.href='{% url 'rolling_track' track_id=track.pk  %}?{{request|safe}}'" type="button">Smooth plots</button>
         <button onclick="location.href='{% url 'track_statistics' track_id=track.pk %}'" type="button">Custom plots</button>
     </h2>
 {%endblock%}
@@ -193,9 +193,9 @@
                             {%if track.gpx_author%}<tr><td> Gpx author</td> <td>{{track.gpx_author}}</td> </tr>{%endif%}
                             <tr><td> # points  </td> <td>{{track.n_points_gpx}}</td> </tr>
                             {%if track.n_tracks_gpx > 0 %}
-                            <tr><td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td> <td>{{track.n_tracks_gpx}} {%if track.n_tracks_gpx > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>
+                            <tr><td> <a href="{% url 'subtracks' track_id=track.pk %}?{{request|safe}} "># tracks </a>  </td> <td>{{track.n_tracks_gpx}} {%if track.n_tracks_gpx > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>
                             {%endif%}
-                            {%if track.n_segments > 0 %}<tr><td><a href="{% url 'segments' track_id=track.pk %}?{{request}} "> # segments</a>  </td> <td>{{track.n_segments}}</td> </tr>{%endif%}
+                            {%if track.n_segments > 0 %}<tr><td><a href="{% url 'segments' track_id=track.pk %}?{{request|safe}} "> # segments</a>  </td> <td>{{track.n_segments}}</td> </tr>{%endif%}
 
                         </tbody>
                 </table>
@@ -216,8 +216,8 @@
                             {% if track.total_speed_kml %}<tr><td> Speed</td><td>{{track.total_speed_kml|floatformat:-2}}km/h</td></tr>{%endif%}
                             {% if track.pace_string_kml %}<tr><td> Pace</td> <td>{{track.pace_string_kml}}</td></tr>{% endif %}
                             {%if track.kml_description%}<tr><td> Details  </td> <td>{{track.kml_description|safe|linebreaksbr}}</td> </tr>{%endif%}
-                            {%if track.n_tracks_kml > 0 %}<tr><td>  <a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks </a>  </td> <td>{{track.n_tracks_kml}} {%if track.n_tracks_kml > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>{%endif%}
-                            {%if track.n_segments_kml > 1 %}<tr><td> <a href="{% url 'segments' track_id=track.pk %}?{{request}} "> # segments: </a>  </td> <td>{{track.n_segments_kml}}</td> </tr>{%endif%}
+                            {%if track.n_tracks_kml > 0 %}<tr><td>  <a href="{% url 'subtracks' track_id=track.pk %}?{{request|safe}} "># tracks </a>  </td> <td>{{track.n_tracks_kml}} {%if track.n_tracks_kml > 1 %}<a href="{% url 'files_from_tracks' track_id=track.pk  %}">Extract a file per track</a>{%endif%}</td> </tr>{%endif%}
+                            {%if track.n_segments_kml > 1 %}<tr><td> <a href="{% url 'segments' track_id=track.pk %}?{{request|safe}} "> # segments: </a>  </td> <td>{{track.n_segments_kml}}</td> </tr>{%endif%}
                             <tr><td>Has gx  </td> <td>{{track.has_gx}}</td> </tr>
                         </tbody>
                     </table>
@@ -390,8 +390,8 @@
                 {% for t in merged_tracks %}
                 <tr><a href="{% url 'track_detail' track_id=t.pk %}">{{t.pk}} - {{t.name_wo_path_wo_ext}}</a><br></tr>
                 {% endfor %}
-                {%if track.n_tracks > 0 %}<tr><a href="{% url 'subtracks' track_id=track.pk %}?{{request}} "># tracks: </a>  {{track.n_tracks}}  </tr>{%endif%}
-                {%if track.n_segments > 0 %}<tr><a href="{% url 'segments' track_id=track.pk %}?{{request}} "> # segments: </a>  {{track.n_segments}} </tr>{%endif%}
+                {%if track.n_tracks > 0 %}<tr><a href="{% url 'subtracks' track_id=track.pk %}?{{request|safe}} "># tracks: </a>  {{track.n_tracks}}  </tr>{%endif%}
+                {%if track.n_segments > 0 %}<tr><a href="{% url 'segments' track_id=track.pk %}?{{request|safe}} "> # segments: </a>  {{track.n_segments}} </tr>{%endif%}
             {% elif track.merged_tracks.all %}
                 Part of following merged tracks:<br>
                 {% for t in track.merged_tracks.all %}
@@ -515,7 +515,7 @@
         <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button>
 
         {% if track.photos.all %}
-            <h2><a href="{% url 'track_photos_detail' track_id=track.pk %}?{{request}}">Photos ({{track.photos.count}})</a></h2>
+            <h2><a href="{% url 'track_photos_detail' track_id=track.pk %}?{{request|safe}}">Photos ({{track.photos.count}})</a></h2>
             <h3><a style="float:left" href="{% url 'photos_show'%}?track_ids={{track.pk}}">Quick show </a></h3><br>
         {% endif %}
 
@@ -537,7 +537,7 @@
             <div style="clear:left"></div>
 
         <!--{% for photo in track.photos.all %}-->
-        <!--</td> <td><a href="{% url 'photo_detail' photo_id=photo.pk %}?{{request}}">{{photo.name}}</a><br>-->
+        <!--</td> <td><a href="{% url 'photo_detail' photo_id=photo.pk %}?{{request|safe}}">{{photo.name}}</a><br>-->
         <!--{% endfor %}-->
     <br>
             </div>
@@ -628,7 +628,7 @@
 
 {% block logs %}
     <div class="tabcontent" id="tab_logs">
-        <h2><a href="{% url 'track_log' track_id=track.pk  %}?{{request}}">Logs</a>
+        <h2><a href="{% url 'track_log' track_id=track.pk  %}?{{request|safe}}">Logs</a>
         <!-- <button class="hide_show_button" onclick="hide_show('log_block')">Hide/Show</button> -->
         </h2>
         <div id="log_block">
@@ -888,7 +888,7 @@
                         <button onclick="location.href='{% url 'serialize_track' track_id=track.pk  %}'" type="button">Export json</button>
                         <button onclick="location.href='{% url 'track_to_gpx' track_id=track.pk  %}'" type="button">Export as GPX</button>
                         <button onclick="location.href='{% url 'track_to_kml' track_id=track.pk  %}'" type="button">Export as KML</button>
-                    <!-- <button onclick="location.href='{% url 'find_laps' track_id=track.pk  %}?{{request}}'" type="button">Find Laps</button> -->
+                    <!-- <button onclick="location.href='{% url 'find_laps' track_id=track.pk  %}?{{request|safe}}'" type="button">Find Laps</button> -->
                     <!-- <button onclick="location.href='{% url 'link_photos_track' track_id=track.pk  %}'" type="button">Link Photos</button> -->
                     <h3>Other</h3>
                         <button onclick="location.href='{% url 'geopy_track' track_id=track.pk  %}'" type="button">Get infos on endpoints</button>

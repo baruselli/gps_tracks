@@ -74,7 +74,7 @@ class QuickImport(models.Model):
             elif step.step_code == "google_drive_photos":
                 downloaded_photos += google_drive_photos()
             elif step.step_code == "google_photos":
-                downloaded_photos += google_photos(only_last_year=True)
+                downloaded_photos += google_photos(only_last_year=False)
             # import photos
             elif step.step_code == "import_photos":
                 imported_photos = import_photos(files=downloaded_photos, update=True)

@@ -486,91 +486,92 @@ def import_photos(path=None, update=False, files=None):
                 img = Image.open(file)
                 info = img._getexif()
                 # save tags in a string
-                tags_dict = {TAGS.get(tag, tag): value for tag, value in info.items()}
-                str_ = ""
-                for key, item in tags_dict.items():
-                    str_ += str(key) + ": " + str(item).replace("\x00", "") + "\n"
-                photo.info = str_
-                logger.debug(photo.info)
-                photo.save()
-                # GPS, TIME
-                for tag, value in info.items():
-                    key = TAGS.get(tag, tag)
-                    #print(key)
-                    if key == "GPSInfo":
-                        gpsinfo = {}
-                        for k, v in value.items():
-                            decode = ExifTags.GPSTAGS.get(k, k)
-                            gpsinfo[decode] = v
-                        # print(gpsinfo)
-                        if "GPSLatitude" in gpsinfo and "GPSLongitude" in gpsinfo:
-                            lat = gpsinfo["GPSLatitude"]
-                            lat_ok = (
-                                lat[0][0] / lat[0][1] / 1.0
-                                + lat[1][0] / lat[1][1] / 60.0
-                                + lat[2][0] / lat[2][1] / 3600.0
-                            )
-                            lon = gpsinfo["GPSLongitude"]
-                            lon_ok = (
-                                lon[0][0] / lon[0][1] / 1.0
-                                + lon[1][0] / lon[1][1] / 60.0
-                                + lon[2][0] / lon[2][1] / 3600.0
-                            )
-                            photo.lat = lat_ok
-                            photo.long = lon_ok
-                            gps_ok=True
-
-                        if "GPSAltitude" in gpsinfo:
-                            alt = gpsinfo["GPSAltitude"]
-                            alt_ok = alt[0] / alt[1] / 1.0
-                            photo.alt = alt_ok
-
-                        ## this uses UTC, so I skip it and use the local time instead
-                        # if "GPSTimeStamp" in gpsinfo and "GPSDateStamp" in gpsinfo:
-                        #     time = gpsinfo["GPSTimeStamp"]
-                        #     date = gpsinfo["GPSDateStamp"]
-                        #     year, month, day = date.split(":")
-                        #
-                        #     datetime_ok =  datetime(
-                        #             int(year),
-                        #             int(month),
-                        #             int(day),
-                        #             int(time[0][0]),
-                        #             int(time[1][0]),
-                        #             int(time[2][0]),
-                        #         )
-                        #     logger.debug(datetime_ok)
-                        #     photo.time = datetime_ok
-                        #     time_ok=True
-
-
-                        photo.save()
-
-                # parse datetime
-                if not time_ok:
+                if info:
+                    tags_dict = {TAGS.get(tag, tag): value for tag, value in info.items()}
+                    str_ = ""
+                    for key, item in tags_dict.items():
+                        str_ += str(key) + ": " + str(item).replace("\x00", "") + "\n"
+                    photo.info = str_
+                    logger.debug(photo.info)
+                    photo.save()
+                    # GPS, TIME
                     for tag, value in info.items():
                         key = TAGS.get(tag, tag)
-                        if key == "DateTimeOriginal":
-                            dateinfo = value
-                            try:
-                                photo.time =  datetime.strptime(dateinfo, "%Y:%m:%d %H:%M:%S")
-                                time_ok=True
-                            except:
-                                pass
-                        if key == "DateTime":
-                            dateinfo = value
-                            try:
-                                photo.time = datetime.strptime(dateinfo, "%Y:%m:%d %H:%M:%S")
-                                time_ok = True
-                            except:
-                                pass
-                        if key == "DateTimeDigitized":
-                            dateinfo = value
-                            try:
-                                photo.time = datetime.strptime(dateinfo, "%Y:%m:%d %H:%M:%S")
-                                time_ok = True
-                            except:
-                                pass
+                        #print(key)
+                        if key == "GPSInfo":
+                            gpsinfo = {}
+                            for k, v in value.items():
+                                decode = ExifTags.GPSTAGS.get(k, k)
+                                gpsinfo[decode] = v
+                            # print(gpsinfo)
+                            if "GPSLatitude" in gpsinfo and "GPSLongitude" in gpsinfo:
+                                lat = gpsinfo["GPSLatitude"]
+                                lat_ok = (
+                                    lat[0][0] / lat[0][1] / 1.0
+                                    + lat[1][0] / lat[1][1] / 60.0
+                                    + lat[2][0] / lat[2][1] / 3600.0
+                                )
+                                lon = gpsinfo["GPSLongitude"]
+                                lon_ok = (
+                                    lon[0][0] / lon[0][1] / 1.0
+                                    + lon[1][0] / lon[1][1] / 60.0
+                                    + lon[2][0] / lon[2][1] / 3600.0
+                                )
+                                photo.lat = lat_ok
+                                photo.long = lon_ok
+                                gps_ok=True
+
+                            if "GPSAltitude" in gpsinfo:
+                                alt = gpsinfo["GPSAltitude"]
+                                alt_ok = alt[0] / alt[1] / 1.0
+                                photo.alt = alt_ok
+
+                            ## this uses UTC, so I skip it and use the local time instead
+                            # if "GPSTimeStamp" in gpsinfo and "GPSDateStamp" in gpsinfo:
+                            #     time = gpsinfo["GPSTimeStamp"]
+                            #     date = gpsinfo["GPSDateStamp"]
+                            #     year, month, day = date.split(":")
+                            #
+                            #     datetime_ok =  datetime(
+                            #             int(year),
+                            #             int(month),
+                            #             int(day),
+                            #             int(time[0][0]),
+                            #             int(time[1][0]),
+                            #             int(time[2][0]),
+                            #         )
+                            #     logger.debug(datetime_ok)
+                            #     photo.time = datetime_ok
+                            #     time_ok=True
+
+
+                            photo.save()
+
+                    # parse datetime
+                    if not time_ok:
+                        for tag, value in info.items():
+                            key = TAGS.get(tag, tag)
+                            if key == "DateTimeOriginal":
+                                dateinfo = value
+                                try:
+                                    photo.time =  datetime.strptime(dateinfo, "%Y:%m:%d %H:%M:%S")
+                                    time_ok=True
+                                except:
+                                    pass
+                            if key == "DateTime":
+                                dateinfo = value
+                                try:
+                                    photo.time = datetime.strptime(dateinfo, "%Y:%m:%d %H:%M:%S")
+                                    time_ok = True
+                                except:
+                                    pass
+                            if key == "DateTimeDigitized":
+                                dateinfo = value
+                                try:
+                                    photo.time = datetime.strptime(dateinfo, "%Y:%m:%d %H:%M:%S")
+                                    time_ok = True
+                                except:
+                                    pass
 
                 warn_message=""
                 if time_ok:

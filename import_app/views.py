@@ -1,3 +1,4 @@
+from import_app.utils import get_all_photo_dirs
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
@@ -276,6 +277,16 @@ class DuplicatedFilesView(View):
 
         return render(request, self.template_name, {"duplicated_files":duplicated_files})
 
+class DuplicatedPhotosView(View):
+    template_name = "import_app/duplicated_photos.html"
+    def get(self, request, *args, **kwargs):
+
+        logger.info("DuplicatedPhotosView Track")
+        from .utils import find_duplicated_photos
+        duplicated_photos=find_duplicated_photos()
+
+        return render(request, self.template_name, {"duplicated_photos":duplicated_photos})
+
 class DownloadFileView(View):
     def get(self, request, *args, **kwargs):
         from django.contrib import messages
@@ -285,8 +296,16 @@ class DownloadFileView(View):
         import os
 
         file_path=request.GET.get("file_path", None)
+        from import_app.utils import get_all_photo_dirs
+        allowed_dirs = get_all_photo_dirs() + [settings.TRACKS_DIR]
 
-        if settings.TRACKS_DIR in file_path and os.path.exists(file_path):
+        allowed = False
+        if os.path.exists(file_path):
+            for dir_ in allowed_dirs:
+                if dir_ in file_path:
+                    allowed=True
+
+        if allowed:
             wrapper = FileWrapper(open(file_path, "rb"))
             response = HttpResponse(wrapper, content_type="application/force-download")
             out_filename = os.path.basename(file_path).replace(",", "_")
@@ -295,9 +314,9 @@ class DownloadFileView(View):
             return response
         else:
             message = "Cannot find file " + file_path
-            messages.success(message)
+            messages.success(request,message)
             logger.warning(message)
-            return redirect(reverse("track", track_id=track_id))
+            return redirect(reverse("index"))
 
 class AllFilesReportView(View):
     template_name = "import_app/all_files_report.html"

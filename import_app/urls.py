@@ -20,6 +20,7 @@ urlpatterns = [
     url(r"^failed_tracks_reimport/$", views.FailedTracksReimportView.as_view(), name="failed_tracks_reimport", ),
     # list of duplicated file tracks tracks
     url(r"^duplicated_files/$", views.DuplicatedFilesView.as_view(), name="duplicated_files", ),
+    url(r"^duplicated_photos/$", views.DuplicatedPhotosView.as_view(), name="duplicated_photos", ),
     # download a single file
     url(r"^download_file/$", views.DownloadFileView.as_view(), name="download_file", ),
     # 1 track import

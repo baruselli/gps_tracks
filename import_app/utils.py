@@ -790,6 +790,68 @@ def find_duplicated_files(dir_, extensions=[".kmz", ".kml", ".gpx", ".csv", ".tc
 
     return duplicated_files_list
 
+def find_duplicated_photos(extensions=[".jpg"]):
+    """
+    find files with the same names(which are considered as a single photo by us)
+    """
+    logger.info("find_duplicated_photos")
+    from .utils import get_all_photo_dirs
+    all_dirs = get_all_photo_dirs()
+
+    files = []
+    for dir_ in all_dirs:
+        files.extend(find_files_in_dir(dir_=dir_, extensions=extensions))
+
+    dict_name_files={}
+
+    for file in files:
+        base_name=name_wo_path_wo_ext(file)
+        if base_name in dict_name_files:
+            dict_name_files[base_name].append(file)
+        else:
+            dict_name_files[base_name]=[file]
+
+    duplicated_files_list=[]
+    for name, files in dict_name_files.items():
+        names_wo_path = [os.path.basename(f) for f in files]
+        # print(names_wo_path,set(names_wo_path))
+        if len(set(names_wo_path))!=len(names_wo_path):
+            import collections
+            duplicated_name_extensions=set([x for x in names_wo_path if names_wo_path.count(x) > 1])
+            for name_ext in duplicated_name_extensions:
+                duplicated_files=[f for f in files if os.path.basename(f)==name_ext]
+                duplicated_files_sizes=[os.stat(f).st_size for f in duplicated_files]
+                same_size =all([a==duplicated_files_sizes[0] for a in duplicated_files_sizes])
+                duplicated_files_list.append({
+                    "name_wo_path":name_ext,
+                    "name":os.path.basename(name_ext),
+                    "files":[
+                        {
+                            "name":f,
+                            "size": os.stat(f).st_size,
+                        } 
+                        for f in duplicated_files
+                    ],
+                    "same_size":same_size
+                })
+
+    ## add photo infos
+
+    photo_names=set([name_wo_path_wo_ext(a["name"]) for a in duplicated_files_list])
+    
+    photos = Photo.objects.filter(name__in=photo_names).only("pk","name")
+    dict_name_pk={t.name: t.pk for t in photos}
+
+    # from pprint import pprint
+    # pprint(duplicated_files_list)
+
+    for d in duplicated_files_list:
+        d["photo_name"] = name_wo_path_wo_ext(d["name_wo_path"])
+        d["photo_pk"] = dict_name_pk.get(d["photo_name"],None)
+
+
+    return duplicated_files_list
+
 def name_wo_path_wo_ext(file):
     "file name wo path wo extension"
     base=os.path.basename(file)

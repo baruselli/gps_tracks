@@ -370,7 +370,7 @@ def find_files_in_dir(dir_=None, extensions=[".kmz", ".kml", ".gpx", ".csv", ".t
         for root, dirs, filess in os.walk(dir_):
             for file in filess:
                 for extension in extensions:
-                    if file.endswith(extension):
+                    if file.lower().endswith(extension.lower()):
                         files.append(os.path.join(root, file))
     return files
 

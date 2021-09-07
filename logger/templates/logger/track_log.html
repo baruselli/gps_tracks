@@ -14,7 +14,7 @@
 </head>
 
 <body>
-<h2>Log for track  <a href="{% url 'track_detail' track_id=track.pk %}?{{request}}">{{track.name_wo_path_wo_ext}}</a></h2>
+<h2>Log for track  <a href="{% url 'track_detail' track_id=track.pk %}?{{request|safe}}">{{track.name_wo_path_wo_ext}}</a></h2>
 
 <h3>Errors</h3>
 {{track.log.errors|linebreaksbr}}

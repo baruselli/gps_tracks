@@ -498,24 +498,42 @@ def import_photos(path=None, update=False, files=None):
                             # print(gpsinfo)
                             if "GPSLatitude" in gpsinfo and "GPSLongitude" in gpsinfo:
                                 lat = gpsinfo["GPSLatitude"]
-                                lat_ok = (
-                                    lat[0][0] / lat[0][1] / 1.0
-                                    + lat[1][0] / lat[1][1] / 60.0
-                                    + lat[2][0] / lat[2][1] / 3600.0
-                                )
+                                try:
+                                    lat_ok = (
+                                        lat[0][0] / lat[0][1] / 1.0
+                                        + lat[1][0] / lat[1][1] / 60.0
+                                        + lat[2][0] / lat[2][1] / 3600.0
+                                    )
+                                except:
+                                    lat_ok = (
+                                        lat[0]  / 1.0
+                                        + lat[1] / 60.0
+                                        + lat[2] / 3600.0
+                                    )                                    
                                 lon = gpsinfo["GPSLongitude"]
-                                lon_ok = (
-                                    lon[0][0] / lon[0][1] / 1.0
-                                    + lon[1][0] / lon[1][1] / 60.0
-                                    + lon[2][0] / lon[2][1] / 3600.0
-                                )
+                                try:
+                                    lon_ok = (
+                                        lon[0][0] / lon[0][1] / 1.0
+                                        + lon[1][0] / lon[1][1] / 60.0
+                                        + lon[2][0] / lon[2][1] / 3600.0
+                                    )
+                                except:
+                                    lon_ok = (
+                                        lon[0] / 1.0
+                                        + lon[1]/ 60.0
+                                        + lon[2]/ 3600.0
+                                    )                                    
+
                                 photo.lat = lat_ok
                                 photo.long = lon_ok
                                 gps_ok=True
 
                             if "GPSAltitude" in gpsinfo:
                                 alt = gpsinfo["GPSAltitude"]
-                                alt_ok = alt[0] / alt[1] / 1.0
+                                try:
+                                    alt_ok = alt[0] / alt[1] / 1.0
+                                except:
+                                    alt_ok = alt
                                 photo.alt = alt_ok
 
                             ## this uses UTC, so I skip it and use the local time instead
@@ -587,6 +605,8 @@ def import_photos(path=None, update=False, files=None):
                 imported_photos.append(photo)
 
             except Exception as e:
+                import traceback
+                traceback.print_exc()
                 logger.warning("error " + str(e))
 
     logger.info("End import_photos")

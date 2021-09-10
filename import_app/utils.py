@@ -871,6 +871,11 @@ def name_wo_path_wo_ext(file):
     base=os.path.basename(file)
     return os.path.splitext(base)[0]
 
+def name_wo_path(file):
+    "file name wo path"
+    base=os.path.basename(file)
+    return base
+
 def import_new_tracks(dir_=None,extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
     """find and import new tracks"""
     files = find_imported_and_existing_files(dir_=dir_, extensions=extensions)["missing_tracks_existing_paths"]

@@ -124,7 +124,12 @@ def google_drive_photos():
         from options.models import OptionSet
         download_dir = OptionSet.get_option("PHOTOS_DOWNLOAD_DIR", default=settings.PHOTOS_DIR)
 
-        existing_file_list = os.listdir(download_dir)
+
+        from import_app.utils import find_files_in_dir,get_all_photo_dirs,name_wo_path
+        dirs = get_all_photo_dirs()
+        files = find_files_in_dir(dir_=dirs, extensions=[".jpg",])        
+        existing_file_list=[name_wo_path(f) for f in files]
+
         # print (existing_file_list)
 
         downloaded_photos=[]
@@ -178,10 +183,11 @@ def google_photos(only_last_year=False):
         download_dir = OptionSet.get_option("PHOTOS_DOWNLOAD_DIR", default=settings.PHOTOS_DIR)
 
         #existing_file_list = os.listdir(download_dir)
-        from import_app.utils import get_all_photo_dirs
-        existing_file_list = []
-        for dir_ in get_all_photo_dirs():
-            existing_file_list.extend(os.listdir(dir_))
+        from import_app.utils import find_files_in_dir,get_all_photo_dirs,name_wo_path
+        dirs = get_all_photo_dirs()
+        files = find_files_in_dir(dir_=dirs, extensions=[".jpg",])        
+        existing_file_list=[name_wo_path(f) for f in files]
+
 
         if only_last_year:
             min_year=datetime.now().year

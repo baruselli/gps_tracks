@@ -155,6 +155,8 @@ def get_colors(n, colorscale=None):
         colors = [matplotlib.colors.rgb2hex(cmap(i)[:3]) for i in range(cmap.N)]
     except:
         colors=["black" for i in range(n)]
+    if n==2 and colorscale=="gist_rainbow_r":
+        colors=["#FF0000","#0000FF"]
     # colors=["black" for i in range(n)]
     return colors
 

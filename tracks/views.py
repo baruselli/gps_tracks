@@ -835,7 +835,7 @@ class DownloadSourceView(View):
             return response
         else:
             message = "Cannot find file " + file_path
-            messages.success(message)
+            messages.success(request,message)
             logger.warning(message)
             return redirect(reverse("track", track_id=track_id))
 

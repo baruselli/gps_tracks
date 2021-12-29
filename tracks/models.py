@@ -2602,6 +2602,14 @@ class Track(models.Model):
             lats=[a[0] for a in tcx_obj.position_values()]
             lons=[a[1] for a in tcx_obj.position_values()]
             heart=tcx_obj.hr_values()
+            cadence=tcx_obj.cadence_values()
+            if not cadence:
+                try:
+                    cadence=tcx_obj.root.xpath("//ns3:TPX/ns3:RunCadence", namespaces={"ns3": "http://www.garmin.com/xmlschemas/ActivityExtension/v2"})
+                    cadence=[2*int(x.text)/60 for x in cadence]
+                except:
+                    cadence=[]
+
             self.info("TCX points %s" %len(times))
 
             delta_times=[(t- times[0]).total_seconds() for t in times]
@@ -2626,17 +2634,21 @@ class Track(models.Model):
             import pandas as pd
             df=pd.DataFrame({"lats":pd.Series(lats),"long":pd.Series(lons), 
                              "dist":pd.Series(dists),"heart":pd.Series(heart),
-                             "alts":pd.Series(alts)})
+                             "alts":pd.Series(alts),"cadence":pd.Series(cadence)})
             df.ffill(inplace=True)
             df.bfill(inplace=True)
             self.td.lats=list(df["lats"])
             self.td.alts=list(df["alts"])
             self.td.long=list(df["long"])
             self.td.heartbeats=list(df["heart"])
+            self.td.frequencies=list(df["cadence"])
             self.td.dist_tcx=list(df["dist"])
 
             if len(heart)>0:
                 self.set_cardio(df["heart"])
+            
+            if len(cadence)>0:
+                self.set_total_frequency()
 
             self.td.delta_times=delta_times
             self.td.times=times
@@ -3889,6 +3901,18 @@ class Track(models.Model):
             except Exception as e:
                 self.warning("Error in assign_time_to_wps, %s: %s" %(wp,e))
 
+    def set_total_frequency(self):
+        """sets average frequency"""
+        if self.td.frequencies and self.has_freq:
+            self.total_frequency = np.nanmean([x for x in self.td.frequencies if x is not None])*60
+            if np.isnan(self.total_frequency):
+                self.total_frequency=None
+        else:
+            self.td.frequencies=[]
+            self.td.frequency_rolling=[]
+            self.total_frequency=None
+        self.save()
+
     def set_heartrate_freq(self):
         """only used when merging tracks (it is usually done when importing)"""
         import pandas as pd
@@ -3908,14 +3932,7 @@ class Track(models.Model):
             self.max_cardio = None
             self.min_cardio = None
             self.total_heartbeat = None
-        if self.td.frequencies and self.has_freq:
-            self.total_frequency = np.nanmean([x for x in self.td.frequencies if x is not None])*60
-            if np.isnan(self.total_frequency):
-                self.total_frequency=None
-        else:
-            self.td.frequencies=[]
-            self.td.frequency_rolling=[]
-            self.total_frequency=None
+        self.set_total_frequency()
         self.save()
 
     def get_arrays_smooth3(self):

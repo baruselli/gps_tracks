@@ -118,7 +118,7 @@
                                 width:auto;"></a>
                         </td>
                         <td>
-                            <a href="{% url 'track_detail' track_id=track.pk %}"> {{track.name_wo_path_wo_ext|truncatechars:30}}</a>
+                            <a title="{{track.name_wo_path_wo_ext}}" href="{% url 'track_detail' track_id=track.pk %}"> {{track.name_wo_path_wo_ext|truncatechars:30}}</a>
                         </td>
 
                         <td>{% if track.date%}{{track.date|date:"Y/m/d"}}{% endif %}</td>
@@ -148,7 +148,7 @@
                     <h3>
                         <a href="{% url 'track_index' %}?min_date={{ytd.min_date}}&max_date={{ytd.max_date}}&exclude_excluded_groups=1">{{ytd.n_year}} {% if ytd.n_year == 1%}year{%else%}years{%endif%} ago</a>
                     </h3>
-                    <a href="{% url 'track_detail' track_id=ytd.track.pk %}"> {{ytd.track.name_wo_path_wo_ext|truncatechars:30}}</a><br>
+                    <a title="{{ytd.track.name_wo_path_wo_ext}}" href="{% url 'track_detail' track_id=ytd.track.pk %}"> {{ytd.track.name_wo_path_wo_ext|truncatechars:30}}</a><br>
                     {{ytd.track.end_country}}, {{ytd.track.end_city}}<br>
                     {{ytd.track.duration_string}}, {{ytd.track.length_3d|div:1000|floatformat:-2}}km<br>
 

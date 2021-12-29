@@ -2648,6 +2648,9 @@ class Track(models.Model):
                 self.set_cardio(df["heart"])
             
             if len(cadence)>0:
+                # this needs less smoothening than tomtom
+                if self.n_rolling_freq==120:
+                    self.n_rolling_freq = 10
                 self.set_total_frequency()
 
             self.td.delta_times=delta_times

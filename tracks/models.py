@@ -2658,6 +2658,7 @@ class Track(models.Model):
             self.total_dist_tcx=self.td.dist_tcx[-1]
             #creator
             self.tcx_creator = tcx_obj.activity.Creator.Name
+            self.total_calories = tcx_obj.calories
 
             self.total_speed_tcx=self.total_dist_tcx/delta_times[-1]
             pace = 1 / 0.06 /  self.total_speed_tcx  # (min/km)

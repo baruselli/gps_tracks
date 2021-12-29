@@ -2609,7 +2609,7 @@ class Track(models.Model):
                     cadence=[2*int(x.text)/60 for x in cadence]
                 except:
                     cadence=[]
-
+            
             self.info("TCX points %s" %len(times))
 
             delta_times=[(t- times[0]).total_seconds() for t in times]
@@ -3903,7 +3903,7 @@ class Track(models.Model):
 
     def set_total_frequency(self):
         """sets average frequency"""
-        if self.td.frequencies and self.has_freq:
+        if self.td.frequencies:
             self.total_frequency = np.nanmean([x for x in self.td.frequencies if x is not None])*60
             if np.isnan(self.total_frequency):
                 self.total_frequency=None

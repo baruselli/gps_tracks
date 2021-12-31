@@ -23,6 +23,9 @@ class OptionSet(models.Model):
     TOMTOM_USER = models.CharField( max_length=200, blank=True, null=True, verbose_name="<h3> TomTom </h3> TomTom username"  )
     TOMTOM_PASSWORD = models.CharField( max_length=200, blank=True, null=True, verbose_name="TomTom password")
     TOMTOM_FILENAME = models.CharField( max_length=200, blank=True, null=True, verbose_name="TomTom file name, see https://mysports.tomtom.com/app/settings/account-manage/data-protection/", default="1.zip")
+    #TOMTOM
+    GARMIN_USER = models.CharField( max_length=200, blank=True, null=True, verbose_name="<h3> Garmin </h3> Garmin username"  )
+    GARMIN_PASSWORD = models.CharField( max_length=200, blank=True, null=True, verbose_name="Garmin password")
     #GOOGLE
     GOOGLE_PHOTOS_DIRS = models.TextField(blank=True, null=True, verbose_name="<h3> Google Drive and Photos </h3> Google Photos dirs in Drive (separate by newline)"  )
     GOOGLE_TRACKS_DIRS = models.TextField(blank=True, null=True,verbose_name="Google Tracks dirs in Drive (separate by newline)"  )

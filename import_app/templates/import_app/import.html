@@ -69,6 +69,7 @@
     <h3>Download</h3>
     <p>You can configure for automatic download from Google Drive and TomTom.</p>
     <button {% if not ok_tomtom %}disabled {%endif%} title="Requires TomTom username and password set in Options" onclick="location.href='{% url 'download_tomtom'  %}'" type="button">Download from TomTom</button>
+    <button {% if not ok_garmin %}disabled {%endif%} title="Requires Garmin username and password set in Options" onclick="location.href='{% url 'download_garmin'  %}'" type="button">Download from Garmin</button>
     <button {% if not ok_google %}disabled {%endif%} title="Requires Google Tracks directory names set in Options. An interactive login page will be shown."onclick="location.href='{% url 'google_drive_tracks'  %}'" type="button">Download from Google Drive</button><br>
 
     <h3>Other</h3>

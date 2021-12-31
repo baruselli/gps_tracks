@@ -9,6 +9,7 @@ class OptionsForm(forms.ModelForm):
         exclude=["BASEMAPS"]
         widgets = {
              'TOMTOM_PASSWORD': forms.PasswordInput(render_value = True),
+             'GARMIN_PASSWORD': forms.PasswordInput(render_value = True),
              "GMAIL_PWD": forms.PasswordInput(render_value = True),
              "COLORSCALE_LISTS":forms.Select(choices=COLOR_CHOICES),
              "COLORSCALE_RANKS": forms.Select(choices=COLOR_CHOICES),

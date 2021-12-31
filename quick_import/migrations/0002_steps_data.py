@@ -26,6 +26,13 @@ class Migration(migrations.Migration):
         step.save()
 
         step = ImportStep.objects.create(
+            name = "Garmin Tracks (requires GARMIN_USER, GARMIN_PASSWORD)",
+            step_code = "download_garmin",
+            step_type = "11_download_tracks",
+        )
+        step.save()
+
+        step = ImportStep.objects.create(
             name = "Import downloaded tracks",
             step_code = "generate_tracks",
             step_type = "21_import_tracks",

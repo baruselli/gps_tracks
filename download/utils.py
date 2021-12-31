@@ -254,3 +254,74 @@ def download_tomtom(ext="csv"):
         logger.error("Error in download_tomtom: %s"%e)
         return []
 
+def download_garmin():
+
+    logger.info("download_garmin")
+
+    import datetime
+
+    from garminconnect import (
+        Garmin,
+        GarminConnectConnectionError,
+        GarminConnectTooManyRequestsError,
+        GarminConnectAuthenticationError,
+    )
+
+    files = []
+
+    try:
+        ## Initialize Garmin api with your credentials
+        garmin_user=OptionSet.get_option("GARMIN_USER")
+        garmin_password=OptionSet.get_option("GARMIN_PASSWORD")        
+        api = Garmin(garmin_user, garmin_password)
+
+        max_attempts = 3
+        attempts = 0
+
+        while attempts < max_attempts:
+            try:
+                logger.info("Garmin trying to login, %s" %attempts)
+                api.login()
+                break
+            except (
+                    GarminConnectConnectionError,
+                    GarminConnectAuthenticationError,
+                    GarminConnectTooManyRequestsError,
+                ) as e:
+                logger.info(e)
+                attempts += 1
+                import time
+                time.sleep(1)
+
+        ## Login to Garmin Connect portal
+
+
+        activities = api.get_activities(0,9999) # 0=start, 1=limit
+
+        out_path = os.path.join(settings.TRACKS_DIR, "garmin")
+        try:
+            os.mkdir(out_path)
+        except:
+            pass
+
+        for activity in activities:
+            from pprint import pprint
+            #pprint(activity)
+            activity_id = activity["activityId"]
+            activity_name = activity["activityName"].replace(" ","_")
+            activity_time = activity["startTimeLocal"].replace(":","-").replace(" ","_")
+            logger.info("api.download_activities(%s, %s)", activity_id,activity_name)
+            output_file = activity_name + "_" + str(activity_time) + ".tcx"
+            output_file_path = os.path.join(out_path, output_file)
+
+            if not os.path.exists(output_file_path) and activity["distance"] and activity["distance"]>0:
+                tcx_data = api.download_activity(activity_id, dl_fmt=api.ActivityDownloadFormat.TCX)
+                logger.info("downloading " + output_file_path)
+                with open(output_file_path, "wb") as fb:
+                    fb.write(tcx_data)
+                files.append(output_file_path)
+
+    except Exception as e:
+        logger.error("Error in download_garmin: %s", e)
+
+    return files

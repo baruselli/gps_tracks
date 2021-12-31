@@ -44,6 +44,7 @@ class Import(View):
         n_users = User.objects.count()
 
         ok_tomtom =  OptionSet.get_option("TOMTOM_USER") and OptionSet.get_option("TOMTOM_PASSWORD")
+        ok_garmin =  OptionSet.get_option("GARMIN_USER") and OptionSet.get_option("GARMIN_PASSWORD")
         ok_google =  bool(OptionSet.get_option("GOOGLE_TRACKS_DIRS"))
         from .utils import get_all_photo_dirs
         all_photos_dirs = "; ".join(get_all_photo_dirs())
@@ -89,6 +90,7 @@ class Import(View):
             "photos_dir": settings.PHOTOS_DIR,
             "all_photos_dirs": all_photos_dirs,
             "ok_tomtom":ok_tomtom,
+            "ok_garmin":ok_garmin,
             "ok_google": ok_google,
             "quick_imports": quick_imports,
             "db_size":db_size,

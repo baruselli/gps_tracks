@@ -64,6 +64,20 @@ class DownloadTomtom(View):
 
         return redirect(reverse("import"))
 
+class DownloadGarmin(View):
+    def get(self, request, *args, **kwargs):
+
+        logger.info("DownloadGarmin")
+
+        from .utils import download_garmin
+        download_garmin()
+
+        message = "Done"
+        messages.success(request, message)#
+        logger.info(message)
+
+        return redirect(reverse("import"))
+
 class GoogleDriveTracksView(View):
     def get(self, request, *args, **kwargs):
         from django.contrib import messages

@@ -1,5 +1,5 @@
 from django.db import models
-from download.utils import google_drive_tracks, google_drive_photos, google_photos, download_tomtom
+from download.utils import google_drive_tracks, google_drive_photos, google_photos, download_tomtom, download_garmin
 from import_app.utils import import_photos, generate_tracks
 from photos.utils import associate_photos_to_tracks
 from options.models import OptionSet
@@ -35,6 +35,8 @@ class ImportStep(models.Model):
             return bool(OptionSet.get_option("GOOGLE_PHOTOS_DIRS"))
         elif self.step_code == "download_tomtom":
             return OptionSet.get_option("TOMTOM_USER") and OptionSet.get_option("TOMTOM_PASSWORD")
+        elif self.step_code == "download_garmin":
+            return OptionSet.get_option("GARMIN_USER") and OptionSet.get_option("GARMIN_PASSWORD")
         else:
             return True
 
@@ -61,12 +63,15 @@ class QuickImport(models.Model):
         generated_tracks = []
         imported_photos = []
 
-        for step in self.steps.all():
+        for step in self.steps.all().order_by("step_type"):
+            logger.info(step)
             # download tracks
             if step.step_code == "google_drive_tracks":
                 downloaded_tracks += google_drive_tracks()
             elif step.step_code == "download_tomtom":
                 downloaded_tracks += download_tomtom(ext="csv")
+            elif step.step_code == "download_garmin":
+                downloaded_tracks += download_garmin()
             # import tracks
             elif step.step_code == "generate_tracks":
                 generated_tracks = generate_tracks(settings.TRACKS_DIR,files = downloaded_tracks, update=False)

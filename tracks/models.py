@@ -930,7 +930,7 @@ class Track(models.Model):
                                                                                     steps_legend=steps_legend,diverging=True)
             ## slope
             if hasattr(self , 'td_slope_rolling') and   self.td_slope_rolling:
-                track_json["Slope"] = self.td_slope_rolling
+                track_json["Slope"] = [to_float_or_zero(a) for a in self.td_slope_rolling]
                 track_json["ColorSlope"],  track_json["GradesSlope"],  track_json["LegendSlope"] = numbers_to_colors(self.td_slope_rolling, colorscale,steps=steps,
                                                                                     steps_legend=steps_legend,diverging=True)        
             ## step length

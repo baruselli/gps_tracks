@@ -1271,7 +1271,7 @@ def to_int(a):
     except:
         return -1
 
-def to_float_or_zero(a, default=None):
+def to_float_or_zero(a, default=0):
     if a is None:
         return default
     if math.isnan(a) or np.isinf(a):

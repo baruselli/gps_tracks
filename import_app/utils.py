@@ -351,6 +351,94 @@ def from_files_to_tracks(files, update=False,import_new_extensions=False,ignore_
     logger.info("***************************************")
     return generated_tracks
 
+def from_files_to_waypoints(files, update=True):
+    logger.info("From files to waypoints")
+    logger.info("files %s, update %s"  %(len(files),update ))
+    
+    # to be returned
+    generated_waypoints=[]
+
+    for f in files:
+        try:
+            import io
+            try:
+                gpx = io.open(f, mode="r", encoding="utf-8")
+                _gpx = gpxpy.parse(open(f, "r", encoding="utf8"))
+            except Exception as e:
+                logger.warning("Cannot read gpx with utf8, now trying without: %s" %e)
+                gpx = io.open(f, mode="r")
+                _gpx = gpxpy.parse(open(f, "r"))
+            f = gpx.read()
+
+            n_waypoints=0
+            for wp in _gpx.waypoints:
+                try:
+                    n_waypoints += 1
+
+                    wp.name=wp.name or "No name"
+    
+                    query = Waypoint.objects.filter(
+                        name=wp.name, lat=wp.latitude, long=wp.longitude
+                    ).first()
+                    if query is not None:
+                        waypoint = query
+                        logger.info("%s Updating waypoint %s" %(n_waypoints,waypoint))
+                    else:
+                        waypoint = Waypoint()
+                        logger.info("%s Creating waypoint %s" %(n_waypoints,wp.name))
+
+
+                    #if wp.description:
+                    #    waypoint.name = wp.name+" "+wp.description
+                    #else:
+                    waypoint.name = wp.name
+                    waypoint.lat = wp.latitude
+                    waypoint.long = wp.longitude
+                    waypoint.alt = wp.elevation
+                    waypoint.save()                
+                    waypoint.set_timezone()
+                    if wp.description: waypoint.description = wp.description.replace("<BR>","\n")
+                    if wp.comment: waypoint.comment = wp.comment.replace("<BR>","\n")
+                    waypoint.time = wp.time + waypoint.get_timezone_offset()
+                    added=False
+                    if waypoint.time:
+                        track_list = Track.objects.filter(
+                            beginning__isnull=False,
+                            end__isnull=False,
+                            beginning__lte = waypoint.time,
+                            end__gte = waypoint.time,
+                        ).order_by("-priority")
+                        for t in track_list:
+                            add = True
+                            if t.min_lat and t.min_long and t.max_lat and t.max_long:
+                                delta_lat =  t.max_lat -  t.min_lat
+                                delta_long =  t.max_long -  t.min_long
+                                if  (waypoint.lat > t.max_lat + 0.1*delta_lat) or (waypoint.lat < t.min_lat - 0.1*delta_lat) or \
+                                    (waypoint.long > t.max_long + 0.1*delta_long) or (waypoint.long < t.min_long - 0.1*delta_long):
+                                    add = False
+                                if add:
+                                    added = True
+                                    logger.info ("Waypoint %s added to track %s" %(waypoint,t))
+                                    waypoint.other_tracks.add(t)
+                    # if I cannot associate it to any trac, I mark it as global                                    
+                    if not added:
+                        waypoint.is_global=True               
+                            
+                    # waypoint.track = self
+                    # waypoint.track_pk = self.pk
+                    # waypoint.track_name = self.name_wo_path_wo_ext
+
+
+                    waypoint.save()
+                except Exception as e:
+                    logging.error(f + " from_files_to_waypoints, waypoint %s" + str(e,wp))
+
+        except Exception as e:
+            logging.error(f + " from_files_to_waypoints " + str(e))
+            return
+
+    return generated_waypoints
+
 def find_files_in_dir(dir_=None, extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
     """Automatically finds file in dir and its subdirs"""
     import os
@@ -615,7 +703,7 @@ def import_photos(path=None, update=False, files=None):
 
 
 
-def handle_uploaded_files(files, update=True):
+def handle_uploaded_files(files, update=True,gpx_for_waypoints=False):
     """given file paths (i.e. strings), import files """
     from tracks.models import Track
     from django.core.files.base import ContentFile
@@ -623,24 +711,34 @@ def handle_uploaded_files(files, update=True):
 
     logger.info("handle_uploaded_files %s" %files)
 
-    track_files = [f for f in files if os.path.splitext(f)[1] in settings.TRACK_EXTENSIONS]
-    photo_files = [f for f in files if os.path.splitext(f)[1] in settings.PHOTO_EXTENSIONS]
-    obj_pk=None
 
-    if track_files:
-        generated_tracks = from_files_to_tracks(track_files, update=update, ignore_blacklist=True, manual_upload=True)
-        # extract pk of the first track (needed when I upload a single track)
-        if generated_tracks:
-            obj_pk=generated_tracks[0].pk
-    if photo_files:
-        generated_photos = import_photos(files=photo_files, update=update)
-        # extract pk of the first photo (needed when I upload a single photo)
-        if generated_photos:
-            obj_pk=generated_photos[0].pk
+    if gpx_for_waypoints:
+        print("files",files)
 
-    if track_files and photo_files:
-        from photos.utils import associate_photos_to_tracks
-        associate_photos_to_tracks(photo_list=generated_photos, track_list=generated_tracks)
+        track_files = [f for f in files if os.path.splitext(f)[1].lower() in [".gpx",]]
+        print("track_files",track_files)
+
+        generated_waypoints = from_files_to_waypoints(track_files)
+        obj_pk=None
+
+    else:
+        track_files = [f for f in files if os.path.splitext(f)[1] in settings.TRACK_EXTENSIONS]
+        photo_files = [f for f in files if os.path.splitext(f)[1] in settings.PHOTO_EXTENSIONS]
+        obj_pk=None
+        if track_files:
+            generated_tracks = from_files_to_tracks(track_files, update=update, ignore_blacklist=True, manual_upload=True)
+            # extract pk of the first track (needed when I upload a single track)
+            if generated_tracks:
+                obj_pk=generated_tracks[0].pk
+        if photo_files:
+            generated_photos = import_photos(files=photo_files, update=update)
+            # extract pk of the first photo (needed when I upload a single photo)
+            if generated_photos:
+                obj_pk=generated_photos[0].pk
+
+        if track_files and photo_files:
+            from photos.utils import associate_photos_to_tracks
+            associate_photos_to_tracks(photo_list=generated_photos, track_list=generated_tracks)
 
     logger.info("End handle_uploaded_files")
 
@@ -888,13 +986,15 @@ def import_new_photos(dir_=None,extensions=[".jpg"]):
     files = find_imported_and_existing_photos(dir_=dir_, extensions=extensions)["missing_photos_existing_paths"]
     import_photos(files=files, update=True)
 
-def save_uploaded_files(files):
+def save_uploaded_files(files,gpx_for_waypoints=False):
     """save uploaded files, and return list of paths where they are saved"""
     from django.core.files.storage import FileSystemStorage
     paths=[]
     for f in files:
         extension = os.path.splitext(f.name)[1]
-        if extension in [".gpx", ".csv", ".kml", ".kmz", ".tcx"]:
+        if gpx_for_waypoints:
+            path=os.path.join(settings.MEDIA_BASE_DIR,"input_files","waypoints")
+        elif extension in [".gpx", ".csv", ".kml", ".kmz", ".tcx"]:
             path=os.path.join(settings.MEDIA_BASE_DIR,"input_files","upload")
             type_="track"
         elif extension in [".jpg"]:

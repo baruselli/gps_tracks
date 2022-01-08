@@ -390,3 +390,32 @@ class GetDirSizesView(View):
     def get(self, request, *args, **kwargs):
         from .utils import get_dir_sizes
         return JsonResponse(get_dir_sizes())
+
+class UploadWaypoints(View):
+    """import a gpx consisting of only waypoints"""
+    def post(self, request, *args, **kwargs):
+        from .utils import handle_uploaded_files, save_uploaded_files
+        from .forms import UploadFileForm
+        import threading
+        from django.contrib import messages
+
+        files = request.FILES.getlist("file")
+        logger.info("Upload file(s)")
+
+        if len(files) == 0:
+            message = "Please select a file!"
+            messages.success(request, message)
+            logger.warning("No uploaded files")
+            return redirect(reverse("index"))
+        else:
+            # save files to disk
+            logger.info("Uploaded files")
+            from pprint import pprint, pformat
+            paths = save_uploaded_files(files,gpx_for_waypoints=True)
+            # process files in parallel thread
+            t = threading.Thread(target=handle_uploaded_files, args=(paths,),kwargs={"gpx_for_waypoints":True})
+            t.start()
+            # generate_tracks(track_dir,ext,update)
+            message = "Started import in a parallel thread, check logs for details"
+            messages.success(request, message)
+            return redirect(reverse("import"))

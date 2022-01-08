@@ -22,6 +22,7 @@
 
     <div class="tab">
         <button class="tablinks active" id="btn_tab_tracks" onclick="open_tab(event, 'tab_tracks')"><h2>Tracks</h2></a></li>
+        <button class="tablinks " id="btn_tab_waypoints" onclick="open_tab(event, 'tab_waypoints')"><h2>Waypoints</h2></a></li>
         <button class="tablinks " id="btn_tab_photos" onclick="open_tab(event, 'tab_photos')"><h2>Photos</h2></a></li>
         <button class="tablinks" id="btn_tab_delete" onclick="open_tab(event, 'tab_delete')"><h2>Delete</h2></a></li>
         <button class="tablinks" id="btn_tab_quickimport" onclick="open_tab(event, 'tab_quickimport')"><h2>Quick Import</h2></a></li>
@@ -109,6 +110,16 @@
     <!-- <h1>Waypoints</h1>
     <button onclick="location.href='{% url 'geopy_waypoints'  %}'" type="button">Get infos on waypoints</button>
     <button onclick="location.href='{% url 'serialize_waypoints'  %}'" type="button">Export as JSON</button> -->
+</div>
+
+<div class="tabcontent" id="tab_waypoints">
+    <!-- <h1>Photos</h1> -->
+    <p>You can upload a gpx file containing only waypoints, which will be associated to existing tracks accorting to their timestamp and location.</p>
+    <form method="post" enctype="multipart/form-data"  action="{% url 'upload_waypoints'%}">
+        {% csrf_token %}
+        <input type="file" name="file" multiple title="Upload waypoints"/>
+        <input type="submit" value="Upload File" />
+    </form>
 </div>
 
 <div class="tabcontent" id="tab_photos">

@@ -16,6 +16,7 @@ class Waypoint(models.Model):
     # geom=              PointField(null=True)
     track = models.ForeignKey("tracks.Track", null=True, blank=True,on_delete=models.CASCADE)
     track2 = models.ForeignKey("tracks.Track", null=True, blank=True, on_delete=models.CASCADE, related_name="waypoints2")
+    other_tracks =  models.ManyToManyField("tracks.Track",blank=True,related_name="other_tracks")
     # these 2 fields are to speed up menu loadings
     track_name = models.CharField(max_length=255, verbose_name="Track name", null=True, blank=True, unique=False)
     track_pk = models.IntegerField(null=True)
@@ -66,3 +67,25 @@ class Waypoint(models.Model):
             import traceback
             traceback.print_exc()
             logger.warning("Cannot set time_zone: %s" %e)
+
+    def get_timezone_offset(self,time=None, timezone=None):
+        import datetime
+        import pytz
+
+        try:
+            if not timezone:
+                timezone = pytz.timezone(self.time_zone)
+            if isinstance(timezone,str):
+                timezone = pytz.timezone(timezone)
+            if not time:
+                if self.time:
+                    time = self.time
+                else:
+                    time=datetime.datetime.now()
+            time = time.replace(tzinfo=None)
+            return timezone.utcoffset(time)
+        except Exception as e:
+            logger.error("wp error with get_timezone_offset: %s" %e)
+            import traceback
+            traceback.print_exc()
+            return datetime.timedelta(0)

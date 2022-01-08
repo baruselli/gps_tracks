@@ -53,6 +53,8 @@
 
                     <tr><td>Track</td> <td> {% if track %}<a href="{% url 'track_detail' track_id=track.pk %}">{{track.name}}</a>{%endif%}</td> </tr>
                     <tr><td>Secondary Track</td> <td> {% if waypoint.track2 %}<a href="{% url 'track_detail' track_id=waypoint.track2.pk %}">{{waypoint.track2.name}}</a>{%endif%}</td> </tr>
+                    <tr><td>Other Tracks</td> <td> 
+                        {% for track in waypoint.other_tracks.all %}<a href="{% url 'track_detail' track_id=track.pk %}">{{track.name}}</a>{%endfor%}</td> </tr>
 
                     {% comment %}
                     <tr><td><a href="{% url 'many_tracks' track_ids=ids %}">Nearby Tracks</a></td> <td></td> </tr>

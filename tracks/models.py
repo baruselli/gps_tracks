@@ -94,7 +94,7 @@ class Track(models.Model):
     total_heartbeat = models.FloatField(null=True)  # from csv
     total_calories = models.FloatField(null=True)  # from csv
     total_step_length = models.FloatField(null=True)  # from csv
-    total_steps = models.IntegerField(null=True)  # from csv
+    total_steps = models.IntegerField(null=True)  # from csv and tcx
     # computed data
     length_2d = models.FloatField(null=True)
     length_3d = models.FloatField(null=True)
@@ -2603,13 +2603,28 @@ class Track(models.Model):
             lons=[a[1] for a in tcx_obj.position_values()]
             heart=tcx_obj.hr_values()
             cadence=tcx_obj.cadence_values()
+            # point by point cadence, for running activities
             if not cadence:
                 try:
                     cadence=tcx_obj.root.xpath("//ns3:TPX/ns3:RunCadence", namespaces={"ns3": "http://www.garmin.com/xmlschemas/ActivityExtension/v2"})
                     cadence=[2*int(x.text)/60 for x in cadence]
                 except:
                     cadence=[]
-            
+            # avg cadence, for walking activities, lap by lap
+            if not cadence:
+                try:
+                    avg_cadences = tcx_obj.root.xpath("//ns3:LX/ns3:AvgRunCadence", namespaces={"ns3": "http://www.garmin.com/xmlschemas/ActivityExtension/v2"})
+                    durations = [lap.TotalTimeSeconds for lap in tcx_obj.activity.Lap]
+                    total_steps_per_lap = [a*b for a,b in zip(avg_cadences,durations)]
+                    total_steps = sum(total_steps_per_lap) * 2 / 60
+                    total_duration = sum(durations)
+                    self.total_steps = int(total_steps)
+                    self.total_frequency = sum(total_steps_per_lap) * 2 / total_duration
+                    self.save()
+                    self.info("avg_cadences %s, durations %s, total_steps_per_lap %s, total_steps %s, total_frequency %s"
+                                %(avg_cadences,durations,total_steps_per_lap,total_steps, self.total_frequency))
+                except:
+                    pass
             self.info("TCX points %s" %len(times))
 
             delta_times=[(t- times[0]).total_seconds() for t in times]

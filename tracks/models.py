@@ -2620,6 +2620,8 @@ class Track(models.Model):
                     total_duration = sum(durations)
                     self.total_steps = int(total_steps)
                     self.total_frequency = sum(total_steps_per_lap) * 2 / total_duration
+                    distances = [lap.DistanceMeters for lap in tcx_obj.activity.Lap]
+                    self.total_step_length = sum(distances) / self.total_steps
                     self.save()
                     self.info("avg_cadences %s, durations %s, total_steps_per_lap %s, total_steps %s, total_frequency %s"
                                 %(avg_cadences,durations,total_steps_per_lap,total_steps, self.total_frequency))

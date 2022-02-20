@@ -160,6 +160,10 @@
                         {% for c in source_options %}
                             <option value='{{c}}'{% if c and c == source %} selected {%endif%}>{{c|truncatechars:40 }}</option>
                         {% endfor %}
+                        <tr><td>Activity type</td><td><select  id="searchbox25" name="activity_type">
+                            {% for c in activity_type_options %}
+                                <option value='{{c}}'{% if c and c == activity_type %} selected {%endif%}>{{c|truncatechars:40 }}</option>
+                            {% endfor %}                        
                         </select></td></tr>
                         <tr><td>Description</td><td><input class="searchfield" id="searchbox7" name="q" type="text" value="{{q}}" placeholder="Search for term (slow)"/></td></tr>
                         <tr><td>Heartrate</td><td><select  id="searchbox16" name="heartbeat">

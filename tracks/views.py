@@ -362,6 +362,7 @@ class TracksListView(View):
         extension=request.GET.get("extension","")
         country=request.GET.get("country","")
         source=request.GET.get("source","")
+        activity_type=request.GET.get("activity_type","")
         q=request.GET.get("q","")
         min_date=request.GET.get("min_date","")
         max_date=request.GET.get("max_date","")
@@ -433,6 +434,10 @@ class TracksListView(View):
             source_options = [""]+source_options
         source_options.sort()
 
+        activity_type_options = list(set(list(Track.objects.filter(activity_type__isnull=False).values_list('activity_type',flat=True).distinct())))
+        if "" not in activity_type_options:
+            activity_type_options = [""]+activity_type_options
+
         from .forms import FindTracksForm
         if track_ids:
             ids_list=[int(i) for i in track_ids.split("_")]
@@ -497,6 +502,8 @@ class TracksListView(View):
              "special_search_pk":special_search_pk,
              "special_search":special_search,
              "regex_name":regex_name,
+             "activity_type_options": activity_type_options,
+             "activity_type":activity_type,
              })
 
 

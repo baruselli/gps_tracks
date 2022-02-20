@@ -403,6 +403,7 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     extension = request.get('extension',None)           #OK
     country = request.get('country',None)           #OK
     source = request.get('source',None)           #OK
+    activity_type = request.get('activity_type',None)       #OK  
     address = request.get('address',None)           #OK
     year = request.get('year',None)           #OK
     heartbeat = request.get('heartbeat',None) #OK
@@ -529,6 +530,10 @@ def filter_tracks(request,silent=True,initial_queryset=None):
     # by source
     if source:
         tracks = tracks.filter(Q(csv_source=source)|Q(gpx_creator=source)|Q(gpx_author=source)|Q(tcx_creator=source)|Q(kml_creator=source))
+
+    # by activity type
+    if activity_type:
+        tracks = tracks.filter(activity_type=activity_type)
 
     # by time_zone
     if time_zone=="None":

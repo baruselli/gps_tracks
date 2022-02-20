@@ -132,11 +132,16 @@ class EmptyMap(View):
             except:
                 lat, long , address= 0,0,""
 
+        try:
+            max_n_tracks = 5 * OptionSet.get_option("MAX_N_TRACKS_AS_LINES")
+        except:
+            max_n_tracks = 100
+
         return render(request, self.template_name, {
             "lat": lat, "long": long, "address": address,
             "min_lat": min_lat, "max_lat": max_lat,"min_long": min_long, "max_long": max_long,
             "location_name":location_name,
-            "max_n_tracks": OptionSet.get_option("MAX_N_TRACKS_AS_LINES")})
+            "max_n_tracks": max_n_tracks})
 
 # class Statistics(View):
 #     template_name = "base/statistics.html"

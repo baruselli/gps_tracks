@@ -2688,7 +2688,9 @@ class Track(models.Model):
             #self.pace_string_tcx=
             self.td.save()
             self.n_points_tcx=len(lats)
-            self.activity_type=tcx_obj.activity_type
+            # activity_type can be overriden manually or from garmin api
+            if not self.activity_type:
+                self.activity_type=tcx_obj.activity_type
             self.save()
             self.info("OK read tcx")
 

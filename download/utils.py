@@ -307,6 +307,39 @@ def download_garmin():
         for activity in activities:
             from pprint import pprint
             #pprint(activity)
+            #print(activity.keys())
+            # for reference, all the fields of "activity"
+            #['activityId', 'activityName', 'description', 'startTimeLocal', 'startTimeGMT', 'activityType', 'eventType', 
+            # 'comments', 'parentId', 'distance', 'duration', 'elapsedDuration', 'movingDuration', 'elevationGain', 
+            # 'elevationLoss', 'averageSpeed', 'maxSpeed', 'startLatitude', 'startLongitude', 'hasPolyline', 'ownerId',
+            #  'ownerDisplayName', 'ownerFullName', 'ownerProfileImageUrlSmall', 'ownerProfileImageUrlMedium', 
+            # 'ownerProfileImageUrlLarge', 'calories', 'averageHR', 'maxHR', 'averageRunningCadenceInStepsPerMinute', 
+            # 'maxRunningCadenceInStepsPerMinute', 'averageBikingCadenceInRevPerMinute', 'maxBikingCadenceInRevPerMinute', 
+            # 'averageSwimCadenceInStrokesPerMinute', 'maxSwimCadenceInStrokesPerMinute', 'averageSwolf', 'activeLengths', 
+            # 'steps', 'conversationUuid', 'conversationPk', 'numberOfActivityLikes', 'numberOfActivityComments', 'likedByUser', 
+            # 'commentedByUser', 'activityLikeDisplayNames', 'activityLikeFullNames', 'activityLikeProfileImageUrls', 
+            # 'requestorRelationship', 'userRoles', 'privacy', 'userPro', 'courseId', 'poolLength', 'unitOfPoolLength', 
+            # 'hasVideo', 'videoUrl', 'timeZoneId', 'beginTimestamp', 'sportTypeId', 'avgPower', 'maxPower', 
+            # 'aerobicTrainingEffect', 'anaerobicTrainingEffect', 'strokes', 'normPower', 'leftBalance', 'rightBalance', 
+            # 'avgLeftBalance', 'max20MinPower', 'avgVerticalOscillation', 'avgGroundContactTime', 'avgStrideLength', 
+            # 'avgFractionalCadence', 'maxFractionalCadence', 'trainingStressScore', 'intensityFactor', 'vO2MaxValue', 
+            # 'avgVerticalRatio', 'avgGroundContactBalance', 'lactateThresholdBpm', 'lactateThresholdSpeed', 'maxFtp', 
+            # 'avgStrokeDistance', 'avgStrokeCadence', 'maxStrokeCadence', 'workoutId', 'avgStrokes', 'minStrokes', 
+            # 'deviceId', 'minTemperature', 'maxTemperature', 'minElevation', 'maxElevation', 'avgDoubleCadence', 
+            # 'maxDoubleCadence', 'summarizedExerciseSets', 'maxDepth', 'avgDepth', 'surfaceInterval', 'startN2', 'endN2', 
+            # 'startCns', 'endCns', 'summarizedDiveInfo', 'activityLikeAuthors', 'avgVerticalSpeed', 'maxVerticalSpeed', 
+            # 'floorsClimbed', 'floorsDescended', 'manufacturer', 'diveNumber', 'locationName', 'bottomTime', 'lapCount', 
+            # 'endLatitude', 'endLongitude', 'minAirSpeed', 'maxAirSpeed', 'avgAirSpeed', 'avgWindYawAngle', 'minCda', 
+            # 'maxCda', 'avgCda', 'avgWattsPerCda', 'flow', 'grit', 'jumpCount', 'caloriesEstimated', 'caloriesConsumed', 
+            # 'waterEstimated', 'waterConsumed', 'maxAvgPower_1', 'maxAvgPower_2', 'maxAvgPower_5', 'maxAvgPower_10', 
+            # 'maxAvgPower_20', 'maxAvgPower_30', 'maxAvgPower_60', 'maxAvgPower_120', 'maxAvgPower_300', 'maxAvgPower_600', 
+            # 'maxAvgPower_1200', 'maxAvgPower_1800', 'maxAvgPower_3600', 'maxAvgPower_7200', 'maxAvgPower_18000', 
+            # 'excludeFromPowerCurveReports', 'totalSets', 'activeSets', 'totalReps', 'minRespirationRate', 
+            # 'maxRespirationRate', 'avgRespirationRate', 'trainingEffectLabel', 'activityTrainingLoad', 'avgFlow', 
+            # 'avgGrit', 'minActivityLapDuration', 'avgStress', 'startStress', 'endStress', 'differenceStress', 'maxStress', 
+            # 'aerobicTrainingEffectMessage', 'anaerobicTrainingEffectMessage', 'splitSummaries', 'hasSplits', 'maxBottomTime',
+            #  'hasSeedFirstbeatProfile', 'calendarEventId', 'calendarEventUuid', 'parent', 'favorite', 'decoDive', 'pr', 
+            # 'autoCalcCalories', 'atpActivity', 'purposeful', 'manualActivity', 'elevationCorrected']            
             activity_id = activity["activityId"]
             activity_name = activity["activityName"].replace(" ","_")
             activity_time = activity["startTimeLocal"].replace(":","-").replace(" ","_")
@@ -314,12 +347,29 @@ def download_garmin():
             output_file = activity_time + "_" + activity_name + ".tcx"
             output_file_path = os.path.join(out_path, output_file)
 
+            # download new tracks
             if not os.path.exists(output_file_path) and activity["distance"] and activity["distance"]>0:
                 tcx_data = api.download_activity(activity_id, dl_fmt=api.ActivityDownloadFormat.TCX)
                 logger.info("downloading " + output_file_path)
                 with open(output_file_path, "wb") as fb:
                     fb.write(tcx_data)
                 files.append(output_file_path)
+
+            # update existing tracks
+            if os.path.exists(output_file_path) and activity["distance"] and activity["distance"]>0:
+                track = Track.objects.filter(name_wo_path_wo_ext = output_file[:-4]).first()
+                if track:
+                    # example of  activity["activityType"]: 
+                    # {'typeId': 9, 'typeKey': 'walking', 'parentTypeId': 17, 'isHidden': False, 'sortOrder': None, 'restricted': False, 'trimmable': True}
+                    # update activity_type because it is often set wrongly as "other" in tcx files
+                    try:
+                        activity_type = activity["activityType"]["typeKey"]
+                    except:
+                        activity_type = None
+                    if activity_type and activity_type != track.activity_type:
+                        logger.info("Setting acitvity type of %s as %s" %(track, activity_type))
+                        track.activity_type = activity_type
+                        track.save()
 
     except Exception as e:
         logger.error("Error in download_garmin: %s", e)

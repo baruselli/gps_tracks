@@ -96,6 +96,7 @@
                         {% if track.total_steps%}<tr><td> Total Steps</td><td>{{track.total_steps}}</td></tr>{%endif%}
                         {% if track.end_country%}<tr><td> Country</td><td>{{track.end_country}}</td></tr>{%endif%}
                         {% if track.end_city%}<tr><td> City</td><td>{{track.end_city}}</td></tr>{%endif%}
+                        {% if track.activity_type%}<tr><td> Activity type</td><td>{{track.activity_type}}</td></tr>{%endif%}
                         <tr><td> Photos</td><td>{{track.photos.count}}</td></tr>
                         <tr><td> Waypoints</td><td>{{track.waypoints_all.count}}</td></tr>
                         {% if track.description%}<tr><td> Notes</td><td>{{track.description|safe}}</td></tr>{%endif%}

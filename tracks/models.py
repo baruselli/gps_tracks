@@ -150,7 +150,7 @@ class Track(models.Model):
     #     on_delete=models.SET_NULL,
     #     related_name="group2",
     # )
-    activity_type = models.CharField(max_length=50, null=True)
+    activity_type = models.CharField(max_length=50, null=True,blank=True)
     length_kml = models.FloatField(null=True)
     moving_time = models.FloatField(null=True)
     stopped_time = models.FloatField(null=True)
@@ -2688,6 +2688,7 @@ class Track(models.Model):
             #self.pace_string_tcx=
             self.td.save()
             self.n_points_tcx=len(lats)
+            self.activity_type=tcx_obj.activity_type
             self.save()
             self.info("OK read tcx")
 

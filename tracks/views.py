@@ -434,7 +434,7 @@ class TracksListView(View):
             source_options = [""]+source_options
         source_options.sort()
 
-        activity_type_options = list(set(list(Track.objects.filter(activity_type__isnull=False).values_list('activity_type',flat=True).distinct())))
+        activity_type_options = sorted(list(set(list(Track.objects.filter(activity_type__isnull=False).values_list('activity_type',flat=True).distinct()))))
         if "" not in activity_type_options:
             activity_type_options = [""]+activity_type_options
 

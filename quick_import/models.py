@@ -71,7 +71,11 @@ class QuickImport(models.Model):
             elif step.step_code == "download_tomtom":
                 downloaded_tracks += download_tomtom(ext="csv")
             elif step.step_code == "download_garmin":
-                downloaded_tracks += download_garmin()
+                garmin_tracks = download_garmin()
+                if garmin_tracks is None:
+                    logger.warning("Error in download_garmin, stop here")
+                    return
+                downloaded_tracks += garmin_tracks
             # import tracks
             elif step.step_code == "generate_tracks":
                 generated_tracks = generate_tracks(settings.TRACKS_DIR,files = downloaded_tracks, update=False)

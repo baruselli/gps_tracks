@@ -275,7 +275,7 @@ def download_garmin():
         garmin_password=OptionSet.get_option("GARMIN_PASSWORD")        
         api = Garmin(garmin_user, garmin_password)
 
-        max_attempts = 3
+        max_attempts = 1
         attempts = 0
 
         while attempts < max_attempts:
@@ -323,5 +323,6 @@ def download_garmin():
 
     except Exception as e:
         logger.error("Error in download_garmin: %s", e)
+        files = None
 
     return files

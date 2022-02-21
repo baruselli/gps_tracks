@@ -83,14 +83,17 @@ class TrackView(View):
             stats_laps={}
 
         # garmin_info
+        garmin_info = ""
+        garmin_link = ""
         if track.garmin_info:
             import json
             try:
                 garmin_info = json.loads(track.garmin_info)
+                garmin_id = garmin_info.get("activityId")
+                if garmin_id:
+                    garmin_link = "https://connect.garmin.com/modern/activity/"+str(garmin_id)
             except:
-                garmin_info = ""
-        else:
-            garmin_info = ""
+                pass
 
         #input files:
         from import_app.utils import find_files_in_dir_by_prefix
@@ -183,6 +186,7 @@ class TrackView(View):
                 "n_photos_same_day": n_photos_same_day,
                 "subtrack_names":subtrack_names,
                 "garmin_info": garmin_info,
+                "garmin_link":garmin_link,
             },
         )
     def post(self, request, *args, **kwargs):

@@ -183,7 +183,13 @@
                     </table>
 
                     {% if garmin_info %}
-                        <h3>Garmin Info</h3>
+                        <h3>
+                            {% if garmin_link %}
+                                <a target="_blank" href="{{garmin_link}}">Garmin Info</a>
+                            {%else%}
+                                Garmin Info
+                            {% endif %}
+                        </h3>
                         <table>
                             <thead>
                             </thead>

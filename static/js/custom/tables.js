@@ -209,12 +209,12 @@ function create_table(
         {text: 'Map tracks',
         action:function ( e, dt, node, config) {
             ids=get_track_ids(e, dt, node, config)
-            if(ids){window.location=url_many_tracks+ids+"&reduce_points=every&every=0&do_plots=0"}
+            if(ids){window.location=url_many_tracks+ids+"&use_points=0&reduce_points=every&every=0&do_plots=0"}
         }},
         {text: 'Map & Plot tracks',
         action:function ( e, dt, node, config) {
             ids=get_track_ids(e, dt, node, config)
-            if(ids){window.location=url_many_tracks+ids+"&reduce_points=every&every=0&do_plots=1"}
+            if(ids){window.location=url_many_tracks+ids+"&use_points=0&reduce_points=every&every=0&do_plots=1"}
         }},
         { text: 'Create Group',
         action:function ( e, dt, node, config) {

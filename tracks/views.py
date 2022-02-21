@@ -82,6 +82,16 @@ class TrackView(View):
             #print(track.td.laps_stats)
             stats_laps={}
 
+        # garmin_info
+        if track.garmin_info:
+            import json
+            try:
+                garmin_info = json.loads(track.garmin_info)
+            except:
+                garmin_info = ""
+        else:
+            garmin_info = ""
+
         #input files:
         from import_app.utils import find_files_in_dir_by_prefix
         all_input_files = find_files_in_dir_by_prefix(settings.TRACKS_DIR,track.name_wo_path_wo_ext)
@@ -172,6 +182,7 @@ class TrackView(View):
                 "unused_input_files":unused_input_files,
                 "n_photos_same_day": n_photos_same_day,
                 "subtrack_names":subtrack_names,
+                "garmin_info": garmin_info,
             },
         )
     def post(self, request, *args, **kwargs):

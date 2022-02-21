@@ -355,21 +355,19 @@ def download_garmin():
                     fb.write(tcx_data)
                 files.append(output_file_path)
 
-            # update existing tracks
+            # update existing tracks, fill garmin_info and othrt stuff
             if os.path.exists(output_file_path) and activity["distance"] and activity["distance"]>0:
                 track = Track.objects.filter(name_wo_path_wo_ext = output_file[:-4]).first()
                 if track:
                     # example of  activity["activityType"]: 
                     # {'typeId': 9, 'typeKey': 'walking', 'parentTypeId': 17, 'isHidden': False, 'sortOrder': None, 'restricted': False, 'trimmable': True}
                     # update activity_type because it is often set wrongly as "other" in tcx files
-                    try:
-                        activity_type = activity["activityType"]["typeKey"]
-                    except:
-                        activity_type = None
-                    if activity_type and activity_type != track.activity_type:
-                        logger.info("Setting acitvity type of %s as %s" %(track, activity_type))
-                        track.activity_type = activity_type
+                    if not track.garmin_info:
+                        import json
+                        track.garmin_info = json.dumps(activity)
                         track.save()
+                        track.read_garmin_info()
+
 
     except Exception as e:
         logger.error("Error in download_garmin: %s", e)

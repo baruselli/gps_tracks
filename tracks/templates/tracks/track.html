@@ -160,7 +160,7 @@
 
         <div class="row" id ="table_other" style="float:left;width:400" >
         <h3>Other info</h3>
-        <table>
+                    <table>
                         <thead>
                         </thead>
 
@@ -181,7 +181,22 @@
                         </tbody>
 
                     </table>
-            </div>
+
+                    {% if garmin_info %}
+                        <h3>Garmin Info</h3>
+                        <table>
+                            <thead>
+                            </thead>
+            
+                            <tbody>
+                                {% for key, value  in garmin_info.items %}
+                                    <tr><td> {{key}}  </td> <td>{{value}}</td> </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {%endif%}
+
+        </div>
 
         {% if track.gpx_file%}
         <div class="row" id ="table_gpx" style="float:left;width:400">
@@ -229,7 +244,7 @@
         {% if track.tcx_file%}
         <div class="row" id ="table_tcx" style="float:left;width:400">
             <h3>TCX</h3>
-        <table>
+                    <table>
                         <thead>
                         </thead>
 
@@ -247,7 +262,7 @@
         {% if track.csv_file%}
         <div class="row" id ="table_csv" style="float:left;width:400">
             <h3>CSV</h3>
-        <table>
+                    <table>
                         <thead>
                         </thead>
 
@@ -263,6 +278,7 @@
 
                 </div>
         {%endif%}
+
         </div>
 
         <div>

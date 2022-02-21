@@ -229,6 +229,7 @@ class Track(models.Model):
     priority = models.IntegerField(blank=False, null=False,default=5)
 
     photos_details = models.CharField(max_length=512, null=True, blank=True, default="No linking performed yet")
+    garmin_info = models.TextField(null=True, blank=True, unique=False,default="")
 
     duplicated_group=-1
 
@@ -3994,6 +3995,27 @@ class Track(models.Model):
     def get_segment_names(self):
         return json.loads(self.segment_names)
 
+    def read_garmin_info(self):
+        self.info("Reading garmin_info")
+        if self.garmin_info:
+            try:
+                import json
+                garmin_info = json.loads(self.garmin_info)
+
+                from pprint import pprint
+                pprint(garmin_info)
+
+                try:
+                    activity_type = garmin_info["activityType"]["typeKey"]
+                except:
+                    activity_type = None
+                if activity_type and activity_type != self.activity_type:
+                    self.info("Setting activity type as %s" %(activity_type))
+                    self.activity_type = activity_type
+                    self.save()
+
+            except Exception as e:
+                self.error("Error in reading garmin_info: %s" %e)
 # def get_splits_pace_(self):
     #     from .utils import get_splits_pace, get_splits_hr
     #

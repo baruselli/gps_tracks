@@ -4002,9 +4002,6 @@ class Track(models.Model):
                 import json
                 garmin_info = json.loads(self.garmin_info)
 
-                from pprint import pprint
-                pprint(garmin_info)
-
                 try:
                     activity_type = garmin_info["activityType"]["typeKey"]
                 except:

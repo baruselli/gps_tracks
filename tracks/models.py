@@ -3926,12 +3926,15 @@ class Track(models.Model):
             except Exception as e:
                 self.warning("Error in assign_time_to_wps, %s: %s" %(wp,e))
 
-    def set_total_frequency(self):
+    def set_total_frequency(self,mult_by_2=False):
         """sets average frequency"""
         if self.td.frequencies:
             self.total_frequency = np.nanmean([x for x in self.td.frequencies if x is not None])*60
             if np.isnan(self.total_frequency):
                 self.total_frequency=None
+            else:
+                self.total_steps = int(self.total_frequency * self.duration)
+                self.total_step_length = self.length_3d / self.total_steps
         else:
             self.td.frequencies=[]
             self.td.frequency_rolling=[]

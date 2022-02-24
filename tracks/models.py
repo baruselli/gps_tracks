@@ -3932,14 +3932,14 @@ class Track(models.Model):
 
     def set_total_frequency(self,mult_by_2=False):
         """sets average frequency"""
-        if self.td.frequencies:
+        if self.td.frequencies and not self.total_frequency:
             self.total_frequency = np.nanmean([x for x in self.td.frequencies if x is not None])*60
             if np.isnan(self.total_frequency):
                 self.total_frequency=None
             else:
-                if self.total_frequency and self.duration:
+                if self.total_frequency and self.duration and not self.total_steps:
                     self.total_steps = int(self.total_frequency * self.duration)
-                if self.length_3d and self.total_steps:
+                if self.length_3d and self.total_steps and not self.total_step_length:
                     self.total_step_length = self.length_3d / self.total_steps
         else:
             self.td.frequencies=[]

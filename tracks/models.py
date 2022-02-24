@@ -2696,7 +2696,7 @@ class Track(models.Model):
             self.info("OK read tcx")
 
         except Exception as e:
-            self.error(e)
+            self.error("Error in read_tcx: %s" %e)
 
 
     def read_gpx(self):
@@ -3933,8 +3933,10 @@ class Track(models.Model):
             if np.isnan(self.total_frequency):
                 self.total_frequency=None
             else:
-                self.total_steps = int(self.total_frequency * self.duration)
-                self.total_step_length = self.length_3d / self.total_steps
+                if self.total_frequency and self.duration:
+                    self.total_steps = int(self.total_frequency * self.duration)
+                if self.length_3d and self.total_steps:
+                    self.total_step_length = self.length_3d / self.total_steps
         else:
             self.td.frequencies=[]
             self.td.frequency_rolling=[]

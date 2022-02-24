@@ -649,6 +649,10 @@ class Track(models.Model):
         step += 1
         self.set_track_single_geojson()
 
+        self.info("%s - Set total frequency" %step)
+        step += 1
+        self.set_total_frequency()
+
         try:
             self.info("%s - Set ascii name" %step)
             step += 1

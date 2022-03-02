@@ -1015,7 +1015,7 @@ function add_photos_ajax(data_tot,links=false,request=""){
          '<img src='+url_path+' style=" display: inline-block;height:100%;width:auto;max-width:100%" >'
     }
     function img_text_tn(thumbnail_url,n){
-        return '<img class="demo cursor" src='+thumbnail_url+ ' style="width:100%" onclick="currentSlide('+n+')">'
+        return '<img class="img_photo demo cursor" src='+thumbnail_url+ ' style="width:100%" onclick="currentSlide('+n+')">'
     }    
     function a_text(link){
         return '<a href="'+link+'?'+request+'">'
@@ -1068,7 +1068,9 @@ function add_photos_ajax(data_tot,links=false,request=""){
             $( "#slideshow_container .thumbnail_container .row_slideshow" ).append(text_tn)
         }
         $(".total_photos_slideshow").html(counter-1)
-        showSlides(1);
+        if ($("#slideshow_container").length >0){
+            showSlides(1);
+        }
     }else{
         $( "#photos_div" ).append("<p><b>No Photos available</b></p>")
     }

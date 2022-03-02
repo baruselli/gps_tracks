@@ -76,17 +76,23 @@
   /* Six columns side by side */
   .column_slideshow {
     float: left;
-    width: 16.66%;
+    width: 19%;
+    margin-left: 1%;
     height: 0;
-    padding-bottom: 25%;
+    padding-bottom: 27%;
   }
   
   /* Add a transparency effect for thumnbail images */
   .demo {
-    opacity: 0.6;
+    opacity: 1;
   }
   
-  .active,
-  .demo:hover {
+  .active{
     opacity: 1;
+    border: 5px solid black;
+  }
+
+  .demo:hover:not(.active) {
+    opacity: 1;
+    border: 5px solid #555;
   }

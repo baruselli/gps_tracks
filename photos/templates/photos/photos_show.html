@@ -99,6 +99,7 @@
                             <tr><td>Max results</td><td><input class="searchfield" id="searchbox11" name="how_many" type="number" value="{{how_many}}" placeholder="How many"/></td></tr>
                             <tr><td>Last photos by ID</td><td><input class="searchfield" id="searchbox20" name="by_id" type="number" value="{{by_id}}" placeholder="By ID"/></td></tr>
                             <tr><td>View</td><td><select  id="searchbox21" name="view_type">
+                                    <option value='slideshow'{% if view_type == "slideshow" %} selected {%endif%}>Slideshow</option>
                                     <option value='show'{% if view_type == "show" %} selected {%endif%}>Only photos</option>
                                     <option value='map'{% if view_type == "map" %} selected {%endif%}>Map</option>
                                     <option value='table'{% if view_type == "table" %} selected {%endif%}>Table</option>
@@ -152,8 +153,12 @@
             </table>
         </div>
     {%else %}
-      <div  id="photos_div">
-      <!-- add photos here by AJAX-->
+        <!-- add photos here by AJAX-->
+        {% if view_type == "slideshow" %}
+            {% include 'photos/slideshow.html' %}
+        {% else %}
+            <div  id="photos_div">
+        {% endif %}
       </div>
     {% endif %}
 

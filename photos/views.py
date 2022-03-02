@@ -42,7 +42,7 @@ class PhotosShowView(View):
         address = request.GET.get('address', "")
         track_ids = request.GET.get('track_ids', None)
         photo_ids = request.GET.get('photo_ids', None)
-        view_type = request.GET.get('view_type', "show")
+        view_type = request.GET.get('view_type', "slideshow")
 
 
         ## option to avoid doing any search (for page initialization)

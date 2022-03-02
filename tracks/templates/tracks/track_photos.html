@@ -69,12 +69,14 @@
 
 {% block content %}
     <div class="tabcontent" id="tab_photos">
-        {%for photo in track.photos.all %}
+        <!-- {%for photo in track.photos.all %}
             <div style="width:48%;float:left; margin-left: 1%;margin-top: 1%">
             <div max-width: 100%;></div>
             <div max-width: 100%;><a href='{% url 'photo_detail' photo_id=photo.pk %}' ><img src='{{photo.url_path}}'  style="max-width:100%"; ></a></div>
             </div>
-        {%endfor%}
+        {%endfor%} -->
+
+        {% include 'photos/slideshow.html' with photos=track.photos.all %}
     </div>
 {%endblock%}
 

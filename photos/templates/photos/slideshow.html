@@ -1,0 +1,37 @@
+<!-- from https://www.w3schools.com/howto/howto_js_slideshow_gallery.asp -->
+<!-- Container for the image gallery -->
+<div id="slideshow_container" class="slideshow_container">
+    <div class="photo_container">
+
+        {%for photo in photos.all %}
+            <div class="mySlides" style="max-height:100%;width:auto; text-align: center;">
+                <div class="numbertext">{{ forloop.counter }} / {{ photos.count}} </div>
+                <a href='{% url 'photo_detail' photo_id=photo.pk %}' >
+                    <img src='{{photo.url_path}}' style=" display: inline-block;height:100%;width:auto;max-width:100%" >
+                </a>
+            </div> 
+        {%endfor%}
+    
+        <!-- Next and previous buttons -->
+        <a class="prev_btn" id="prev_btn" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next_btn" id="next_btn" onclick="plusSlides(1)">&#10095;</a>
+    </div>   
+
+    <div class="thumbnail_container">
+
+        <!-- Image text -->
+        <div class="caption-container">
+        <p id="caption"></p>
+        </div>
+    
+        <!-- Thumbnail images -->
+        <div class="row_slideshow" style="max-height:100%;width:auto; text-align: center;">
+            {%for photo in photos.all %}
+                <div class="column_slideshow">
+                    <img class="demo cursor" src='{{photo.thumbnail_url_path}}' style="width:100%" onclick="currentSlide({{ forloop.counter }})">
+                </div>
+            {%endfor%}
+        </div>
+    </div>
+</div>  
+</div>

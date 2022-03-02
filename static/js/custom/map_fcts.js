@@ -997,40 +997,78 @@ function legend_fct(map,colors,grades, id, name="Legend", decimals=1, father_id=
     };
 
 function add_photos_ajax(data_tot,links=false,request=""){
+    // for showing list of photos
     var base_div_text='<div style="width:19%;float:left; margin-left: 1%;margin-top: 1%">'
+    // for slideshow
+    var base_div_text_ss='<div class="mySlides" style="max-height:100%;width:auto; text-align: center;">'
+    // for thumbnails of slideshow
+    var base_div_text_tn='<div class="column_slideshow">'
+    var total_photos = data_tot["Photos"].length
     function img_text(thumbnail_url,url_path){
         return '<img \
         onmouseover="this.src='+"'"+url_path+"'"+'" \
         onmouseout="this.src='+"'"+thumbnail_url+"'"+'" \
         class="img_photo" src="'+thumbnail_url+'" alt="img" width="100%">'
+    }    
+    function img_text_ss(url_path,n){
+        return '<div class="numbertext"><span>'+n+ '</span> / <span class="total_photos_slideshow"></span></div>'+
+         '<img src='+url_path+' style=" display: inline-block;height:100%;width:auto;max-width:100%" >'
     }
+    function img_text_tn(thumbnail_url,n){
+        return '<img class="demo cursor" src='+thumbnail_url+ ' style="width:100%" onclick="currentSlide('+n+')">'
+    }    
     function a_text(link){
         return '<a href="'+link+'?'+request+'">'
     }
 
-    if (data_tot["Photos"].length>0){
+    var counter = 1
+    if (total_photos>0){
         for (p in data_tot["Photos"]){
             photo=data_tot["Photos"][p]
-            text=""
+            var text=""
+            var text_ss = ""
+            var text_tn = ""
+            var text_a= ""
+            var text_ss_a= ""
             if (Array.isArray(photo.thumbnail_url_path)){ //case of clustering
                 for (i in  photo.thumbnail_url_path){
                     text+=base_div_text
                     text_a=img_text(photo.thumbnail_url_path[i],photo.url_path[i]);
+                    text_ss+=base_div_text_ss
+                    text_tn+=base_div_text_tn
+                    text_tn+=img_text_tn(photo.thumbnail_url_path[i],counter)
+                    var text_ss_a=img_text_ss(photo.url_path[i],counter);
                     if (links){
                         text_a=a_text(photo.link[i])+text_a+"</a>";
+                        text_ss_a=a_text(photo.link[i])+text_ss_a+"</a>";
                     }
                     text+=text_a+"</div>"
+                    text_ss+=text_ss_a+"</div>"
+                    text_tn+="</div>"
+                    counter++;
                 }
             }else{  //normal case
                 text+=base_div_text
                 text_a=img_text(photo.thumbnail_url_path, photo.url_path)
+                text_ss+=base_div_text_ss
+                text_ss_a=img_text_ss(photo.url_path, counter)
+                text_tn+=base_div_text_tn
+                text_tn+=img_text_tn(photo.thumbnail_url_path,counter)                
                 if(links){
                     text_a=a_text(photo.link)+text_a+"</a>";
+                    text_ss_a=a_text(photo.link)+text_ss_a+"</a>";
                 }
                 text+=text_a+"</div>"
+                text_ss+=text_ss_a+"</div>"                
+                text_tn+="</div>"
+                counter++;
             }
             $( "#photos_div" ).append(text)
+            $( "#slideshow_container .photo_container" ).append(text_ss)
+            $( "#slideshow_container .thumbnail_container .row_slideshow" ).append(text_tn)
         }
+        $(".total_photos_slideshow").html(counter-1)
+        showSlides(1);
     }else{
         $( "#photos_div" ).append("<p><b>No Photos available</b></p>")
     }

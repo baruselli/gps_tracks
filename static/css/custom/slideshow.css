@@ -61,10 +61,10 @@
   
   /* Container for image text */
   .caption-container {
-    text-align: center;
-    background-color: #222;
-    padding: 2px 16px;
-    color: white;
+    /* text-align: center; */
+    /* background-color: #222; */
+    padding: 20px 16px;
+    /* color: white; */
   }
   
   .row_slideshow:after {

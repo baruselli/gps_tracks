@@ -333,6 +333,8 @@ class Track(models.Model):
             files.append(self.kmz_file)
         if self.csv_file:
             files.append(self.csv_file)
+        if self.tcx_file:
+            files.append(self.tcx_file)            
 
         return files
 

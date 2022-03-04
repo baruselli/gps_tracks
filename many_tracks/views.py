@@ -187,4 +187,4 @@ class ManyTracksSourceView(View):
             zipObj.write(f,basename(f))
         zipObj.close()
     
-        return redirect(settings.STATIC_URL+"export/tracks.zip")
+        return redirect(settings.MEDIA_URL+"export/tracks.zip")

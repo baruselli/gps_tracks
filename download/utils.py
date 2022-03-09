@@ -343,11 +343,12 @@ def download_garmin():
             activity_id = activity["activityId"]
             activity_name = activity["activityName"].replace(" ","_")
             activity_time = activity["startTimeLocal"].replace(":","-").replace(" ","_")
-            logger.info("api.download_activities(%s, %s)", activity_id,activity_name)
+            logger.debug("api.download_activities(%s, %s)", activity_id,activity_name)
             output_file = activity_time + "_" + activity_name + ".tcx"
             output_file_path = os.path.join(out_path, output_file)
 
             # download new tracks
+            # logger.info("%s, %s" %(activity_name, activity["distance"]))
             if not os.path.exists(output_file_path) and activity["distance"] and activity["distance"]>0:
                 tcx_data = api.download_activity(activity_id, dl_fmt=api.ActivityDownloadFormat.TCX)
                 logger.info("downloading " + output_file_path)

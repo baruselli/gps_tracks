@@ -974,9 +974,10 @@ def name_wo_path(file):
     base=os.path.basename(file)
     return base
 
-def import_new_tracks(dir_=None,extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"]):
+def import_new_tracks(dir_=None,extensions=[".kmz", ".kml", ".gpx", ".csv", ".tcx"], files=None):
     """find and import new tracks"""
-    files = find_imported_and_existing_files(dir_=dir_, extensions=extensions)["missing_tracks_existing_paths"]
+    if files is None:
+        files = find_imported_and_existing_files(dir_=dir_, extensions=extensions)["missing_tracks_existing_paths"]
     from_files_to_tracks(files, update=False ,ignore_blacklist=False,import_new_extensions=False)
 
 def import_new_photos(dir_=None,extensions=[".jpg"]):

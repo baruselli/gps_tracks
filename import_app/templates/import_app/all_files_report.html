@@ -33,13 +33,17 @@
             <table class="table table-bordered table-hover" id="import_table2">
             <thead>
             <tr>
-                <td>File</td>
+                <td>File</td><td>Import</td>
             </tr>
             </thead>
             <tbody>
                 {% for file in all_files.missing_tracks_existing_paths %}
                 <tr>
                     <td>{{file}}</td>
+                    <td> <form method="GET" action="{% url 'import_new_tracks'  %}">
+                        <input name="file_name" type="hidden" value="{{file}}">
+                        <input type="submit" value="Import">
+                    </form></td>
                 </tr>
                 {% endfor %}
             </tbody>

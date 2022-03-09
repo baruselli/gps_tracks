@@ -360,9 +360,18 @@ class ImportNewTracksView(View):
         import threading
         from django.contrib import messages
 
+        file_name = request.GET.get("file_name",None)
+        if file_name:
+            files = [file_name]
+        else:
+            files = None
+
         logger.info("ImportNewTracks")
         logger.info(settings.TRACKS_DIR)
-        t = threading.Thread(target=import_new_tracks, args=(str(settings.TRACKS_DIR),))
+        t = threading.Thread(target=import_new_tracks, kwargs={
+            "dir_": str(settings.TRACKS_DIR),
+            "files" : files,
+        })
         t.start()
 
         message = "Started import in a parallel thread, check logs for details"

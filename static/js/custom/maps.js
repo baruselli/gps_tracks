@@ -29,10 +29,13 @@ function enrich_basemaps(mapbox_token="",basemaps_mapbox=[],show_google_maps=fal
     basemaps["MapBox"]["accessToken"]=mapbox_token
     basemaps["MapBox"]["url"]=basemaps["MapBox"]["url"].replace("{accessToken}",mapbox_token)
     base_url=basemaps["MapBox"]["url"];
-    variants={}
+    variants=basemaps["MapBox"]["variants"]
+    if (!variants){
+        variants = {}
+    }
     for (i in basemaps_mapbox){
         m=basemaps_mapbox[i]
-        variants[m]={url:base_url.replace("{id}","mapbox."+m)}
+        variants[m]={url:base_url.replace("{id}","mapbox/"+m)}
     }
     basemaps["MapBox"]["variants"]=variants
 

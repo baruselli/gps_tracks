@@ -22,6 +22,7 @@ from .utils import get_colors
 from django.core.serializers.json import DjangoJSONEncoder
 import math
 import json
+from tracks.utils import numbers_to_colors, to_float_or_zero
 
 
 logger = logging.getLogger("gps_tracks")
@@ -544,8 +545,11 @@ class Track(models.Model):
                         + "s"
                     )
                 if self.length_3d and self.duration:
-                    self.avg_speed = self.length_3d / self.duration / 60  # (m/s)
-                    self.pace = 1 / 0.06 / self.avg_speed  # (min/km)
+                    self.avg_speed = to_float_or_zero(self.length_3d / self.duration / 60)   # (m/s)
+                    if self.avg_speed:
+                        self.pace = to_float_or_zero(1 / 0.06 / self.avg_speed)  # (min/km)
+                    else:
+                        self.pace = 0
                     self.pace_string = (
                         str(int(self.pace))
                         + ":"
@@ -555,6 +559,8 @@ class Track(models.Model):
                 self.save()
                 self.info("OK beginning, end ,length")
         except Exception as e:
+            #import traceback
+            #traceback.print_exc()
             self.warning("Error set_all_properties cannot set beginning, end ,length: %s" %e)
 
         self.info("End common infos")
@@ -922,8 +928,8 @@ class Track(models.Model):
                                                                                 steps=steps, steps_legend=steps_legend)
             ## altitude
             if  hasattr(self , 'td_alt_rolling') and   self.td_alt_rolling:
-                track_json["Altitude"] = self.td_alt_rolling
-                track_json["AltitudeOriginal"] = self.td_alts
+                track_json["Altitude"] =  [to_float_or_zero(a) for a in self.td_alt_rolling] 
+                track_json["AltitudeOriginal"] = [to_float_or_zero(a) for a in self.td_alts]
                 track_json["ColorAltitude"], track_json["GradesAltitude"], track_json["LegendAltitude"]=numbers_to_colors(self.td_alt_rolling,colorscale,steps=steps,steps_legend=steps_legend)
             elif  hasattr(self , 'td_alts') and  self.td_alts:
                 track_json["Altitude"] = self.td_alts
@@ -1833,6 +1839,15 @@ class Track(models.Model):
             pace_ms = int((self.pace or 0) *60000)
         except:
             pace_ms = 0
+
+        if not self.length_3d:
+            self.length_3d = 0
+
+        fields_to_fix = ["length_3d", "avg_speed", "pace", "uphill", "downhill", "total_heartbeat"]
+        for field_to_fix in fields_to_fix:
+            if math.isnan(getattr(self, field_to_fix)) or str(getattr(self, field_to_fix)).lower()=="nan":
+                setattr(self, field_to_fix, 0)
+        self.save()
 
         features = {
             # directly from DB
@@ -3105,6 +3120,8 @@ class Track(models.Model):
             self.td.save()
             self.info("End reducing points with gpxpy")
         except Exception as e:
+            #import traceback
+            #traceback.print_exc()
             self.error("Error in Part for both reading and passing an object: %s" %e)
         
         self.info("End Read Gpx")

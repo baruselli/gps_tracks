@@ -1845,7 +1845,8 @@ class Track(models.Model):
 
         fields_to_fix = ["length_3d", "avg_speed", "pace", "uphill", "downhill", "total_heartbeat"]
         for field_to_fix in fields_to_fix:
-            if math.isnan(getattr(self, field_to_fix)) or str(getattr(self, field_to_fix)).lower()=="nan":
+            attr_value = getattr(self, field_to_fix)
+            if attr_value and (math.isnan(attr_value) or str(attr_value).lower()=="nan"):
                 setattr(self, field_to_fix, 0)
         self.save()
 

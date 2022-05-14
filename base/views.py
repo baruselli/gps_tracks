@@ -32,7 +32,7 @@ class MenuView(View):
         track_form=TrackSearchForm()
         group_form=GroupSearchForm()
 
-        tracks =  Track.objects.exclude(date__isnull=True).order_by("-date")[:7]
+        tracks =  Track.objects.exclude(beginning__isnull=True).order_by("-beginning")[:7]
         waypoints = Waypoint.objects.exclude(time__isnull=True).exclude(auto_generated=True).order_by("-time")[:5]
         photos = Photo.objects.exclude(time__isnull=True).order_by("-time")[:8]
         groups = Group.objects.exclude(modified__isnull=True).exclude(is_path_group=True).order_by("-modified")[:5]

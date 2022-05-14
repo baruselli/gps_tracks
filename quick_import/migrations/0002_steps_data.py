@@ -61,11 +61,25 @@ class Migration(migrations.Migration):
         step.save()
 
         step = ImportStep.objects.create(
-            name = "Associated photos to tracks",
+            name = "Associated photos to downloaded tracks",
             step_code = "associate_photos_to_tracks",
             step_type = "51_link_track_photos",
         )
         step.save()
+
+        step = ImportStep.objects.create(
+            name = "Associated photos to all tracks",
+            step_code = "associate_photos_to_all_tracks",
+            step_type = "52_link_all_track_photos",
+        )
+        step.save()     
+
+        step = ImportStep.objects.create(
+            name = "Associated all photos to tracks",
+            step_code = "associate_all_photos_to_tracks",
+            step_type = "53_link_track_all_photos",
+        )
+        step.save()        
 
         # 2 quick imports
         QuickImport = apps.get_model("quick_import", "QuickImport")

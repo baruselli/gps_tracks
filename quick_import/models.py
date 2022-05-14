@@ -16,6 +16,8 @@ class ImportStep(models.Model):
         ("31_download_photos","Download Photos"),
         ("41_import_photos","Import Photos"),
         ("51_link_track_photos","Link Photos to Tracks"),
+        ("52_link_all_track_photos","Link Photos to all Tracks"),
+        ("53_link_track_all_photos","Link all Photos to Tracks"),
     ]
 
     name = models.CharField(max_length=255, verbose_name="Import Step Name", null=False, blank=False, unique=True)
@@ -88,8 +90,15 @@ class QuickImport(models.Model):
             elif step.step_code == "import_photos":
                 imported_photos = import_photos(files=downloaded_photos, update=True)
             # link photos - tracks
+            # downloaded photos to downloaded tracks
             elif step.step_code == "associate_photos_to_tracks":
                 associate_photos_to_tracks(photo_list=imported_photos, track_list=generated_tracks)
+            # downloaded photos to all tracks
+            elif step.step_code == "associate_photos_to_all_tracks":
+                associate_photos_to_tracks(photo_list=imported_photos, track_list=None)
+            # all photos to downloaded tracks
+            elif step.step_code == "associate_all_photos_to_tracks":
+                associate_photos_to_tracks(photo_list=[], track_list=generated_tracks)
 
         logger.info("downloaded_tracks")
         logger.info(downloaded_tracks)

@@ -20,3 +20,12 @@ then go to http://localhost:8000/ on a web browser (Chrome or Firefox).
 Tests:
 
 python manage.py test
+
+Some screenshots:
+
+![alt text](https://github.com/baruselli/gps_tracks/blob/master/example_images/Screenshot%20(8).png)
+![alt text](https://github.com/baruselli/gps_tracks/blob/master/example_images/Screenshot%20(9).png)
+![alt text](https://github.com/baruselli/gps_tracks/blob/master/example_images/Screenshot%20(10).png)
+![alt text](https://github.com/baruselli/gps_tracks/blob/master/example_images/Screenshot%20(11).png)
+![alt text](https://github.com/baruselli/gps_tracks/blob/master/example_images/Screenshot%20(12).png)
+![alt text](https://github.com/baruselli/gps_tracks/blob/master/example_images/Screenshot%20(13).png)
